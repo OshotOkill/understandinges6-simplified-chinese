@@ -8,10 +8,10 @@
 * [Chapter 4](chapter_4.md)
 * [Chapter 5](chapter_5.md)
 * [Chapter 6](chapter_6.md)
-* Chapter 7
-* [Chapter 8](chapter_8.md)
-* [Chapter 9](chapter_9.md)
-* Chapter 10
+* [Chapter 7](chapter_7.md)
+* Chapter 8
+* Chapter 9
+* [Chapter 10](chapter_10.md)
 * Chapter 11
 * Chapter 12
 * Chapter 13
