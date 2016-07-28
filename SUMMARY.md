@@ -3,7 +3,7 @@
 * [About](README.md)
 * [Introduction](chapter1.md)
 * [Chapter 1](chapter_1.md)
-* Chapter 2
+* [Chapter 2](chapter_2.md)
 * Chapter 3
 * Chapter 4
 * Chapter 5
