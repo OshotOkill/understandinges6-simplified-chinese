@@ -15,4 +15,5 @@
 * [Chapter 11](chapter_11.md)
 * [Chapter 12](chapter_12.md)
 * [Chapter 13](chapter_13.md)
+* Appendix A
 
