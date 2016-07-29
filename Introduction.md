@@ -21,9 +21,11 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 对 ECMAScript 6 特性的深入了解是所有 JavaScript 开发者提升自身水平的关键。在不久的将来，ECMAScript 6 中包含的新特性会是 JavaScript 应用开发的基础，这也是本书所要阐述的。我希望你们能够通过阅读本书来了解 ECMAScript 6 以便在需要使用的时候快速上手。
 
+
 #### 浏览器及 Node.js 兼容性
 
 许多 JavaScript 环境，如浏览器及 Node.js 都正在实现 ECMAScript 6。本书并不关心他们实现的差异性而仅关注注在规范中定义的正确行为。因此在你的 JavaScript 环境中，一些行为可能与本书描述的不符。
+
 
 #### 本书的适用人群
 
@@ -31,11 +33,9 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 本书并不适合从未写过 JavaScript 的初学者，你需要一定的基础知识才能通读本书。
 
-Overview
+
 
 #### 总览
-
-Each of this book’s thirteen chapters covers a different aspect of ECMAScript 6. Many chapters start by discussing problems that ECMAScript 6 changes were made to solve, to give you a broader context for those changes, and all chapters include code examples to help you learn new syntax and concepts.
 
 本书共13章，ECMAScript 6 中不同的部分由各自的章节分别阐释。许多章节都是以 ECMAScript 6 是怎样解决过去开发过程中存在的某处痛点开头，目的是为了让你对这些变更有个大体上的认识，此外所有的章节都包含实际的代码示例，以助你学习新的语法及概念。
 
@@ -44,57 +44,76 @@ Each of this book’s thirteen chapters covers a different aspect of ECMAScript 
 
 > 讨论了块级声明 let 和 const —— var 的替代者们。
 
+
 第二章： **字符串及正则表达式（Strings and Regular Expressions ）**
 
 > 涵盖了新增加的字符串操作和查看方法，以及字符串模板（template strings）等内容。
 
-Chapter 3: Functions in ECMAScript 6 discusses the various changes to functions. This includes the arrow function form, default parameters, rest parameters, and more.
 
 第三章： **ECMAScript 6 中的函数（Functions in ECMAScript 6）**
 
 > 阐述了在 ECMAScript 6 中函数发生的变化，包括箭头函数，默认参数，剩余参数等。
 
-Chapter 4: Expanded Object Functionality explains the changes to how objects are created, modified, and used. Topics include changes to object literal syntax, and new reflection methods.
 
 第四章： **扩展的对象功能（Expanded Object Functionality）**
 
 > 揭示了对象在创建，修改及使用过程中发生的变化，包括对象字面量以及新的反射方法（reflection methods）。
 
-Chapter 5: Destructuring for Easier Data Access introduces object and array destructuring, which allow you to decompose objects and arrays using a concise syntax.
 
 第五章： **解构（Destructuring for Easier Data Access）**
 
 > 介绍了对象和数组的解构方法，允许你用更简洁的语法来分解（decompose）对象和数组。
 
-Chapter 6: Symbols and Symbol Properties introduces the concept of symbols, a new way to define properties. Symbols are a new primitive type that can be used to obscure (but not hide) object properties and methods.
 
 第六章： **Symbols 与 Symbols属性（Symbols and Symbol Properties）**
 
 > 解释了symbols的概念，这是一种定义属性的新方式。Symbols 是新添加的原始类型，可以用来模糊（不是隐藏）对象的属性和方法。
 
-Chapter 7: Sets and Maps details the new collection types of Set, WeakSet, Map, and WeakMap. These types expand on the usefulness of arrays by adding semantics, de-duping, and memory management designed specifically for JavaScript.
 
 第七章： **Sets 与 Maps（Sets and Maps）**
 
 > 展示了新的集合类型的细节，包括 Set，WeakSet，Map 和 WeakMap，这些类型在数组的基础之上添加了一组实用的扩展功能，包括添加语义（adding semantics），去重（de-duping）及针对JavaScript的内存管理（memory management）
 
 
+第八章： **迭代器与生成器（Iterators and Generators）**
 
-Chapter 8: Iterators and Generators discusses the addition of iterators and generators to the language. These features allow you to work with collections of data in powerful ways that were not possible in previous versions of JavaScript.
+> 讨论了迭代器和生成器这两个新添加的特性，它们允许你使用另一种强有力的方式操作集合中的数据，而在 ECMAScript 6 之前的版本中这是绝对无法做到的。
 
-Chapter 9: Introducing JavaScript Classes introduces the first formal concept of classes in JavaScript. Often a point of confusion for those coming from other languages, the addition of class syntax in JavaScript makes the language more approachable to others and more concise for enthusiasts.
 
-Chapter 10: Improved Array Capabilities details the changes to native arrays and the interesting new ways they can be used in JavaScript.
+第九章： **类 (Introducing JavaScript Classes)**
 
-Chapter 11: Promises and Asynchronous Programming introduces promises as a new part of the language. Promises were a grassroots effort that eventually took off and gained in popularity due to extensive library support. ECMAScript 6 formalizes promises and makes them available by default.
+> 解释了在JavaScript中首次正式定义的类的概念。类的缺失是使其它语言开发者学习 JavaScript 感到困惑的原因之一，天之后使得 JavaScript 更易理解而且语法更为简洁
 
-Chapter 12: Proxies and the Reflection API introduces the formalized reflection API for JavaScript and the new proxy object that allows you to intercept every operation performed on an object. Proxies give developers unprecedented control over objects and, as such, unlimited possibilities for defining new interaction patterns.
 
-Chapter 13: Encapsulating Code with Modules details the official module format for JavaScript. The intent is that these modules can replace the numerous ad-hoc module definition formats that have appeared over the years.
+第十章： **改进数组功能（Improved Array Capabilities）**
 
-Appendix A: Smaller ECMAScript 6 Changes covers other changes implemented in ECMAScript 6 that you’ll use less frequently or that didn’t quite fit into the broader major topics covered in each chapter.
+> 阐释了原生数组的一些变化及新的有趣的使用方式。
 
-Appendix B: Understanding ECMAScript 7 (2016) describes the two additions to the standard that were implemented for ECMAScript 7, which didn’t impact JavaScript nearly as much as ECMAScript 6.
+
+第十一章：**Promises 与异步编程（Promises and Asynchronous Programming）*** 
+
+>  Promises 成为了语言的一部分，由底层实现并被广泛且流行的库所支持。ECMAScript 6 原生支持并标准化了 promises 。 
+>  
+
+第十二章： **代理与反射API（Proxies and the Reflection API）**
+
+> 介绍了 JavaScript 中正式添加的反射API及新的代理对象（proxy object），使你可以拦截任何针对对象的操作。代理给予开发者操控对象空前的自由度和定义新交互方式的无限可能性。
+
+
+第十三章： **模块（Encapsulating Code with Modules）**
+
+> 官方正式定义了 JavaScript 中模块的格式，目的是取代这些年涌现的各式各样的模块加载方案。
+
+
+附录 A： **ECMAScript 6 中的小改进（Smaller ECMAScript 6 Changes）**
+
+> 集中介绍了 ECMAScript 6 中其它不太常见或者内容较少不大适合写为章节的内容。
+
+
+附录 B： **领悟 ECMAScript 7（2016）（Understanding ECMAScript 7 (2016)）**
+
+> 介绍了 ECMAScript 7（2016）新添加的两项内容，对 JavaScript 的改进相比 ECMAScript 6 甚微
+
 
 
 
