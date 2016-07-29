@@ -2,6 +2,7 @@
 
 JavaScript 语言的核心特性是由 ECMA-262 标准定义的，而这个标准定义的语言被称为 ECMAScript，你所熟悉的在浏览器或者是在 Node.js 中运行的 JavaScript 其实是 ECMAScript 的一个超集。浏览器及 Node.js 通过额外的对象和方法添加了更多的功能，但是核心部分和 ECMAScript 仍保持一致。 总的来讲 ECMA-262 的持续发展是 JavaScript 获得如此成功不可或缺的要素， 本书涵盖了到目前为止最近的一次针对该语言的主要更新内容： ECMAScript 6 。
 
+<br />
 
 #### ECMASciprt 6 的诞生之路
 
@@ -17,15 +18,19 @@ ECMAScript 3.1 最终作为 ECMA-262 第五版标准被发布，别名为 ECMASc
 
 ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此正式被更名为 “ECMAScript 2015”（不过本书仍称其为 ECMAScript 6 ，因为开发者对这个名字更为熟悉）。该标准中新的特性作用范围十分广泛，包括全新的对象类型，模式以及给已有对象添加新的方法等等。 ECMAScript 6 的兴奋点在于所有的变动都是为了解决开发者在开发过程中实际存在的问题。
 
+<br />
+
 #### 关于本书
 
 对 ECMAScript 6 特性的深入了解是所有 JavaScript 开发者提升自身水平的关键。在不久的将来，ECMAScript 6 中包含的新特性会是 JavaScript 应用开发的基础，这也是本书所要阐述的。我希望你们能够通过阅读本书来了解 ECMAScript 6 以便在需要使用的时候快速上手。
 
+<br />
 
 #### 浏览器及 Node.js 兼容性
 
 许多 JavaScript 环境，如浏览器及 Node.js 都正在实现 ECMAScript 6。本书并不关心他们实现的差异性而仅关注注在规范中定义的正确行为。因此在你的 JavaScript 环境中，一些行为可能与本书描述的不符。
 
+<br />
 
 #### 本书的适用人群
 
@@ -33,16 +38,18 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 本书并不适合从未写过 JavaScript 的初学者，你需要一定的基础知识才能通读本书。
 
-
+<br />
 
 #### 总览
 
 本书共13章，ECMAScript 6 中不同的部分由各自的章节分别阐释。许多章节都是以 ECMAScript 6 是怎样解决过去开发过程中存在的某处痛点开头，目的是为了让你对这些变更有个大体上的认识，此外所有的章节都包含实际的代码示例，以助你学习新的语法及概念。
 
+<br />
 
 第一章： **块级作用域绑定（How Block Bindings Work）**
 
 > 讨论了块级声明 let 和 const —— var 的替代者们。
+
 
 
 第二章： **字符串及正则表达式（Strings and Regular Expressions ）**
@@ -50,9 +57,11 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 > 涵盖了新增加的字符串操作和查看方法，以及字符串模板（template strings）等内容。
 
 
+
 第三章： **ECMAScript 6 中的函数（Functions in ECMAScript 6）**
 
 > 阐述了在 ECMAScript 6 中函数发生的变化，包括箭头函数，默认参数，剩余参数等。
+
 
 
 第四章： **扩展的对象功能（Expanded Object Functionality）**
@@ -104,6 +113,7 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 > 官方正式定义了 JavaScript 中模块的格式，目的是取代这些年涌现的各式各样的模块加载方案。
 
+<br />
 
 附录 A： **ECMAScript 6 中的小改进（Smaller ECMAScript 6 Changes）**
 
@@ -114,6 +124,9 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 > 介绍了 ECMAScript 7（2016）新添加的两项内容，对 JavaScript 的改进相比 ECMAScript 6 甚微
 
+<br />
+<br />
+* 代表翻译存在问题
 
 
 
