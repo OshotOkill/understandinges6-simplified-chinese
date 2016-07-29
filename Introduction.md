@@ -28,7 +28,7 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 #### 浏览器及 Node.js 兼容性
 
-许多 JavaScript 环境，如浏览器及 Node.js 都正在实现 ECMAScript 6。本书并不关心他们实现的差异性而仅关注注在规范中定义的正确行为。因此在你的 JavaScript 环境中，一些行为可能与本书描述的不符。
+许多 JavaScript 环境，如浏览器及 Node.js 都正在实现 ECMAScript 6。本书并不关心他们实现的差异性而仅关注在规范中定义的正确行为。因此在你的 JavaScript 环境中，一些行为可能与本书描述的不符。
 
 <br />
 
@@ -76,7 +76,7 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 第六章： **Symbols 与 Symbols属性（Symbols and Symbol Properties）**
 
-> 解释了symbols的概念，这是一种定义属性的新方式。Symbols 是新添加的原始类型，可以用来模糊（不是隐藏）对象的属性和方法。
+> 解释了symbols的概念，这是一种定义属性的新方式。Symbols 是新添加的原始类型，可以用来模糊（并非隐藏）对象的属性和方法。
 
 
 第七章： **Sets 与 Maps（Sets and Maps）**
