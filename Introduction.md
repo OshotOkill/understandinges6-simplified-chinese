@@ -125,6 +125,48 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 > 介绍了 ECMAScript 7（2016）新添加的两项内容，对 JavaScript 的改进相比 ECMAScript 6 甚微
 
 <br />
+
+#### 排版协定
+
+本书会使用以下的排版协定：
+
+* 斜体表示新术语
+* 代码或文件名使用等宽字体
+
+另外， 长代码会包含在使用等宽字体的代码块中，如：
+
+```doSomething
+function doSomething() {
+    // empty
+}
+```
+
+在代码块中， console.log() 右侧的注释表示代码执行后出现在浏览器或 Node.js 控制台上的输出内容，如
+
+```comment
+console.log("Hi");      // "Hi"
+```
+
+如果代码块中的某行代码抛出一个错误，右侧同样会有提示：
+
+```error
+doSomething();          // error!
+```
+<br />
+
+#### 协助于勘误
+
+你可以向英文原版提交 issue，建议或者PR： [https://github.com/nzakas/understandinges6](https://github.com/nzakas/understandinges6)
+
+如果你在阅读的过程中抱有疑问，也可以发送邮件给：[http://groups.google.com/group/zakasbooks.](http://groups.google.com/group/zakasbooks.)
+
+<br />
+
+#### 鸣谢
+
+英文原文的贡献者请查看 [原文](https://leanpub.com/understandinges6/read) Introduction 小结末尾
+
+<br />
 <br />
 \* 代表翻译存在问题
 
