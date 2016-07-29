@@ -1,5 +1,4 @@
 # 关于
-----
 
 本书的作者 Nicholas C. Zakas 是一名顶尖的前端工程师，曾出版《Professional JavaScript for Web Developers（JavaScript 高级程序设计）》《High Performance JavaScript（高性能 JavaScript）》等多本经典著作。
 
