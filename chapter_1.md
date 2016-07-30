@@ -95,7 +95,6 @@ function getValue(condition) {
 
 #### 禁止重复声明
 
-If an identifier has already been defined in a scope, then using the identifier in a let declaration inside that scope causes an error to be thrown. For example:
 
 如果一个标识符在当前作用域里已经存在，那么再用 let 声明相同的标识符或抛出错误
 
@@ -136,15 +135,12 @@ const maxItems = 30;
 const name;
 ```
 
-The maxItems variable is initialized, so its const declaration should work without a problem. The name variable, however, would cause a syntax error if you tried to run the program containing this code, because name is not initialized.
-
 变量 maxItems 已经被初始化，所以这里不会出现任何问题。至于 name 变量，由于你未对其进行初始化赋值所以在运行时会报错。
 
 <br />
 
 ##### const 声明 vs let 声明（Constants vs Let Declarations）
 
-Constants, like let declarations, are block-level declarations. That means constants are no longer accessible once execution flows out of the block in which they were declared, and declarations are not hoisted, as demonstrated in this example:
 
 const 和 let 都是块级声明，意味着执行流跳出声明所在的代码块后就没有办法在访问它们，同样 const 变量也不会被提升，示例如下：
 
@@ -171,7 +167,6 @@ const message = "Goodbye!";
 const age = 30;
 
 ```
-The two const declarations would be valid alone, but given the previous var and let declarations in this case, neither will work as intended.
 
 以上两条 const 声明如果单独存在即是合法的，很遗憾的是在本例中前面出现了 var 和 let 声明的相同标识符（变量）
 
@@ -182,7 +177,6 @@ const maxItems = 5;
 
 maxItems = 6;      // 抛出错误
 ```
-Much like constants in other languages, the maxItems variable can’t be assigned a new value later on. However, unlike constants in other languages, the value a constant holds may be modified if it is an object.
 
 和其它编程语言类似，maxItems 不能被赋予新的值，然而和其它语言不同的是，const 变量的值如果是个对象，那么这个对象本身可以被修改。
 
@@ -240,7 +234,7 @@ TDZ 只是发生在块级绑定中独特的特设定之一，另一个特殊设�
 
 #### 循环中的块级绑定（Block Binding in Loops）
 
-或许开发者对块级作用域有强烈需求的场景之一就是循环，因为它们不想让循环外部访问到内部的计数器。举个例子，以下的代码在 JavaScript 编程中并不罕见：
+或许开发者对块级作用域有强烈需求的场景之一就是循环，因为它们不想让循环外部访问到内部的索引计数器。举个例子，以下的代码在 JavaScript 编程中并不罕见：
 
 ```
 for (var i = 0; i < 10; i++) {
@@ -251,7 +245,7 @@ for (var i = 0; i < 10; i++) {
 console.log(i);                     // 10
 ```
 
-块级作用域在其它语言内部是默认的，以上的代码的执行过程也并无差异，但区别在于变量 i 只能在循环代码块内部使用。然而在 JavaScript中，变量的提升导致块外的部分在循环结束后依然可以访问 i 。如将 var 替换为 let 则更符合预期：
+块级作用域在其它语言内部是默认的，以上的代码的执行过程也并无差异，但区别在于变量 i 只能在循环代码块内部使用。然而在 JavaScript中，变量的提升导致块外的部分在循环结束后依然可以访问 i 。若将 var 替换为 let 则更符合预期：
 
 ``` block-bindings-in-loop
 for (let i = 0; i < 10; i++) {
@@ -269,7 +263,6 @@ In this example, the variable i only exists within the for loop. Once the loop i
 
 #### 循环中的函数（Functions in Loops）
 
-The characteristics of var have long made creating functions inside of loops problematic, because the loop variables are accessible from outside the scope of the loop. Consider the following code:
 
 长久以来 var 声明的特性使得在循环中创建函数问题多多，因为循环中声明的变量在块外也可以被访问，考虑如下的代码：
 
@@ -287,7 +280,6 @@ funcs.forEach(function(func) {
 
 你可能认为这段代码只是普通的输出 0 - 9 这十个数字，但事实上它会连续十次输出 “10”。这是因为每次迭代的过程中 i  是被共享的，意味着循环中创建的函数都保持着对相同变量的引用。当循环结束后 i 的值为 10，于是当 console.log(i)被调用后，该值会被输出。 
 
-To fix this problem, developers use immediately-invoked function expressions (IIFEs) inside of loops to force a new copy of the variable they want to iterate over to be created, as in this example:
 
 为了修正这个问题，开发者们在循环内部使用即时调用函数表达式（immediately-invoked function expressions, IIFEs）来迫使每次迭代时创建一份当前索引值的拷贝，示例如下：
 
