@@ -89,7 +89,7 @@ function getValue(condition) {
 }
 ```
 
-本次getValue 函数的写法的默认行为更贴近你脑海中C和其它类C语言的印像。既然变量的声明由 var 替换成了 let，那么它们就不会自动提升到当前函数作用域的顶部，除非执行流程到了 if 从句内部，其它情况时是没有办法对该变量进行访问的。如果 if 从句中 condition 的值为 false，那么 value 变量就不会被声明或者初始化。
+本次 getValue 函数的写法的默认行为更贴近你脑海中C和其它类C语言的印像。既然变量的声明由 var 替换成了 let，那么它们就不会自动提升到当前函数作用域的顶部，除非执行流程到了 if 从句内部，其它情况时是没有办法对该变量进行访问的。如果 if 从句中 condition 的值为 false，那么 value 变量就不会被声明或者初始化。
 
 <br />
 
@@ -257,8 +257,6 @@ for (let i = 0; i < 10; i++) {
 console.log(i);
 ```
 
-In this example, the variable i only exists within the for loop. Once the loop is complete, the variable is no longer accessible elsewhere.
-
 在本例中变量 i 只存在于 for 循环代码块中，一旦循环完毕变量 i 将不复存在。
 
 #### 循环中的函数（Functions in Loops）
@@ -346,7 +344,7 @@ funcs.forEach(function(func) {
 
 <br />
 
-> **注意**： 不得不说的是，let 声明在上述循环内部中的表现是在规范中特别定义的，和非变量提升这一特性没有直接的关系。实际上，早期 let 的实现并不会表现中这种效果，它是在后来被添加到规范中的。
+> **注意**： 不得不提的是，let 声明在上述循环内部中的表现是在规范中特别定义的，和非变量提升这一特性没有直接的关系。实际上，早期 let 的实现并不会表现中这种效果，它是在后来被添加到规范中的。
 
 <br />
 
