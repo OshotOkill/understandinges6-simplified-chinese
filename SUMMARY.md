@@ -6,7 +6,7 @@
 * [第二章 - 字符串与正则表达式（施工中）](chapter_2.md)
 * [第三章 - 函数（施工中）](chapter_3.md)
 * [第四章 - 扩展的对象功能（施工中）](chapter_4.md)
-* [Chapter 5](chapter_5.md)
+* [第五章 - 解构（施工中）](chapter_5.md)
 * [Chapter 6](chapter_6.md)
 * [Chapter 7](chapter_7.md)
 * [Chapter 8](chapter_8.md)
