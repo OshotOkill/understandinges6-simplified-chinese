@@ -115,7 +115,7 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 <br />
 
-附录 A： **ECMAScript 6 中的小改进（Smaller ECMAScript 6 Changes）**
+附录 A： **其它改进（Smaller ECMAScript 6 Changes）**
 
 > 集中介绍了 ECMAScript 6 中其它不太常见或者内容较少不大适合写为章节的内容。
 
