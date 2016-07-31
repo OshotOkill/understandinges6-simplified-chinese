@@ -10,7 +10,7 @@
 * [第六章 - Symbols 与 Symbols属性（施工中）](chapter_6.md)
 * [第七章 - Sets 与 Maps（施工中）](chapter_7.md)
 * [第八章 - 迭代器与生成器（施工中）](chapter_8.md)
-* [Chapter 9](chapter_9.md)
+* [第九章 - 类（施工中）](chapter_9.md)
 * [Chapter 10](chapter_10.md)
 * [Chapter 11](chapter_11.md)
 * [Chapter 12](chapter_12.md)
