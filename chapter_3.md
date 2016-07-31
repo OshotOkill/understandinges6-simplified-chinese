@@ -269,5 +269,5 @@ console.log(add(1, 1));         // 2
 console.log(add(undefined, 1)); // 抛出错误
 ```
 
-调用 add(undefined, 1) 发生错误是因为 second 在 first 之后定义，所以 first 无法访问 second 的值，要想知道缘由，就需要一重要概念：暂存性死区。
+调用 add(undefined, 1) 发生错误是因为 second 在 first 之后定义，所以 first 无法访问 second 的值，要想知道缘由，就需要重温一重要概念：暂存性死区。
 
