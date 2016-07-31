@@ -428,6 +428,8 @@ console.log("ncz" in window);           // false
 
 > **注意**： 如果你想让代码可以被全局对象所使用，你仍然需要使用 var ，特别是当你想要在多个 window 和 frame 之间共享代码的时候
 
+<br />
+
 #### 块级绑定的最佳实践（Emerging Best Practices for Block Bindings）
 
 
