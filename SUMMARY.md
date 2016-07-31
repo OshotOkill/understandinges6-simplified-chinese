@@ -14,7 +14,7 @@
 * [第十章 - 改进的数组功能（施工中）](chapter_10.md)
 * [第十一章 - Promises 与 异步编程（施工中）](chapter_11.md)
 * [第十二章 - 代理与反射API（施工中）](chapter_12.md)
-* [Chapter 13](chapter_13.md)
+* [第十三章 - 模块（施工中）](chapter_13.md)
 * [Appendix A](appendix_a.md)
 * [Appendix B](appendix_b.md)
 
