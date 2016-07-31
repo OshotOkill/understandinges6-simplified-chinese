@@ -348,6 +348,103 @@ funcs.forEach(function(func) {
 
 <br />
 
+#### 循环中的 const 声明（Constant Declarations in Loops）
+
+
+ECMAScript 6 规范中没有明确禁止在循环中使用 const 声明，不过其具体的表现要取决于你使用哪种循环方式。对于普通 的 for 循环你可以在初始化（initializer）语句里使用 const 声明，但当你想要修改该声明变量时循环会报错：
+
+```const-in-loop
+var funcs = [];
+
+// throws an error after one iteration
+for (const i = 0; i < 10; i++) {
+    funcs.push(function() {
+        console.log(i);
+    });
+}
+```
+
+在这段代码中，变量 i 被声明为常量。在循环开始迭代，即 i 为 0 的时候，代码是可以运行的，不过当步骤执行到 i++ 的那一刻会发生错误，因为你正在修改一个常量。由此，只有在循环过程中不更改在初始化语句中声明的变量的条件下，才能在里面使用 const 声明。
+
+
+另外，当使用 for-in 或 for-of 循环时，const 声明的变量的表现和 let 完全一致。所以以下的代码不会出错：
+
+```
+var funcs = [],
+    object = {
+        a: true,
+        b: true,
+        c: true
+    };
+
+// 不会报错
+for (const key in object) {
+    funcs.push(function() {
+        console.log(key);
+    });
+}
+
+funcs.forEach(function(func) {
+    func();     // 输出 "a"，"b" 和 "c"
+});
+```
+
+这段代码的作用和 “循环中的 let 声明” 一节的第二个示例相同，唯一的差异是变量 key 的值不能被修改。for-in 和 for-of 循环能正常使用 const 是因为每次迭代都会创建一个新的变量绑定而不是去试图修改已存在的绑定（如上例）。
+
+<br />
+
+#### 全局块级绑定（Global Block Bindings）
+
+
+let 与 const 另一处不同体现在全局作用域上。当在全局作用域内使用 var 声明时会创建一个全局变量，同时也是全局对象（浏览器环境下是 window）的一个属性。这意味着全局对象的属性可能会意外地被重写覆盖，例如：
+
+```global-block-bindings
+// 在浏览器中运行
+var RegExp = "Hello!";
+console.log(window.RegExp);     // "Hello!"
+
+var ncz = "Hi!";
+console.log(window.ncz);        // "Hi!"
+```
+
+虽然全局 RegExp 对象在 window 上已定义，但 var 声明很容易就能把它覆盖。这个例子就声明了一个新的 RegExp 变量并将原本的 RegExp 替换掉了。同样，ncz 也作为一个全局变量被声明并成为了 window 的属性。这就是 JavaScript 的工作机制。
+
+如果你在全局作用域内使用 let 或 const，那么绑定就会发生在全局作用域内，但是不会向全局对象内部添加任何属性。这就意味着你不能使用 let 或 const 重写全局变量，而仅能屏蔽掉它们。如下所示：
+
+```
+// 在浏览器中运行
+let RegExp = "Hello!";
+console.log(RegExp);                    // "Hello!"
+console.log(window.RegExp === RegExp);  // false
+
+const ncz = "Hi!";
+console.log(ncz);                       // "Hi!"
+console.log("ncz" in window);           // false
+```
+
+在这里，let 声明创建了新的 RegExp 绑定并屏蔽掉了全局对象的 RegExp 属性。也就是说 window.RegExp 和 RegExp 并不等同，所以全局作用域并没有被污染。同样 const 声明创建了新的绑定的同时也没有在全局对象内部添加任何属性。这个设定使得在全局作用域内使用 let 或 const 声明要比 var 安全得多，特别是在你不想在全局对象内部添加属性的时候。
+
+<br />
+
+> **注意**： 如果你想让代码可以被全局对象所使用，你仍然需要使用 var ，特别是当你想要在多个 window 和 frame 之间共享代码的时候
+
+#### 块级绑定的最佳实践（Emerging Best Practices for Block Bindings）
+
+
+当 ECMAScript 6 还在酝酿中的时候，一个普遍的共识是使用 let 而不是 var 来作为默认的变量声明方式。对大多数 JavaScript 开发者来讲，let 才是 var 该有的表现形式，自然而然这种取代十分合理。在这个理念下，你应该使用 const 声明来保护一些变量不被修改。
+
+然而，当越来越多的开发者迁移到 ECMAScript 6 之后，一个新的实践逐渐流行了起来：const 是声明变量的默认方式，仅当你明确哪些变量之后需要修改的情况下再用 let 声明那些变量。这个实践的缘由是大部分变量在初始化之后不应该被修改，因为这样做是造成 bug 的根源之一。这个理念有大批的受众而且在你接纳 ECMAScript 6 之后值得考虑。
+
+<br />
+
+#### 总结（Summary）
+
+let 和 const 块级绑定给 JavaScript 引入了词法作用域的概念。这些声明不会被提升且仅存在于声明它们的代码块中。它们的行为和其它语言更为相似且减少了意外错误的发生，因为变量会在原处被声明。作为副作用之一，你不能在它们被声明之气就是用它们，即使是像 typeof 这种安全操作也不可以。暂存性死区（temproal dead zone, TDZ）中绑定的存在会导致声明之前的访问以失败告终。
+
+在大多数情况下，let 和 const 的表现和 var 很相似，在循环中可不是这样。对于 let 和 const 来讲，每次迭代的开始都会创建新的绑定，意味着循环内部创建的函数可以在迭代时访问到当前的索引值，而不是在整个循环结束之后（即 var 的表现形式）。在 for 中使用 let 声明也同样适用，但 const 声明则会抛出错误。
+
+目前关于块级绑定的最佳实践是使用 const 作为默认的声明方式，当变量需要更改时则用 let 声明，保证代码中最基本的不可变性能防止错误的发生。
+
 
 
 
