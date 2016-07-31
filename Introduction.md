@@ -94,7 +94,7 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 > 解释了在JavaScript中首次正式定义的类的概念。类的缺失是使其它语言开发者学习 JavaScript 感到困惑的原因之一，天之后使得 JavaScript 更易理解而且语法更为简洁
 
 
-第十章： **改进数组功能（Improved Array Capabilities）**
+第十章： **改进的数组功能（Improved Array Capabilities）**
 
 > 阐释了原生数组的一些变化及新的有趣的使用方式。
 
