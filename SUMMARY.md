@@ -12,7 +12,7 @@
 * [第八章 - 迭代器与生成器（施工中）](chapter_8.md)
 * [第九章 - 类（施工中）](chapter_9.md)
 * [第十章 - 改进的数组功能（施工中）](chapter_10.md)
-* [Chapter 11](chapter_11.md)
+* [第十一章 - Promises 与 异步编程](chapter_11.md)
 * [Chapter 12](chapter_12.md)
 * [Chapter 13](chapter_13.md)
 * [Appendix A](appendix_a.md)
