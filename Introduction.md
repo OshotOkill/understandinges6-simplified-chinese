@@ -46,7 +46,7 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 <br />
 
-第一章： **块级作用域绑定（How Block Bindings Work）**
+第一章： **块级绑定（How Block Bindings Work）**
 
 > 讨论了块级声明 let 和 const —— var 的替代者们。
 
