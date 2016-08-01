@@ -52,7 +52,7 @@ function makeRequest(url, timeout, callback) {
 #### ECMAScript 6 中的默认参数（Default Parameter Values in ECMAScript 6）
 
 
-ECMAScript 6 使参数获得默认值变得更加方便，当未传入实参给形参时形参的初始值会被使用，如下所示：
+ECMAScript 6 中函数参数能更方便地获取默认值，当未传入实参给形参时形参的默认值会被使用，如下所示：
 
 ``` deafult-parameter-in-es6
 function makeRequest(url, timeout = 2000, callback = function() {}) {
@@ -728,7 +728,7 @@ var anotherPerson = new AnotherPerson("Nicholas");  // 错误！
 
 <br />
 
-ECMAScript 6 通过添加 new.target 解决了函数存在调用歧义的问题。紧随该主题的是，ECMAScript 6 还解决另一个早先存在的含糊问题：在块内声明函数。
+ECMAScript 6 通过添加 new.target 消除了函数存在调用歧义的可能性。紧随该主题的是，ECMAScript 6 还解决另一个早先存在的含糊问题：在块内声明的函数。
 
 <br />
 
