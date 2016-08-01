@@ -5,10 +5,14 @@
 
 ECMAScript 6 中的函数相较而言是个大的跃进，着手调查了 JavaScript 开发者多年的抱怨和需求。最终的结果是在 ECMAScript 5 函数的基础之上做了几项改进，增强 JavaScript 的编程体验并减少诱发错误的因素。
 
-#### 带默认参数的函数（Functions with Default Parameter Values）
+<br />
+
+### 带默认参数的函数（Functions with Default Parameter Values）
 
 
 JavaScript 的函数比较特殊的是可以接受任意个数的参数，完全无视函数声明中的参数个数。这允许你通过自行给未传值的参数赋默认值来定义带有不同参数的函数。本章将介绍 ECMAScript 6 及之前的 ECMAScript 版本如何实现默认参数，同时引出的还有 arguments 对象，参数表达式（expressions as parameters）及 TDZ 的另一形式。
+
+<br />
 
 #### ECMAScript 5 默认参数模拟（Simulating Default Parameter Values in ECMAScript 5）
 
@@ -271,3 +275,230 @@ console.log(add(undefined, 1)); // 抛出错误
 
 调用 add(undefined, 1) 发生错误是因为 second 在 first 之后定义，所以 first 无法访问 second 的值，要想知道缘由，就需要重温一重要概念：暂存性死区。
 
+<br />
+
+#### 默认参数的暂存性死区（Default Parameter Value Temporal Dead Zone）
+
+
+第一章介绍了关于 let 和 const 的暂存性死区 （temporal dead zone, TDZ），其同样存在于默认参数中使得变量无法访问。 和 let 声明类似，每个参数都创建了一个新的绑定，但是在它们被初始化之前访问会抛出错误。初始化的方式是通过在函数被调用的时刻传递参数或者使用默认参数。
+
+为了进一步说明默认参数中的 TDZ，考虑 “默认参数表达式” 中的例子：
+
+```
+function getValue(value) {
+    return value + 5;
+}
+
+function add(first, second = getValue(first)) {
+    return first + second;
+}
+
+console.log(add(1, 1));     // 2
+console.log(add(1));        // 7
+```
+
+调用 add(1, 1) 和 add(1) 事实上执行了以下语句以创建 first 和 second 参数和赋值：
+
+```
+// 调用 add(1, 1) 的 JavaScript 描述
+let first = 1;
+let second = 1;
+
+// 调用 add(1) 的 JavaScript 描述
+let first = 1;
+let second = getValue(first);
+```
+
+当函数 add() 执行时，first 和 second 的绑定被移入了特定的参数 TDZ（类似于 let）。之所以 second 可以被 first 初始化是因为 first 的初始化在前，反之则不能。现在考虑下面经过重写的 add() 函数：
+
+```
+function add(first = second, second) {
+    return first + second;
+}
+
+console.log(add(1, 1));         // 2
+console.log(add(undefined, 1)); // 抛出错误
+```
+
+在这个例子中调用 add(1, 1) 和 add(undefined, 1) 幕后做了如下工作：
+
+```
+//调用 add(1, 1) 的 JavaScript 描述
+let first = 1;
+let second = 1;
+
+// 调用 add(undefined, 1) 的 JavaScript 描述
+let first = second;
+let second = 1;
+```
+
+调用 add(undefind, 1）会抛出错误是因为 second 在 first 需要初始化的时候还未初始化。该时刻 second 仍在 TDZ 中所以访问它会出错。这些和第一章讨论的 let 绑定十分相似。
+
+<br />
+
+> **注意**: 函数参数相比函数内部有着自己的作用域和 TDZ，意味着参数的默认值不能使用函数内部声明的任何变量。
+
+<br />
+
+### 未命名参数（Working with Unnamed Parameters）
+
+目前为止本章只讨论了函数定义中的命名参数，然而 JavaScript 函数并不限制可传入实参的数量，你可以传递比命名参数个数或多或少数量的参数。默认的参数值针对的是传入参数少于命名参数的情况，同样 ECMAScript 6 也为另一种情况铺了条更好的路。
+
+#### ECMAScript 5 中的未命名参数（Unnamed Parameters in ECMAScript 5）
+
+早先，JavaScript 提供了 arguments 对象使得查看函数参数时，分别定义每个参数的名称显得不是很必要。虽然当大部分使用 arguments 对象的情况下都能正常工作，但有时使用它会显得十分繁琐。比如下例中使用 arguments 对象的方式：
+
+```
+function pick(object) {
+    let result = Object.create(null);
+
+    // start at the second parameter
+    for (let i = 1, len = arguments.length; i < len; i++) {
+        result[arguments[i]] = object[arguments[i]];
+    }
+
+    return result;
+}
+
+let book = {
+    title: "Understanding ECMAScript 6",
+    author: "Nicholas C. Zakas",
+    year: 2015
+};
+
+let bookData = pick(book, "author", "year");
+
+console.log(bookData.author);   // "Nicholas C. Zakas"
+console.log(bookData.year);     // 2015
+```
+
+这个函数模仿了 Underscore.js 库中的 pick() 方法，返回了原始对象属性的子集。本例中只定义了一个参数，希望接收一个对象以便拷贝它的属性。其它传入的参数为添加到 result 对象中的属性名。
+
+pick() 函数有几个需要注意的地方。首先，该函数看起来不具备处理更多参数的能力，或许你会想定义额外的参数，但是你不能预测调用这个函数的时候到底会传入多少参数。其次，当你要复制属性的时候，arguments 对象的索引值要从 1 而不是 0 开始。记住索引的起始值不难，但毕竟多了一个不安要素。
+
+ECMAScript 6 引入了剩余参数来解决这个问题。
+
+<br />
+
+#### 剩余参数（Rest Parameters）
+
+剩余参数由三点（...）和一个命名参数（放在三点之后）指定。这个命名参数是一个包含其它传入参数的数组，“剩余” 这个名称也是由此而来。例如，pick() 可以使用剩余参数来重写：
+
+```
+function pick(object, ...keys) {
+    let result = Object.create(null);
+
+    for (let i = 0, len = keys.length; i < len; i++) {
+        result[keys[i]] = object[keys[i]];
+    }
+
+    return result;
+}
+```
+
+在这个版本的函数中，keys 是一个囊括所有 object 之后传入参数的剩余参数（和 arguments 不同，它不包含第一个参数）。这意味着你可以放心大胆地迭代 keys 中所有的值。同时又一点好处是你可以根据函数的签名来判断它有处理任意参数的能力。
+
+<br />
+
+> **注意**： 函数的 length 属性用来描述参数的个数，剩余参数对其并无影响。上例中 pick() 的 length 属性值仍为 1，因为它只包括 object 参数。
+
+<br />
+
+##### 剩余参数的限制（Rest Parameter Restrictions）
+
+剩余参数有两点限制。其一是函数只能有一个剩余参数，且必须放在最后的位置。下面例子中的代码是不正确的：
+
+```
+// 语法错误：剩余参数后不应有命名参数
+function pick(object, ...keys, last) {
+    let result = Object.create(null);
+
+    for (let i = 0, len = keys.length; i < len; i++) {
+        result[keys[i]] = object[keys[i]];
+    }
+
+    return result;
+}
+```
+
+在这里，last 参数跟在剩余参数后面，这会导致一个语法错误。
+
+第二个限制是剩余函数不能被用在对象字面量中的 setter 上，也就是说下面的代码会导致语法错误：
+
+```
+let object = {
+
+    // 语法错误：不能在 setter 上使用剩余参数
+    set name(...value) {
+        // do something
+    }
+};
+```
+
+这项限制的存在原因是对象字面量中的 setter 只被允许接受单个参数，而规范中的剩余参数可以接受无限个数的参数，所以它是不被允许的。
+
+##### 剩余参数对 arguments 对象的影响（How Rest Parameters Affect the arguments Object）
+
+设计剩余参数的目的是用来替代 ECMAScript 中的 arguments。原本在 ECMAScript 4 中就决定移除 arguments 并添加了剩余参数来允许传入无限个数的参数。虽然 ECMAScript 4 从未走上台面，但是这个主意被保留并在 ECMAScript 6 中重新引入，尽管 arguments 对象仍有一席之地。
+
+arguments 对象通过反映传入的参数来和剩余参数共同协作，如下面所示：
+
+```
+function checkArgs(...args) {
+    console.log(args.length);
+    console.log(arguments.length);
+    console.log(args[0], arguments[0]);
+    console.log(args[1], arguments[1]);
+}
+
+checkArgs("a", "b");
+The call to checkArgs() outputs:
+
+2
+2
+a a
+b b
+```
+arguments 对象总是能正确的反映所有传入的参数而无视剩余参数的使用。
+
+以上的内容对于你初用剩余参数来说已经足够了。
+
+### 增强的 Function 构造函数（Increased Capabilities of the Function Constructor）
+
+The Function constructor is an infrequently used part of JavaScript that allows you to dynamically create a new function. The arguments to the constructor are the parameters for the function and the function body, all as strings. Here’s an example:
+
+Function 构造函数用来动态创建一个新的函数，但是在 JavaScript 编程中甚少使用。传给该构造函数的参数全部为字符串，并被视为新创建函数的参数和函数主体，如下所示：
+
+```
+var add = new Function("first", "second", "return first + second");
+
+console.log(add(1, 1));     // 2
+```
+
+ECMAScript 6 augments the capabilities of the Function constructor to allow default parameters and rest parameters. You need only add an equals sign and a value to the parameter names, as follows:
+
+ECMAScript 6 通过允许设置默认参数和剩余参数来增强了 Function 构造函数的功能，现在你只需要添加等于号和默认值就可以设置默认参数，如下：
+
+```
+var add = new Function("first", "second = first",
+        "return first + second");
+
+console.log(add(1, 1));     // 2
+console.log(add(1));        // 2
+```
+
+在这个例子中，当未传入参数给 second 时，first 的值会赋给它。此处的语法和其它未使用 Function 构造的函数一致。
+
+至于剩余函数则只需要添加给参数前面添加 ... 即可，就像这样：
+
+```
+var pickFirst = new Function("...args", "return args[0]");
+
+console.log(pickFirst(1, 2));   // 1
+```
+
+This code creates a function that uses only a single rest parameter and returns the first argument that was passed in.
+
+这段代码使用了单个剩余参数并返回传入的第一个参数。
+
+The addition of default and rest parameters ensures that Function has all of the same capabilities as the declarative form of creating functions.
