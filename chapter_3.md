@@ -636,7 +636,7 @@ console.log(notAPerson);    // "undefined"
 
 当创建 notAPerson 时，即未使用 new 来调用 Person() 会输出 undefined（同时在非严格模式下给全局对象添加了 name 属性）。Person 首字母的大写是唯一指示其应该被 new 调用的标识，这在 JavaScript 编程中十分普遍。函数双重角色的扮演在 ECMAScript 6 中发生了一些改变。
 
-JavaScript 中的函数有两个不同的只有内部（internal-only）能使用的方法：[[call]] 与 [[Construct]]。当函数未被 new 调用时，[[call]] 方法会被执行，运行的是函数主体中的代码。当函数被 new 调用时，[[Construct]] 会被执行并创建了一个新的对象，称为 new target，之后会执行函数主体并把 this 绑定为该对象。带有 [[Construct]] 方法的函数被称为构造器（constructor）。
+JavaScript 中的函数有两个不同的只有内部（internal-only）能使用的方法：[[call]] 与 [[Construct]]。当函数未被 new 调用时，[[call]] 方法会被执行，运行的是函数主体中的代码。当函数被 new 调用时，[[Construct]] 会被执行并创建了一个新的对象，称为 new target，之后会执行函数主体并把 this 绑定为该对象。带有 [[Construct]] 方法的函数被称为构造函数（constructor）。
 
 <br />
 
@@ -660,7 +660,7 @@ function Person(name) {
 var person = new Person("Nicholas");
 var notAPerson = Person("Nicholas");  // 抛出错误
 ```
-在这里，this 的值会被用来判断是否为构造器的实例，答案为是的话则正常执行，否则会抛出错误。因为 [[Construct]] 方法会创建 Person 的新实例并将它绑定到 this 上。遗憾的是，这个方案并不可靠，因为不使用 new 调用的函数，其 this 值也可能是 Person，如下所示：
+在这里，this 的值会被用来判断是否为构造函数的实例，答案为是的话则正常执行，否则会抛出错误。因为 [[Construct]] 方法会创建 Person 的新实例并将它绑定到 this 上。遗憾的是，这个方案并不可靠，因为不使用 new 调用的函数，其 this 值也可能是 Person，如下所示：
 
 ```
 function Person(name) {
@@ -675,41 +675,40 @@ var person = new Person("Nicholas");
 var notAPerson = Person.call(person, "Michael");    // 正常运行！
 ```
 
-The call to Person.call() passes the person variable as the first argument, which means this is set to person inside of the Person function. To the function, there’s no way to distinguish this from being called with new.
-
 调用 Person.call() 并将 person 变量作为第一个参数会将 Person 内部的 this 设置为 person。对于函数本身来讲，如何辨别它们显得无能为力。
 
 <br />
 
 #### 元属性 new.target(The new.target MetaProperty)
 
-To solve this problem, ECMAScript 6 introduces the new.target metaproperty. A metaproperty is a property of a non-object that provides additional information related to its target (such as new). When a function’s [[Construct]] method is called, new.target is filled with the target of the new operator. That target is typically the constructor of the newly created object instance that will become this inside the function body. If [[Call]] is executed, then new.target is undefined.
 
-This new metaproperty allows you to safely detect if a function is called with new by checking whether new.target is defined as follows:
+为了解决这个问题，ECMAScript 6 引入了 new.target 这个元属性。元属性指的是和目标（如 new）相关但并非被包含在一个对象内的属性。当函数内部的 [[Construct]] 方法被调用后，new 操作符调用的目标（target）将赋给 new.target。该目标通常为创建对象实例并将该实例赋值给 this 的构造函数。如果 [[call]] 被执行，那么 new.target 的值为 undefined 。
+
+新引入的该元属性允许你通过检查 new.target 是否被定义来准确的判断出函数是否被 new 调用，如下所示：
 
 ```
 function Person(name) {
     if (typeof new.target !== "undefined") {
-        this.name = name;   // using new
+        this.name = name;   // 使用 new
     } else {
-        throw new Error("You must use new with Person.")
+        throw new Error("你必须使用 new 来调用 Person。")
     }
 }
 
 var person = new Person("Nicholas");
-var notAPerson = Person.call(person, "Michael");    // error!
+var notAPerson = Person.call(person, "Michael");    // 错误！
 ```
 
-By using new.target instead of this instanceof Person, the Person constructor is now correctly throwing an error when used without new.
+使用 new.target 而非 instanceof Person 会正确的在未使用 new 调用构造函数的时候抛出错误。
 
-You can also check that new.target was called with a specific constructor. For instance, look at this example:
+你也可以通过检查 new.target 来判断特定的构造函数是否被调用。例子如下：
 
 ```
 function Person(name) {
     if (typeof new.target === Person) {
-        this.name = name;   // using new
+        this.name = name;   // 使用 new
     } else {
-        throw new Error("You must use new with Person.")
+        throw new Error("你必须使用 new 来调用 Person。")
     }
 }
 
@@ -718,12 +717,22 @@ function AnotherPerson(name) {
 }
 
 var person = new Person("Nicholas");
-var anotherPerson = new AnotherPerson("Nicholas");  // error!
+var anotherPerson = new AnotherPerson("Nicholas");  // 错误！
 ```
 
-In this code, new.target must be Person in order to work correctly. When new AnotherPerson("Nicholas") is called, the subsequent call to Person.call(this, name) will throw an error because new.target is undefined inside of the Person constructor (it was called without new).
+在这段代码中，new.target 必须是 Person 才可以正常运行。当调用 new AnotherPerson("Nicholas") 时 Person.call(this, name)也随即运行，但由于 Person 构造函数的 new.target 为 undefined 所以会抛出错误。
 
-Warning: Using new.target outside of a function is a syntax error.
+<br />
 
-By adding new.target, ECMAScript 6 helped to clarify some ambiguity around functions calls. Following on this theme, ECMAScript 6 also addresses another previously ambiguous part of the language: declaring functions inside of blocks.
+> **警告**： 在函数之外使用 new.target 会抛出语法错误
+
+<br />
+
+ECMAScript 6 通过添加 new.target 解决了函数存在调用歧义的问题。紧随该主题的是，ECMAScript 6 还解决另一个早先存在的含糊问题：在块内声明函数。
+
+<br />
+
+### 块级函数（Block-Level Functions）
+
+
 
