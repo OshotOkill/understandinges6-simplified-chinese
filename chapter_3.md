@@ -644,5 +644,38 @@ JavaScript 中的函数有两个不同的只有内部（internal-only）能使�
 
 <br />
 
+#### ECMAScript 5 中函数调用方式的判断（Determining How a Function was Called in ECMAScript 5）
 
+The most popular way to determine if a function was called with new (and hence, with constructor) in ECMAScript 5 is to use instanceof, for example:
+
+在 ECMAScript 5 中判断函数是否被 new 调用过的方式是使用 instanceof，如下：
+
+```
+function Person(name) {
+    if (this instanceof Person) {
+        this.name = name;   // using new
+    } else {
+        throw new Error("You must use new with Person.")
+    }
+}
+
+var person = new Person("Nicholas");
+var notAPerson = Person("Nicholas");  // throws error
+```
+Here, the this value is checked to see if it’s an instance of the constructor, and if so, execution continues as normal. If this isn’t an instance of Person, then an error is thrown. This works because the [[Construct]] method creates a new instance of Person and assigns it to this. Unfortunately, this approach is not completely reliable because this can be an instance of Person without using new, as in this example:
+
+```
+function Person(name) {
+    if (this instanceof Person) {
+        this.name = name;   // using new
+    } else {
+        throw new Error("You must use new with Person.")
+    }
+}
+
+var person = new Person("Nicholas");
+var notAPerson = Person.call(person, "Michael");    // works!
+```
+
+The call to Person.call() passes the person variable as the first argument, which means this is set to person inside of the Person function. To the function, there’s no way to distinguish this from being called with new.
 
