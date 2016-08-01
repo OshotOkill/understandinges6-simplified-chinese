@@ -646,27 +646,50 @@ JavaScript 中的函数有两个不同的只有内部（internal-only）能使�
 
 #### ECMAScript 5 中函数调用方式的判断（Determining How a Function was Called in ECMAScript 5）
 
-The most popular way to determine if a function was called with new (and hence, with constructor) in ECMAScript 5 is to use instanceof, for example:
-
 在 ECMAScript 5 中判断函数是否被 new 调用过的方式是使用 instanceof，如下：
 
 ```
 function Person(name) {
     if (this instanceof Person) {
-        this.name = name;   // using new
+        this.name = name;   // 使用 new
     } else {
-        throw new Error("You must use new with Person.")
+        throw new Error("你必须使用 new 来调用 Person。")
     }
 }
 
 var person = new Person("Nicholas");
-var notAPerson = Person("Nicholas");  // throws error
+var notAPerson = Person("Nicholas");  // 抛出错误
 ```
-Here, the this value is checked to see if it’s an instance of the constructor, and if so, execution continues as normal. If this isn’t an instance of Person, then an error is thrown. This works because the [[Construct]] method creates a new instance of Person and assigns it to this. Unfortunately, this approach is not completely reliable because this can be an instance of Person without using new, as in this example:
+在这里，this 的值会被用来判断是否为构造器的实例，答案为是的话则正常执行，否则会抛出错误。因为 [[Construct]] 方法会创建 Person 的新实例并将它绑定到 this 上。遗憾的是，这个方案并不可靠，因为不使用 new 调用的函数，其 this 值也可能是 Person，如下所示：
 
 ```
 function Person(name) {
     if (this instanceof Person) {
+        this.name = name;   // 使用 new
+    } else {
+        throw new Error("你必须使用 new 来调用 Person。")
+    }
+}
+
+var person = new Person("Nicholas");
+var notAPerson = Person.call(person, "Michael");    // 正常运行！
+```
+
+The call to Person.call() passes the person variable as the first argument, which means this is set to person inside of the Person function. To the function, there’s no way to distinguish this from being called with new.
+
+调用 Person.call() 并将 person 变量作为第一个参数会将 Person 内部的 this 设置为 person。对于函数本身来讲，如何辨别它们显得无能为力。
+
+<br />
+
+#### 元属性 new.target(The new.target MetaProperty)
+
+To solve this problem, ECMAScript 6 introduces the new.target metaproperty. A metaproperty is a property of a non-object that provides additional information related to its target (such as new). When a function’s [[Construct]] method is called, new.target is filled with the target of the new operator. That target is typically the constructor of the newly created object instance that will become this inside the function body. If [[Call]] is executed, then new.target is undefined.
+
+This new metaproperty allows you to safely detect if a function is called with new by checking whether new.target is defined as follows:
+
+```
+function Person(name) {
+    if (typeof new.target !== "undefined") {
         this.name = name;   // using new
     } else {
         throw new Error("You must use new with Person.")
@@ -674,8 +697,33 @@ function Person(name) {
 }
 
 var person = new Person("Nicholas");
-var notAPerson = Person.call(person, "Michael");    // works!
+var notAPerson = Person.call(person, "Michael");    // error!
 ```
 
-The call to Person.call() passes the person variable as the first argument, which means this is set to person inside of the Person function. To the function, there’s no way to distinguish this from being called with new.
+By using new.target instead of this instanceof Person, the Person constructor is now correctly throwing an error when used without new.
+
+You can also check that new.target was called with a specific constructor. For instance, look at this example:
+
+```
+function Person(name) {
+    if (typeof new.target === Person) {
+        this.name = name;   // using new
+    } else {
+        throw new Error("You must use new with Person.")
+    }
+}
+
+function AnotherPerson(name) {
+    Person.call(this, name);
+}
+
+var person = new Person("Nicholas");
+var anotherPerson = new AnotherPerson("Nicholas");  // error!
+```
+
+In this code, new.target must be Person in order to work correctly. When new AnotherPerson("Nicholas") is called, the subsequent call to Person.call(this, name) will throw an error because new.target is undefined inside of the Person constructor (it was called without new).
+
+Warning: Using new.target outside of a function is a syntax error.
+
+By adding new.target, ECMAScript 6 helped to clarify some ambiguity around functions calls. Following on this theme, ECMAScript 6 also addresses another previously ambiguous part of the language: declaring functions inside of blocks.
 
