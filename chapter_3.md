@@ -497,8 +497,57 @@ var pickFirst = new Function("...args", "return args[0]");
 console.log(pickFirst(1, 2));   // 1
 ```
 
-This code creates a function that uses only a single rest parameter and returns the first argument that was passed in.
-
 这段代码使用了单个剩余参数并返回传入的第一个参数。
 
-The addition of default and rest parameters ensures that Function has all of the same capabilities as the declarative form of creating functions.
+默认参数和剩余参数的添加保证 Function 拥有使用声明构造的函数的所有能力。
+
+<br />
+
+### 扩展运算符（The Spread Operator）
+
+Closely related to rest parameters is the spread operator. While rest parameters allow you to specify that multiple independent arguments should be combined into an array, the spread operator allows you to specify an array that should be split and have its items passed in as separate arguments to a function. Consider the Math.max() method, which accepts any number of arguments and returns the one with the highest value. Here’s a simple use case for this method:
+
+和剩余参数概念相近的是扩展运算符。相比剩余参数允许你把多个独立的参数整合到一个数组中，扩展运算符则允许你把一个数组中的元素分别作为参数传递给函数。考虑下 Math.max() 这个方法，它接受任意数量的参数并返回它们之中的最大值。下面这个例子使用了该方法：
+
+```
+let value1 = 25,
+    value2 = 50;
+
+console.log(Math.max(value1, value2));      // 50
+```
+
+When you’re dealing with just two values, as in this example, Math.max() is very easy to use. The two values are passed in, and the higher value is returned. But what if you’ve been tracking values in an array, and now you want to find the highest value? The Math.max() method doesn’t allow you to pass in an array, so in ECMAScript 5 and earlier, you’d be stuck either searching the array yourself or using apply() as follows:
+
+```
+let values = [25, 50, 75, 100]
+
+console.log(Math.max.apply(Math, values));  // 100
+```
+
+This solution works, but using apply() in this manner is a bit confusing. It actually seems to obfuscate the true meaning of the code with additional syntax.
+
+The ECMAScript 6 spread operator makes this case very simple. Instead of calling apply(), you can pass the array to Math.max() directly and prefix it with the same ... pattern used with rest parameters. The JavaScript engine then splits the array into individual arguments and passes them in, like this:
+
+```
+let values = [25, 50, 75, 100]
+
+// equivalent to
+// console.log(Math.max(25, 50, 75, 100));
+console.log(Math.max(...values));           // 100
+```
+
+Now the call to Math.max() looks a bit more conventional and avoids the complexity of specifying a this-binding (the first argument to Math.max.apply() in the previous example) for a simple mathematical operation.
+
+You can mix and match the spread operator with other arguments as well. Suppose you want the smallest number returned from Math.max() to be 0 (just in case negative numbers sneak into the array). You can pass that argument separately and still use the spread operator for the other arguments, as follows:
+
+```
+let values = [-25, -50, -75, -100]
+
+console.log(Math.max(...values, 0));        // 0
+```
+
+In this example, the last argument passed to Math.max() is 0, which comes after the other arguments are passed in using the spread operator.
+
+The spread operator for argument passing makes using arrays for function arguments much easier. You’ll likely find it to be a suitable replacement for the apply() method in most circumstances.
+
+In addition to the uses you’ve seen for default and rest parameters so far, in ECMAScript 6, you can also apply both parameter types to JavaScript’s Function constructor.
