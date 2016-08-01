@@ -10,7 +10,7 @@ ECMAScript 2015 （ES6）是 ECMAScript 发展的重要里程碑，给前端开�
 ### 目录
 
 
-[第一章： **块级作用域绑定（How Block Bindings Work）**](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_1.html)
+[第一章： **块级绑定（How Block Bindings Work）**](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_1.html)
 
 
 [第二章： **字符串及正则表达式（Strings and Regular Expressions ）**](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_2.html)
