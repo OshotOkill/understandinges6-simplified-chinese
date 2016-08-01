@@ -408,7 +408,7 @@ function pick(object, ...keys) {
 
 剩余参数有两点限制。其一是函数只能有一个剩余参数，且必须放在最后的位置。下面例子中的代码是不正确的：
 
-```
+``` rest-parameter
 // 语法错误：剩余参数后不应有命名参数
 function pick(object, ...keys, last) {
     let result = Object.create(null);
@@ -465,8 +465,6 @@ arguments 对象总是能正确的反映所有传入的参数而无视剩余参�
 
 ### 增强的 Function 构造函数（Increased Capabilities of the Function Constructor）
 
-The Function constructor is an infrequently used part of JavaScript that allows you to dynamically create a new function. The arguments to the constructor are the parameters for the function and the function body, all as strings. Here’s an example:
-
 Function 构造函数用来动态创建一个新的函数，但是在 JavaScript 编程中甚少使用。传给该构造函数的参数全部为字符串，并被视为新创建函数的参数和函数主体，如下所示：
 
 ```
@@ -474,8 +472,6 @@ var add = new Function("first", "second", "return first + second");
 
 console.log(add(1, 1));     // 2
 ```
-
-ECMAScript 6 augments the capabilities of the Function constructor to allow default parameters and rest parameters. You need only add an equals sign and a value to the parameter names, as follows:
 
 ECMAScript 6 通过允许设置默认参数和剩余参数来增强了 Function 构造函数的功能，现在你只需要添加等于号和默认值就可以设置默认参数，如下：
 
@@ -505,8 +501,6 @@ console.log(pickFirst(1, 2));   // 1
 
 ### 扩展运算符（The Spread Operator）
 
-Closely related to rest parameters is the spread operator. While rest parameters allow you to specify that multiple independent arguments should be combined into an array, the spread operator allows you to specify an array that should be split and have its items passed in as separate arguments to a function. Consider the Math.max() method, which accepts any number of arguments and returns the one with the highest value. Here’s a simple use case for this method:
-
 和剩余参数概念相近的是扩展运算符。相比剩余参数允许你把多个独立的参数整合到一个数组中，扩展运算符则允许你把一个数组中的元素分别作为参数传递给函数。考虑下 Math.max() 这个方法，它接受任意数量的参数并返回它们之中的最大值。下面这个例子使用了该方法：
 
 ```
@@ -516,7 +510,7 @@ let value1 = 25,
 console.log(Math.max(value1, value2));      // 50
 ```
 
-When you’re dealing with just two values, as in this example, Math.max() is very easy to use. The two values are passed in, and the higher value is returned. But what if you’ve been tracking values in an array, and now you want to find the highest value? The Math.max() method doesn’t allow you to pass in an array, so in ECMAScript 5 and earlier, you’d be stuck either searching the array yourself or using apply() as follows:
+如果像例子这样只使用两个值，那么 Math.max() 是很容易使用的：传入两个值，并返回较大的那个。但如果你想提取一个数组中所有元素的最大值呢？ 在 ECMAScript 5 及 之前的版本中 Math.max() 是不允许你传入整个数组的，所以你只能自己筛选或者像下面这样使用 apply()：
 
 ```
 let values = [25, 50, 75, 100]
@@ -524,21 +518,21 @@ let values = [25, 50, 75, 100]
 console.log(Math.max.apply(Math, values));  // 100
 ```
 
-This solution works, but using apply() in this manner is a bit confusing. It actually seems to obfuscate the true meaning of the code with additional syntax.
+以上的办法是可行的，但是这里使用 apply() 会令人困惑。事实上它使用了额外的语法模糊了代码的本意。
 
-The ECMAScript 6 spread operator makes this case very simple. Instead of calling apply(), you can pass the array to Math.max() directly and prefix it with the same ... pattern used with rest parameters. The JavaScript engine then splits the array into individual arguments and passes them in, like this:
+ECMAScript 6 的扩展运算符使得该需求很容易实现。你可以将数组添加 ... 前缀直接传给 Math.max() 而非调用apply()。JavaScript 引擎将数组分解并将其中的元素传给函数，像这样：
 
-```
+``` spread-operator
 let values = [25, 50, 75, 100]
 
-// equivalent to
+// 等同于
 // console.log(Math.max(25, 50, 75, 100));
 console.log(Math.max(...values));           // 100
 ```
 
-Now the call to Math.max() looks a bit more conventional and avoids the complexity of specifying a this-binding (the first argument to Math.max.apply() in the previous example) for a simple mathematical operation.
+现在调用 Math.max() 的方式看起来更熟悉而且避免了额外的 this 绑定（Math.max.apply()的首个参数）造成复杂度的增加，使其单纯作为一个数学运算操作。
 
-You can mix and match the spread operator with other arguments as well. Suppose you want the smallest number returned from Math.max() to be 0 (just in case negative numbers sneak into the array). You can pass that argument separately and still use the spread operator for the other arguments, as follows:
+你可以混用扩展运算符和其它参数。假设你想让 Math.max() 返回的最小值为 0（防止数组中包含负值）。你可以把 0 传入该函数并在其它位置使用扩展运算符，如下：
 
 ```
 let values = [-25, -50, -75, -100]
@@ -546,8 +540,109 @@ let values = [-25, -50, -75, -100]
 console.log(Math.max(...values, 0));        // 0
 ```
 
-In this example, the last argument passed to Math.max() is 0, which comes after the other arguments are passed in using the spread operator.
+在本例中，传给 Math.max() 最后的参数为 0，其之前的参数由扩展运算符传入。
 
-The spread operator for argument passing makes using arrays for function arguments much easier. You’ll likely find it to be a suitable replacement for the apply() method in most circumstances.
+扩展运算符使得数组作为函数的参数变得更加容易，在大部分情况下你会发现扩展运算符可以很好的替代 apply() 方法。
 
-In addition to the uses you’ve seen for default and rest parameters so far, in ECMAScript 6, you can also apply both parameter types to JavaScript’s Function constructor.
+到目前为止，除了你所见到 ECMAScript 6 中关于默认参数和剩余参数的用法之外，你还可以在 JavaScript 的 Function 构造函数中使用它们。
+
+<br />
+
+### ECMAScript 6 中的 name 属性（ECMAScript 6’s name Property）
+
+JavaScript 中多种定义函数的方式使得函数的辨识成为了一种挑战。此外，匿名函数表达式的流行使得调试更加困难，堆栈在跟踪时难以阅读和解析。由于这个原因，ECMAScript 6 为所有的函数添加了 name 属性。
+
+<br />
+
+#### 选择正确的名称（Choosing Appropriate Names）
+
+ECMAScript 6 中所有函数都有正确的 name 属性值。为了验证请看如下的代码，它使用了函数（声明）和函数表达式，并输出了各自的 name 属性值：
+
+```
+function doSomething() {
+    // ...
+}
+
+var doAnotherThing = function() {
+    // ...
+};
+
+console.log(doSomething.name);          // "doSomething"
+console.log(doAnotherThing.name);       // "doAnotherThing"
+```
+
+在这段代码中，doSomething() 的 name 属性值为 "doSomething"，因为它是由函数声明所定义的。匿名函数表达定义的 doAnotherThing() 的 name 属性值为 "doAnotherThing" ，因为这是它赋给变量的名称。
+
+<br />
+
+#### 特殊情况下的 name 属性（Special Cases of the name Property）
+
+虽然函数声明和函数表达式定义的函数名寻找起来比较容易，但是 ECMAScript 6 更进一步确保了函数名称的正确性。为了说明请看如下的演示：
+
+```
+var doSomething = function doSomethingElse() {
+    // ...
+};
+
+var person = {
+    get firstName() {
+        return "Nicholas"
+    },
+    sayName: function() {
+        console.log(this.name);
+    }
+}
+
+console.log(doSomething.name);      // "doSomethingElse"
+console.log(person.sayName.name);   // "sayName"
+console.log(person.firstName.name); // "get firstName"
+```
+
+在这个例子中，doSomething.name 是 "doSomethingElse"，因为该函数表达式拥有自己的名称，优先级比赋给变量的名称更高。person.sayName() 的 name 属性值为 "sayName"，正如对象字面量定义的那样。类似的是 person.firstName 实际上是个 getter 方法，所以它的 name 是 "get firstName" 以便和其它情况区分。同样，setter 方法在 name 属性值里带有 set 前缀。
+
+函数的名称还有其它特殊情况。使用过 bind() 的函数 name 属性值会添加 bound 前缀，而使用 Function 构造函数创建的函数 name 属性的值为 "anonymous"。
+
+```
+var doSomething = function() {
+    // ...
+};
+
+console.log(doSomething.bind().name);   // "bound doSomething"
+
+console.log((new Function()).name);     // "anonymous"
+```
+
+被绑定过的函数名总是带有 "bound" 字符串前缀，所以绑定过的 doSomething() 函数名为 "bound doSomething"。
+
+需要注意的是函数的 name 属性值并不等同于同名变量。name 属性的作用是为了在调试时获得有用的相关信息，所以 name 属性值是获取不到相关函数的引用的。
+
+<br />
+
+### 明确函数的双重用途（Clarifying the Dual Purpose of Functions）
+
+在 ECMAScript 5 和早期的版本中，函数的双重用途表现在是否使用 new 来调用它。当使用 new 时，函数中的 this 为一个新的对象并返回它，如下面的演示：
+
+```
+function Person(name) {
+    this.name = name;
+}
+
+var person = new Person("Nicholas");
+var notAPerson = Person("Nicholas");
+
+console.log(person);        // "[Object object]"
+console.log(notAPerson);    // "undefined"
+```
+
+当创建 notAPerson 时，即未使用 new 来调用 Person() 会输出 undefined（同时在非严格模式下给全局对象添加了 name 属性）。Person 首字母的大写是唯一指示其应该被 new 调用的标识，这在 JavaScript 编程中十分普遍。函数双重角色的扮演在 ECMAScript 6 中发生了一些改变。
+
+JavaScript 中的函数有两个不同的只有内部（internal-only）能使用的方法：[[call]] 与 [[Construct]]。当函数未被 new 调用时，[[call]] 方法会被执行，运行的是函数主体中的代码。当函数被 new 调用时，[[Construct]] 会被执行并创建了一个新的对象，称为 new target，之后会执行函数主体并把 this 绑定为该对象。带有 [[Construct]] 方法的函数被称为构造器（constructor）。
+
+<br />
+
+> **注意**： 不是每个函数内部都有 [[Construct]] 方法，所以并非所有的函数都能被 new 调用。在后面的小结中提到的箭头函数就没有该方法。
+
+<br />
+
+
+
