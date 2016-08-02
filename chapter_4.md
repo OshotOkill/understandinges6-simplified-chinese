@@ -91,7 +91,7 @@ var person = {
 
 <br />
 
-#### 运算后的属性名（Computed Property Names）
+#### 动态计算的属性名（Computed Property Names）
 
 ECMAScript 5 and earlier could compute property names on object instances when those properties were set with square brackets instead of dot notation. The square brackets allow you to specify property names using variables and string literals that may contain characters that would cause a syntax error if used in an identifier. Here’s an example:
 
@@ -154,5 +154,135 @@ These properties evaluate to "first name" and "last name", and those strings can
 
 ### 新方法（New Method）
 
+One of the design goals of ECMAScript beginning with ECMAScript 5 was to avoid creating new global functions or methods on Object.prototype, and instead try to find objects on which new methods should be available. As a result, the Object global has received an increasing number of methods when no other objects are more appropriate. ECMAScript 6 introduces a couple new methods on the Object global that are designed to make certain tasks easier.
+
+<br />
+
+#### Object.is() 方法（The Object.is() Method）
+
+When you want to compare two values in JavaScript, you’re probably used to using either the equals operator (==) or the identically equals operator (===). Many developers prefer the latter, to avoid type coercion during comparison. But even the identically equals operator isn’t entirely accurate. For example, the values +0 and -0 are considered equal by === even though they are represented differently in the JavaScript engine. Also NaN === NaN returns false, which necessitates using isNaN() to detect NaN properly.
+
+ECMAScript 6 introduces the Object.is() method to make up for the remaining quirks of the identically equals operator. This method accepts two arguments and returns true if the values are equivalent. Two values are considered equivalent when they are of the same type and have the same value. Here are some examples:
+
+```
+console.log(+0 == -0);              // true
+console.log(+0 === -0);             // true
+console.log(Object.is(+0, -0));     // false
+
+console.log(NaN == NaN);            // false
+console.log(NaN === NaN);           // false
+console.log(Object.is(NaN, NaN));   // true
+
+console.log(5 == 5);                // true
+console.log(5 == "5");              // true
+console.log(5 === 5);               // true
+console.log(5 === "5");             // false
+console.log(Object.is(5, 5));       // true
+console.log(Object.is(5, "5"));     // false
+```
+
+In many cases, Object.is() works the same as the === operator. The only differences are that +0 and -0 are considered not equivalent and NaN is considered equivalent to NaN. But there’s no need to stop using equality operators altogether. Choose whether to use Object.is() instead of == or === based on how those special cases affect your code.
+
+<br />
+
+#### Object.assign() 方法（The Object.assign() Method）
+
+Mixins are among the most popular patterns for object composition in JavaScript. In a mixin, one object receives properties and methods from another object. Many JavaScript libraries have a mixin method similar to this:
+
+```
+function mixin(receiver, supplier) {
+    Object.keys(supplier).forEach(function(key) {
+        receiver[key] = supplier[key];
+    });
+
+    return receiver;
+}
+```
+
+The mixin() function iterates over the own properties of supplier and copies them onto receiver (a shallow copy, where object references are shared when property values are objects). This allows the receiver to gain new properties without inheritance, as in this code:
+
+```
+function EventTarget() { /*...*/ }
+EventTarget.prototype = {
+    constructor: EventTarget,
+    emit: function() { /*...*/ },
+    on: function() { /*...*/ }
+};
+
+var myObject = {};
+mixin(myObject, EventTarget.prototype);
+
+myObject.emit("somethingChanged");
+```
+
+Here, myObject receives behavior from the EventTarget.prototype object. This gives myObject the ability to publish events and subscribe to them using the emit() and on() methods, respectively.
+
+This pattern became popular enough that ECMAScript 6 added the Object.assign() method, which behaves the same way, accepting a receiver and any number of suppliers, and then returning the receiver. The name change from mixin() to assign() reflects the actual operation that occurs. Since the mixin() function uses the assignment operator (=), it cannot copy accessor properties to the receiver as accessor properties. The name Object.assign() was chosen to reflect this distinction.
+
+Similar methods in various libraries may have other names for the same basic functionality; popular alternates include the extend() and mix() methods. There was also, briefly, an Object.mixin() method in ECMAScript 6 in addition to the Object.assign() method. The primary difference was that Object.mixin() also copied over accessor properties, but the method was removed due to concerns over the use of super (discussed in the “Easy Prototype Access with Super References” section of this chapter).
+
+You can use Object.assign() anywhere the mixin() function would have been used. Here’s an example:
+
+```
+function EventTarget() { /*...*/ }
+EventTarget.prototype = {
+    constructor: EventTarget,
+    emit: function() { /*...*/ },
+    on: function() { /*...*/ }
+}
+
+var myObject = {}
+Object.assign(myObject, EventTarget.prototype);
+
+myObject.emit("somethingChanged");
+```
+
+The Object.assign() method accepts any number of suppliers, and the receiver receives the properties in the order in which the suppliers are specified. That means the second supplier might overwrite a value from the first supplier on the receiver, which is what happens in this snippet:
+
+```
+var receiver = {};
+
+Object.assign(receiver,
+    {
+        type: "js",
+        name: "file.js"
+    },
+    {
+        type: "css"
+    }
+);
+
+console.log(receiver.type);     // "css"
+console.log(receiver.name);     // "file.js"
+```
+
+The value of receiver.type is "css" because the second supplier overwrote the value of the first.
+
+The Object.assign() method isn’t a big addition to ECMAScript 6, but it does formalize a common function found in many JavaScript libraries.
+
+<br />
+
+> #### Working with Accessor Properties
+Keep in mind that Object.assign() doesn’t create accessor properties on the receiver when a supplier has accessor properties. Since Object.assign() uses the assignment operator, an accessor property on a supplier will become a data property on the receiver. For example:
+
+```
+var receiver = {},
+    supplier = {
+        get name() {
+            return "file.js"
+        }
+    };
+
+Object.assign(receiver, supplier);
+
+var descriptor = Object.getOwnPropertyDescriptor(receiver, "name");
+
+console.log(descriptor.value);      // "file.js"
+console.log(descriptor.get);        // undefined
+```
+>In this code, the supplier has an accessor property called name. After using the Object.assign() method, receiver.name exists as a data property with a value of "file.js" because supplier.name returned "file.js" when Object.assign() was called.
+
+
+<br />
 
 
