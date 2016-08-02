@@ -1135,30 +1135,30 @@ sum() 函数被 call 和 apply() 调用并传递参数，类似于你使用其�
 
 ### 尾调用优化（Tail Call Optimization）
 
-Perhaps the most interesting change to functions in ECMAScript 6 is an engine optimization, which changes the tail call system. A tail call is when a function is called as the last statement in another function, like this:
-
-也许 ECMAScript 6 中关于函数的改进最有意思的是针对尾部调用机制的引擎方面的优化。尾调用指的是一个函数在另一个函数的尾部被调用，像这样：
+也许 ECMAScript 6 中关于函数的改进最有意思的是引擎针对尾部调用机制的优化。尾调用指的是一个函数在另一个函数的尾部被调用，像这样：
 
 ```
 function doSomething() {
-    return doSomethingElse();   // tail call
+    return doSomethingElse();   // 尾调用
 }
 ```
 
-Tail calls as implemented in ECMAScript 5 engines are handled just like any other function call: a new stack frame is created and pushed onto the call stack to represent the function call. That means every previous stack frame is kept in memory, which is problematic when the call stack gets too large.
+ECMAScript 5 实现的尾调用和其它位置调用处理机制都是相同的：一个新的堆栈帧（stack frame）被创建并添加到堆栈上，以代表该函数被调用过。这意味着之前所有的堆栈帧在内存中持续存在，当调用栈过大时会产生一些问题。
 
 <br />
 
 #### 有何不同？（What’s Different?）
 
-ECMAScript 6 seeks to reduce the size of the call stack for certain tail calls in strict mode (nonstrict mode tail calls are left untouched). With this optimization, instead of creating a new stack frame for a tail call, the current stack frame is cleared and reused so long as the following conditions are met:
 
 在严格模式下 ECMAScript 6 试图利用恰当的尾部函数调用来减少调用栈的大小（非严格模式下的尾调用未被考虑）。该优化使得尾部的函数调用不再增加，而是清除并利用已存在的堆栈帧（stack frame）。该优化需要如下条件：
 
-The tail call does not require access to variables in the current stack frame (meaning the function is not a closure)
-The function making the tail call has no further work to do after the tail call returns
-The result of the tail call is returned as the function value
-As an example, this code can easily be optimized because it fits all three criteria:
+
+1. 尾调用不能引用当前堆栈帧中的变量（即尾调用的函数不能是闭包）
+2. 使用尾调用的函数在尾调用结束后不能做额外的操作
+3. 尾调用函数值作为当前函数的返回值
+
+
+下面的代码会被优化，因为以上三个条件全部符合：
 
 ```
 "use strict";
@@ -1169,7 +1169,7 @@ function doSomething() {
 }
 ```
 
-This function makes a tail call to doSomethingElse(), returns the result immediately, and doesn’t access any variables in the local scope. One small change, not returning the result, results in an unoptimized function:
+该函数在尾部调用 doSomethingElse()之后立即返回该函数值，同时未引用当前作用域内的变量。不过一个小小的改动就会阻止优化的发生：
 
 ```
 "use strict";
@@ -1180,7 +1180,7 @@ function doSomething() {
 }
 ```
 
-Similarly, if you have a function that performs an operation after returning from the tail call, then the function can’t be optimized:
+类似的是，如果你的函数对尾调用函数值做了额外操作，那么该函数也不能被优化：
 
 ```
 "use strict";
@@ -1191,9 +1191,9 @@ function doSomething() {
 }
 ```
 
-This example adds the result of doSomethingElse() with 1 before returning the value, and that’s enough to turn off optimization.
+该例中函数在 doSomethingElse() 函数值返回之前对其做了加 1 操作，足以使优化关闭。
 
-Another common way to inadvertently turn off optimization is to store the result of a function call in a variable and then return the result, such as:
+另一无意且常见的至使优化取消的使用方法是使用变量存储函数值，并返回这个变量：
 
 ```
 "use strict";
@@ -1205,9 +1205,9 @@ function doSomething() {
 }
 ```
 
-This example cannot be optimized because the value of doSomethingElse() isn’t immediately returned.
+本例中优化被取消的原因是 doSomethingElse() 的函数值没有被立即返回。
 
-Perhaps the hardest situation to avoid is in using closures. Because a closure has access to variables in the containing scope, tail call optimization may be turned off. For example:
+或许在尾调用优化需求中最难处理的是闭包。因为闭包需要访问包含该尾调用的函数中的变量，尾调用优化就会被取消。例如：
 
 ```
 "use strict";
@@ -1221,13 +1221,13 @@ function doSomething() {
 }
 ```
 
-The closure func() has access to the local variable num in this example. Even though the call to func() immediately returns the result, optimization can’t occur due to referencing the variable num.
+该例中 func() 闭包需要访问本地变量 num。虽然 func() 调用后会马上返回该函数值，但是该引用的存在导致优化不会发生。
 
 <br />
 
-#### How to Harness Tail Call Optimization
+#### 如何使用尾调用优化（How to Harness Tail Call Optimization）
 
-In practice, tail call optimization happens behind-the-scenes, so you don’t need to think about it unless you’re trying to optimize a function. The primary use case for tail call optimization is in recursive functions, as that is where the optimization has the greatest effect. Consider this function, which computes factorials:
+在实践中，尾调用优化发生在幕后，所以除非你有意的去优化某个函数否则不必想得太多。尾调用优化的主要使用场景是使用递归，而且该优化的效果及其显著。考虑如下计算阶乘（factorial）的函数：
 
 ```
 function factorial(n) {
@@ -1236,14 +1236,14 @@ function factorial(n) {
         return 1;
     } else {
 
-        // not optimized - must multiply after returning
+        // 未优化 - 尾调用函数值有乘法运算
         return n * factorial(n - 1);
     }
 }
 ```
-This version of the function cannot be optimized, because multiplication must happen after the recursive call to factorial(). If n is a very large number, the call stack size will grow and could potentially cause a stack overflow.
+该版本的函数不会被优化因为递归调用的 factorial() 的函数值总是要发生乘法运算，如果 n 是个非常大的数，那么调用栈会膨胀，而且有潜在的调用栈溢出的危险。
 
-In order to optimize the function, you need to ensure that the multiplication doesn’t happen after the last function call. To do this, you can use a default parameter to move the multiplication operation outside of the return statement. The resulting function carries along the temporary result into the next iteration, creating a function that behaves the same but can be optimized by an ECMAScript 6 engine. Here’s the new code:
+为了优化该函数，你必须保证函数调用之后不能有乘法运算。为了实现这一点，你可以使用默认参数来去除 return 语句中的乘法运算，之后把临时的结果传给下一次迭代。这些改进虽然功能和上例是相同的，但是会被 ECMAScript 6 的引擎优化。下面是重构后的函数：
 
 ```
 function factorial(n, p = 1) {
@@ -1253,18 +1253,35 @@ function factorial(n, p = 1) {
     } else {
         let result = n * p;
 
-        // optimized
+        // 优化
         return factorial(n - 1, result);
     }
 }
 ```
 
-In this rewritten version of factorial(), a second argument p is added as a parameter with a default value of 1. The p parameter holds the previous multiplication result so that the next result can be computed without another function call. When n is greater than 1, the multiplication is done first and then passed in as the second argument to factorial(). This allows the ECMAScript 6 engine to optimize the recursive call.
+在重写的 factorial() 函数中，添加了第二个参数 p 并带有默认值 1 。参数 p 负责保存上次乘法运算的结果，所以不需要调用其它的函数即可计算下一次的值。当 n 大于 1 的时候，先进行乘法运算并将值作为第二个参数传入 factorial()。这允许 ECMAScript 6 引擎去优化这些递归调用。
 
-Tail call optimization is something you should think about whenever you’re writing a recursive function, as it can provide a significant performance improvement, especially when applied in a computationally-expensive function.
+在书写递归函数的时候你应该考虑尾调用优化，因为它能提供显著的性能提升，尤其是那些带有昂贵计算（computationally-expensive）的函数。
 
 <br />
 
+### 总结（Summary）
+
+ECMAScript 6 中的函数并未发生巨大的变化，相反，一系列小的改进使得函数更容易使用。
+
+默认函数参数允许你方便地给那些未被传入实参的形参赋值。在 ECMAScript 6 之前，实现该需求需要在函数内部书写额外的代码来对参数的存在进行验证和赋值。
+
+剩余参数允许你使用数组来包含所有的遗留参数。使用真正的数组并能自行挑选需要包含的参数使得剩余参数是比 arguments 更为灵活的解决方案。
+
+扩展运算符是剩余参数的同伴，允许你将数组中的元素解构为参数并传给调用的函数。在 ECMAScript 6 之前，想要把数组的元素分别作为参数传给函数只有两种办法：手动将数组中的元素添加到参数的位置或者使用 apply()。在扩展运算符出现后，你可以很容易的把数组传递给函数，同时不需要担心 this 的绑定。
+
+name 属性的添加使得在调试和评估中查找函数名变得极为方便。此外，ECMAScript 6 正式定义了块级函数，所以在严格模式下它们将不会抛出语法错误。
+
+在 ECMAScript 6 中，函数的行为由普通调用时的内部函数 [[Call]]或被 new 调用时的内部函数[[Construct]]来决定。元属性 new.target 可以被用来判断函数是否被 new 调用。
+
+ECMAScript 6 函数最大的变化就是箭头函数的引入。设计箭头函数的目的是为了替代匿名函数表达式。箭头函数有更简洁的语法，this 的词法绑定（lexical this binding）并移除了 arguments 对象。此外箭头函数无法更改 this 的绑定，所以它们不能被用作构造函数。
+
+尾调用优化允许某些函数的调用被优化，以便减少调用栈的大小和内存占用，防止堆栈溢出。当符合相应条件时该优化会由引擎自动实现，然而你可以有目的地重写某些函数以便利用它。
 
 
 
