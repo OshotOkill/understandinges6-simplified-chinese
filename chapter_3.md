@@ -734,5 +734,540 @@ ECMAScript 6 通过添加 new.target 消除了函数存在调用歧义的可能�
 
 ### 块级函数（Block-Level Functions）
 
+在 ECMAScript 3 或更早的版本中，在块中声明函数（块级函数）理论上会发生语法错误，但所有的浏览器却都支持这么做。遗憾的是，每个浏览器支持的方式都有些差异，所以最佳实践就是不要在块中声明函数（更好的选择是使用函数表达式）。
+
+为了抑制这种分裂行为，ECMAScript 5 中的严格模式规定在块中声明函数会发生错误：
+
+```
+"use strict";
+
+if (true) {
+
+    // 在 ES5 中抛出错误，ES6不会
+    function doSomething() {
+        // ...
+    }
+}
+```
+
+在 ECMAScript 5 中，这段代码会抛出语法错误。然而 ECMAScript 6 会将 doSomething() 函数视为块级声明并可以在块内的其它部分调用，例如：
+
+```
+"use strict";
+
+if (true) {
+
+    console.log(typeof doSomething);        // "function"
+
+    function doSomething() {
+        // ...
+    }
+
+    doSomething();
+}
+
+console.log(typeof doSomething);            // "undefined"
+```
+
+块级函数会被提升到块内的顶部，即使 typeof doSomething 语句在函数声明之前也会返回 "function"。一旦代码块执行完毕，doSomething() 也将不复存在。
+
+<br />
+
+#### 使用块级函数的时机（Deciding When to Use Block-Level Functions）
+
+块级函数与 let 函数表达式的相似之处是它们都会在执行流跳出定义它们所在的块作用域之后被销毁。关键的区别是块级函数（声明）会被提升到顶部，而 let 函数表达式则不会，以下代码对其做了说明：
+
+```
+"use strict";
+
+if (true) {
+
+    console.log(typeof doSomething);        // 抛出错误
+
+    let doSomething = function () {
+        // ...
+    }
+
+    doSomething();
+}
+
+console.log(typeof doSomething);
+```
+
+在这里，代码执行到 typeof doSomething 回戛然而止，因为 let 语句还未被执行，doSomething() 仍处在 TDZ 内部。了解改差异之后，你可以根据是否想让函数提升到顶部来选择块级函数（声明）或 let 函数表达式。
+
+<br />
+
+#### 非严格模式下的块级函数（Block-Level Functions in Nonstrict Mode）
+
+
+ECMAScript 6 同样允许非严格模式下块级函数的存在，但是具体行为有些不同。函数的声明会被提升至函数作用域或全局作用域的顶部，而不是块内。例如：
+
+```
+// ECMAScript 6 的行为
+if (true) {
+
+    console.log(typeof doSomething);        // "function"
+
+    function doSomething() {
+        // ...
+    }
+
+    doSomething();
+}
+
+console.log(typeof doSomething);            // "function"
+```
+
+在本例中，doSomething() 会被提升至全局作用域的顶部，所以在 if 代码块外它仍然存在。ECMAScript 6 标准化了该行为以消除不同浏览器之间存在的差异，于是在所有 ECMASCript 6 运行环境中该表现都是相同的。
+
+允许在 JavaScript 中声明块级变量使得声明函数的能力得到了加强。然而 ECMAScript 6 还引入了另一种全新的声明函数的方法。
+
+<br />
+
+### 箭头函数（Arrow Functions）
+
+
+ECMAScript 6 最有意思的部分之一就是箭头函数。正如其名，箭头函数由 “箭头”（=>）这种新的语法来定义。但是箭头函数的表现在以下几个重要的方面不同于传统的 JavaScript 函数：
+
+* 没有 this，super，arguments 和 new.target 绑定 - this，super，arguments 和 new.target 的值由最近的不包含箭头函数的作用域决定。（super 会在第四章讲解）
+
+* 不能被 new 调用 - 箭头函数内部没有 [[Construct]] 方法，因此不能当作构造函数使用。使用 new 调用箭头函数会抛出错误。
+
+* 没有 prototype - 既然你不能使用 new 调用箭头函数，那么 prototype 就没有存在的理由。箭头函数没有 prototype 属性。
+
+* 不能更改 this - this 的值在函数内部不能被修改。在函数的整个生命周期内 this 的值是永恒不变的。
+
+* 没有 arguments 对象 - 既然箭头函数没有 arguments 绑定，你必须依赖于命名或者剩余参数来访问该函数的参数。
+
+* 不允许重复的命名参数 - 不论是在严格模式还是非严格模式下，箭头函数都不允许重复的命名参数存在，相比传统的函数，它们只有在严格模式下才禁止该种行为。
+
+这些差异的存在是有理由的。首先也是最重要的是，在 JavaScript 编程 中 this 绑定是 中发生错误的根源之一。this 的值很容易丢失，使得程序以臆想之外的方式运行，而箭头函数解决了该问题。其次，箭头函数限制 this 为固定值的做法让 JavaScript 引擎可以对一些操作进行优化，相比普通的函数它们可能被视为构造函数或被其它因素修改。
+
+其它方面差异的存在也是专注于减少潜在错误发生的可能性与歧义的消除，同时 JavaScript 引擎也能更好的优化箭头函数。
+
+<br />
+
+> **注意**： 箭头函数的 name 属性是存在的，并且和其它类别的函数遵循相同的规则
+
+<br />
+
+#### 箭头函数语法（Arrow Function Syntax）
+
+
+根据你的需求，箭头函数的语法可以有多种形体。所有变体都是以参数为开头，箭头紧随其后，函数主体为结尾。参数和主体根据用途可以有不同的形式，例如西面的箭头函数接收单个参数并返回它：
+
+```
+var reflect = value => value;
+
+// 等同于：
+
+var reflect = function(value) {
+    return value;
+};
+```
+
+当箭头函数只有一个参数时，该参数可以直接使用而不需要额外的语法。之后则是箭头和需要计算的表达式，即使没有显式书写 return 语句也会返回该参数。
+
+如果你需要传入单个以上的参数，就需要用括号来包含它们，如下：
+
+```
+var sum = (num1, num2) => num1 + num2;
+
+// effectively equivalent to:
+
+var sum = function(num1, num2) {
+    return num1 + num2;
+};
+```
+
+sum() 函数简单地接受两个参数并返回运算结果。它和 reflect() 函数唯一的区别在于参数是被括号包裹并由逗号分隔的（正如一般的函数那样）。
+
+如果函数没有参数，那么在声明中就必须使用一对空括号，如下所示：
+
+```
+var getName = () => "Nicholas";
+
+// 等同于：
+
+var getName = function() {
+    return "Nicholas";
+};
+```
+
+当你想使用传统的函数主体书写方式，尤其是主体内包含一条以上表达式的时候，你需要用花括号显式地包裹函数主体并使用 return 语句，如下面的 sum() 函数：
+
+```
+var sum = (num1, num2) => {
+    return num1 + num2;
+};
+
+// 等同于：
+
+var sum = function(num1, num2) {
+    return num1 + num2;
+};
+```
+
+你可以大体上将传统函数花括号中的内容移植过去，需要注意的是 arguments 对象并不可用。
+
+如果你想创建空函数，那么就必须使用花括号，像这样：
+
+```
+var doNothing = () => {};
+
+// 等同于：
+
+var doNothing = function() {};
+```
+花括号代表函数的主体，以上的示例中花括号的使用到目前为止一切正常。然而当不想使用传统的函数主体形式返回一个对象字面量的时候，必须将该对象放在括号中。例如：
+
+```
+var getTempItem = id => ({ id: id, name: "Temp" });
+
+// 等同于：
+
+var getTempItem = function(id) {
+
+    return {
+        id: id,
+        name: "Temp"
+    };
+};
+```
+
+将对象字面量放在括号内代表其并非为函数主体。
+
+<br />
+
+#### 创建即用函数表达式（Creating Immediately-Invoked Function Expressions）
+
+
+在 JavaScript 中一种流行的函数使用方式是创建即用函数表达式（immediately-invoked function expressions, IIFEs）。IIFEs 允许你创建匿名函数并立即调用它，没有创建任何引用。当你想开拓一个不受项目中其它代码干扰的独立作用域时，这种方法特别好用，例如：
+
+```
+let person = function(name) {
+
+    return {
+        getName: function() {
+            return name;
+        }
+    };
+
+}("Nicholas");
+
+console.log(person.getName());      // "Nicholas"
+```
+
+在这段代码中，IIFE 创建了一个包含 getName() 方法的新对象。该方法返回传入的参数值，并显著地使 name 成为该对象的私有成员。
+
+你可以用括号包裹箭头函数来达到同样的效果：
+
+```
+let person = ((name) => {
+
+    return {
+        getName: function() {
+            return name;
+        }
+    };
+
+})("Nicholas");
+
+console.log(person.getName());      // "Nicholas"
+```
+
+需要注意的是括号包裹的是箭头函数的定义，并不包括（"Nicholas"）。这和传统的函数不同，函数定义和传入的参数可以同时被括号包含。
+
+<br />
+
+#### 无 this 绑定（No this Binding）
+
+JavaScript 编程中最常见的错误之一就是函数中 this 的绑定。由于函数内部的 this 可以在调用时被上下文替换，所以操作了意想不到的对象的几率很大。考虑如下的例子：
+
+```
+var PageHandler = {
+
+    id: "123456",
+
+    init: function() {
+        document.addEventListener("click", function(event) {
+            this.doSomething(event.type);     // error
+        }, false);
+    },
+
+    doSomething: function(type) {
+        console.log("Handling " + type  + " for " + this.id);
+    }
+};
+```
+
+在这段代码中，PageHandler 对象用来处理页面上的交互。init() 方法注册事件并在回调函数里调用 this.doSomething()。但是该段代码没有按照我们想象的方式工作。
+
+this.doSomething() 出现故障是因为 this 指代的是调用该函数的对象（在本例中是 document）而不是PageHandler。如果你试图运行这段代码那么错误将会被抛出，因为 this.doSomething() 在 document 对象上并不存在。
+
+你可以显式地在函数上调用 bind() 来绑定 this 以便解决这个问题，像这样：
+
+```
+var PageHandler = {
+
+    id: "123456",
+
+    init: function() {
+        document.addEventListener("click", (function(event) {
+            this.doSomething(event.type);     // 无错误发生
+        }).bind(this), false);
+    },
+
+    doSomething: function(type) {
+        console.log("Handling " + type  + " for " + this.id);
+    }
+};
+```
+
+现在代码如我们想象的那样运行，不过看起来有些奇怪。通过调用 bind(this)，你实际上创建了一个带有 this 绑定的新函数。为了避免额外函数的创建，更好的方式是使用箭头函数。
+
+箭头函数没有 this 绑定，意味着 this 只能通过查找作用域链来确定。如果箭头函数被另一个不包含箭头函数的函数囊括，那么 this 的值和该函数中的 this 相等，否则 this 的值为 undefined。以下就是使用箭头函数重构的示例：
+
+```
+var PageHandler = {
+
+    id: "123456",
+
+    init: function() {
+        document.addEventListener("click",
+                event => this.doSomething(event.type), false);
+    },
+
+    doSomething: function(type) {
+        console.log("Handling " + type  + " for " + this.id);
+    }
+};
+```
+
+本例中 this.doSomething() 是在处理事件的箭头回调函数中调用。this 的值和 init() 方法相同，所以以上代码的作用和 bind(this) 类似。虽然 doSomething() 方法并不返回任何值，它仍然是函数主体中唯一需要运行的语句，所以花括号的使用没有必要。 
+
+箭头函数被定义为 “用完即仍” 的函数，所以不能被用来定义新类型；证据是箭头函数不存在一般函数中包含的 property 属性。使用 new 来调用箭头函数会发生错误，如下所示：
+
+```
+var MyType = () => {},
+    object = new MyType();  // 错误 - 你不能使用 new 调用箭头函数
+```
+
+在这段代码中，调用 new MyType() 失败的原因是箭头函数内部不存在 [[Construct]] 方法。箭头函数不能被 new 调用的特性使得 JavaScript 引擎能对它们做更深一步的优化。
+
+同样，箭头函数中 this 的值由包含它的函数决定，所以你没有办法通过 call()，apply() 或 bind() 方法来改变 this 的值。
+
+<br />
+
+#### 箭头函数与数组（Arrow Functions and Arrays）
+
+
+箭头函数写法的简洁特性也非常适合操作数组。例如你想自定义数组元素的排序方式，一般会使用下面的写法：
+
+```
+var result = values.sort(function(a, b) {
+    return a - b;
+});
+```
+
+这些代码对如此简单的需求来讲显得冗余，相比如下使用箭头函数重构的版本更是如此：
+
+```
+var result = values.sort((a, b) => a - b);
+```
+
+使用回调函数的数组方法，例如 sort()，map() 和 reduce() 都能享受箭头函数语法带来的好处 —— 把复杂的代码简单化。
+
+<br />
+
+#### 无 arguments 绑定（No arguments Binding）
+
+
+虽然箭头函数没有自己的 arguments 对象，不过访问包含它们的函数中的 arguments 对象还是可行的。该对象不论箭头函数何时执行都能访问。例如：
+
+```
+function createArrowFunctionReturningFirstArg() {
+    return () => arguments[0];
+}
+
+var arrowFunction = createArrowFunctionReturningFirstArg(5);
+
+console.log(arrowFunction());       // 5
+```
+
+在 createArrowFunctionReturningFirstArg() 内部，arguments[0] 元素被创建的箭头函数所引用。该元素为 传入 createArrowFunctionReturningFirstArg() 函数的首个参数。当箭头函数在随后执行时，返回的值为 5，这也正是传给示例中传给 createArrowFunctionReturningFirstArg() 的参数。虽然 createArrowFunctionReturningFirstArg() 被调用后箭头函数将不存在于该函数作用域内，但是作用域链中的 arguments 标识符依旧可以访问。
+
+<br />
+
+#### 查找箭头函数（Identifying Arrow Functions）
+
+
+尽管语法不同，但箭头函数依旧属于函数，定义也是如此。考虑以下的代码：
+
+```
+var comparator = (a, b) => a - b;
+
+console.log(typeof comparator);                 // "function"
+console.log(comparator instanceof Function);    // true
+```
+
+console.log() 输出的内容显示 typeof 和 instanceof 操作箭头函数的表现和其它函数完全一致。
+
+同样，你也可以对箭头函数使用 call()，apply()，bind()，即使它们的 this 不受影响。如下所示：
+
+```
+var sum = (num1, num2) => num1 + num2;
+
+console.log(sum.call(null, 1, 2));      // 3
+console.log(sum.apply(null, [1, 2]));   // 3
+
+var boundSum = sum.bind(null, 1, 2);
+
+console.log(boundSum());                // 3
+```
+
+sum() 函数被 call 和 apply() 调用并传递参数，类似于你使用其它函数的方式。bind() 方法创建了 boundSum() 函数，意味着 sum() 方法的参数已被绑定为 1 和 2，再次调用不需要传入参数。
+
+你使用的任何匿名函数都能被箭头函数所替代，例如回调函数。下一节要讲述的是 ECMAScript 6 另一项主要的开发内容，不过它是由内部实现的，同时没有新的语法出现。
+
+<br />
+
+### 尾调用优化（Tail Call Optimization）
+
+Perhaps the most interesting change to functions in ECMAScript 6 is an engine optimization, which changes the tail call system. A tail call is when a function is called as the last statement in another function, like this:
+
+也许 ECMAScript 6 中关于函数的改进最有意思的是针对尾部调用机制的引擎方面的优化。尾调用指的是一个函数在另一个函数的尾部被调用，像这样：
+
+```
+function doSomething() {
+    return doSomethingElse();   // tail call
+}
+```
+
+Tail calls as implemented in ECMAScript 5 engines are handled just like any other function call: a new stack frame is created and pushed onto the call stack to represent the function call. That means every previous stack frame is kept in memory, which is problematic when the call stack gets too large.
+
+<br />
+
+#### 有何不同？（What’s Different?）
+
+ECMAScript 6 seeks to reduce the size of the call stack for certain tail calls in strict mode (nonstrict mode tail calls are left untouched). With this optimization, instead of creating a new stack frame for a tail call, the current stack frame is cleared and reused so long as the following conditions are met:
+
+在严格模式下 ECMAScript 6 试图利用恰当的尾部函数调用来减少调用栈的大小（非严格模式下的尾调用未被考虑）。该优化使得尾部的函数调用不再增加，而是清除并利用已存在的堆栈帧（stack frame）。该优化需要如下条件：
+
+The tail call does not require access to variables in the current stack frame (meaning the function is not a closure)
+The function making the tail call has no further work to do after the tail call returns
+The result of the tail call is returned as the function value
+As an example, this code can easily be optimized because it fits all three criteria:
+
+```
+"use strict";
+
+function doSomething() {
+    // 优化
+    return doSomethingElse();
+}
+```
+
+This function makes a tail call to doSomethingElse(), returns the result immediately, and doesn’t access any variables in the local scope. One small change, not returning the result, results in an unoptimized function:
+
+```
+"use strict";
+
+function doSomething() {
+    // 未优化 - 无返回值
+    doSomethingElse();
+}
+```
+
+Similarly, if you have a function that performs an operation after returning from the tail call, then the function can’t be optimized:
+
+```
+"use strict";
+
+function doSomething() {
+    // 未优化 - 在函数执行并返回之前有额外的操作
+    return 1 + doSomethingElse();
+}
+```
+
+This example adds the result of doSomethingElse() with 1 before returning the value, and that’s enough to turn off optimization.
+
+Another common way to inadvertently turn off optimization is to store the result of a function call in a variable and then return the result, such as:
+
+```
+"use strict";
+
+function doSomething() {
+    // 未优化 - 函数调用未发生在尾部
+    var result = doSomethingElse();
+    return result;
+}
+```
+
+This example cannot be optimized because the value of doSomethingElse() isn’t immediately returned.
+
+Perhaps the hardest situation to avoid is in using closures. Because a closure has access to variables in the containing scope, tail call optimization may be turned off. For example:
+
+```
+"use strict";
+
+function doSomething() {
+    var num = 1,
+        func = () => num;
+
+    // 未优化 - 存在闭包
+    return func();
+}
+```
+
+The closure func() has access to the local variable num in this example. Even though the call to func() immediately returns the result, optimization can’t occur due to referencing the variable num.
+
+<br />
+
+#### How to Harness Tail Call Optimization
+
+In practice, tail call optimization happens behind-the-scenes, so you don’t need to think about it unless you’re trying to optimize a function. The primary use case for tail call optimization is in recursive functions, as that is where the optimization has the greatest effect. Consider this function, which computes factorials:
+
+```
+function factorial(n) {
+
+    if (n <= 1) {
+        return 1;
+    } else {
+
+        // not optimized - must multiply after returning
+        return n * factorial(n - 1);
+    }
+}
+```
+This version of the function cannot be optimized, because multiplication must happen after the recursive call to factorial(). If n is a very large number, the call stack size will grow and could potentially cause a stack overflow.
+
+In order to optimize the function, you need to ensure that the multiplication doesn’t happen after the last function call. To do this, you can use a default parameter to move the multiplication operation outside of the return statement. The resulting function carries along the temporary result into the next iteration, creating a function that behaves the same but can be optimized by an ECMAScript 6 engine. Here’s the new code:
+
+```
+function factorial(n, p = 1) {
+
+    if (n <= 1) {
+        return 1 * p;
+    } else {
+        let result = n * p;
+
+        // optimized
+        return factorial(n - 1, result);
+    }
+}
+```
+
+In this rewritten version of factorial(), a second argument p is added as a parameter with a default value of 1. The p parameter holds the previous multiplication result so that the next result can be computed without another function call. When n is greater than 1, the multiplication is done first and then passed in as the second argument to factorial(). This allows the ECMAScript 6 engine to optimize the recursive call.
+
+Tail call optimization is something you should think about whenever you’re writing a recursive function, as it can provide a significant performance improvement, especially when applied in a computationally-expensive function.
+
+<br />
+
+
+
+
+
 
 
