@@ -95,6 +95,8 @@ var person = {
 
 ECMAScript 5 and earlier could compute property names on object instances when those properties were set with square brackets instead of dot notation. The square brackets allow you to specify property names using variables and string literals that may contain characters that would cause a syntax error if used in an identifier. Here’s an example:
 
+在 ECMAScript 5 和早期的版本中，在对象实例名称后使用方括号包含而非点操作符操作的属性可以被动态计算。方括号允许你使用变量或包含字符串的字面量来指定属性名，虽然后者
+
 ```
 var person = {},
     lastName = "last name";
@@ -106,9 +108,9 @@ console.log(person["first name"]);      // "Nicholas"
 console.log(person[lastName]);          // "Zakas"
 ```
 
-Since lastName is assigned a value of "last name", both property names in this example use a space, making it impossible to reference them using dot notation. However, bracket notation allows any string value to be used as a property name, so assigning "first name" to "Nicholas" and “last name" to "Zakas" works.
+既然 lastName 已被赋值为 "last name"，而且该例中两个属性名都包含空格，所以使用点操作符来引用它们是不可能的。然而，方括号允许属性为任意字符串，所以 "first name" 和 "last name" 能被分别赋值为 "Nicholas"，"Zakas" 。
 
-Additionally, you can use string literals directly as property names in object literals, like this:
+另外，你可以在对象字面量中直接使用字符串字面量做属性，像这样：
 
 ```
 var person = {
@@ -119,6 +121,8 @@ console.log(person["first name"]);      // "Nicholas"
 ```
 
 This pattern works for property names that are known ahead of time and can be represented with a string literal. If, however, the property name "first name" were contained in a variable (as in the previous example) or had to be calculated, then there would be no way to define that property using an object literal in ECMAScript 5.
+
+使用这个模式的前提是要事先知道属性的名字，并且能由字符串字面量来表示。
 
 In ECMAScript 6, computed property names are part of the object literal syntax, and they use the same square bracket notation that has been used to reference computed property names in object instances. For example:
 
