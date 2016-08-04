@@ -5,7 +5,7 @@
 * [第一章 - 块级绑定](chapter_1.md)
 * [第二章 - 字符串与正则表达式（施工中）](chapter_2.md)
 * [第三章 - 函数](chapter_3.md)
-* [第四章 - 扩展的对象功能（正在施工）](chapter_4.md)
+* [第四章 - 扩展的对象功能](chapter_4.md)
 * [第五章 - 解构（施工中）](chapter_5.md)
 * [第六章 - Symbols 与 Symbols属性（施工中）](chapter_6.md)
 * [第七章 - Sets 与 Maps（施工中）](chapter_7.md)
