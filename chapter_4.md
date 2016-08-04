@@ -60,7 +60,7 @@ function createPerson(name, age) {
 
 <br />
 
-#### 简化的函数（Concise Methods）
+#### 简写的方法（Concise Methods）
 
 
 ECMAScript 6 同样改进了对象字面量中方法的赋值。在 ECMAScript 5 和更早的版本中，你必须指定一个名字并使用函数定义的完整形式来给对象添加方法，如下：
@@ -291,45 +291,47 @@ console.log(descriptor.get);        // undefined
 
 ### 重复的对象字面量属性（Duplicate Object Literal Properties）
 
-ECMAScript 5 strict mode introduced a check for duplicate object literal properties that would throw an error if a duplicate was found. For example, this code was problematic:
+
+ECMAScript 5 在严格模式中检查对象字面量的属性，如若有重复存在便抛出错误。例如，下面的代码会有问题：
 
 ```
 "use strict";
 
 var person = {
     name: "Nicholas",
-    name: "Greg"        // syntax error in ES5 strict mode
+    name: "Greg"        // ES5 严格模式下抛出错误
 };
 ```
 
-When running in ECMAScript 5 strict mode, the second name property causes a syntax error. But in ECMAScript 6, the duplicate property check was removed. Both strict and nonstrict mode code no longer check for duplicate properties. Instead, the last property of the given name becomes the property’s actual value, as shown here:
+在 ECMAScript 5 的严格模式下运行时，第二个 name 属性会造成语法错误。但是在 ECMAScript 6 中，重复属性的检查被移除了，而且后面的同名属性值成为了该对象属性的最终值，如下所示：
 
 ```
 "use strict";
 
 var person = {
     name: "Nicholas",
-    name: "Greg"        // no error in ES6 strict mode
+    name: "Greg"        // ES6 严格模式下正常运行
 };
 
 console.log(person.name);       // "Greg"
 ```
 
-In this example, the value of person.name is "Greg" because that’s the last value assigned to the property.
+在本例中，person.name 的值时 "Greg" 因为该属性最后被赋的值是 "Greg"。
 
 <br />
 
 ### 自身属性的枚举排序（Own Property Enumeration Order）
 
-ECMAScript 5 didn’t define the enumeration order of object properties, as it left this up to the JavaScript engine vendors. However, ECMAScript 6 strictly defines the order in which own properties must be returned when they are enumerated. This affects how properties are returned using Object.getOwnPropertyNames() and Reflect.ownKeys (covered in Chapter 12). It also affects the order in which properties are processed by Object.assign().
 
-The basic order for own property enumeration is:
+ECMAScript 5 并没有定义枚举对象属性的顺序，并将其交给各 JavaScript 引擎自行决定。然而，ECMAScript 6 严格定义了枚举对象自身（own）属性时返回的属性名顺序。这对 Object.getOwnPropertyNames() 和 Reflect.ownKeys（在第十二章介绍）返回的属性名集合有一定影响，包括从 Object.assign() 中获得的属性。
 
-1. All numeric keys in ascending order
-2. All string keys in the order in which they were added to the object
-3. All symbol keys (covered in Chapter 6) in the order in which they were added to the object
+枚举自身属性返回的属性名顺序的基本准则如下：
 
-Here’s an example:
+1. 类型为数字（numeric）键会升序。
+2. 类型为字符的键按照被添加到对象时的顺序保持不变。
+3. 类型为 Symbol（在第六章讲解）的键按照被添加到对象时的顺序保持不变。
+
+这里有个示例： 
 
 ```
 var obj = {
@@ -346,25 +348,27 @@ obj.d = 1;
 console.log(Object.getOwnPropertyNames(obj).join(""));     // "012acbd"
 ```
 
-The Object.getOwnPropertyNames() method returns the properties in obj in the order 0, 1, 2, a, c, b, d. Note that the numeric keys are grouped together and sorted, even though they appear out of order in the object literal. The string keys come after the numeric keys and appear in the order that they were added to obj. The keys in the object literal itself come first, followed by any dynamic keys that were added later (in this case, d).
+Object.getOwnPropertyNames() 方法返回的属性集合顺序依次为 0，1，2，a，c，b，d 。注意数字类型的键会被提升并自动排序，字符类型的键紧随其后并保持添加到对象时的顺序。对象字面量本身的键优先级比后动态添加到对象的高（在本例中，d）。
 
-The for-in loop still has an unspecified enumeration order because not all JavaScript engines implement it the same way. The Object.keys() method and JSON.stringify() are both specified to use the same (unspecified) enumeration order as for-in.
+for-in 循环的枚举顺序仍不明确，因为各 JavaScript 引擎的实现不懂。同样 Object.keys() 和 JSON.stringify() 由于枚举顺序和 for-in 相同导致它们的具体结果也无确切定义。
 
-While enumeration order is a subtle change to how JavaScript works, it’s not uncommon to find programs that rely on a specific enumeration order to work correctly. ECMAScript 6, by defining the enumeration order, ensures that JavaScript code relying on enumeration will work correctly regardless of where it is executed.
+虽然枚举顺序的变动对 JavaScript 的运作来讲细小甚微，但是依赖于枚举顺序而运行的项目并不罕见。ECMAScript 6 通过定义枚举的顺序使其与具体的执行环境无关，保证依赖于枚举的 JavaScript 代码能正常工作。
 
 <br />
 
 ### 更多的原型属性（More Powerful Prototypes）
 
-Prototypes are the foundation of inheritance in JavaScript, and ECMAScript 6 continues to make prototypes more powerful. Early versions of JavaScript severely limited what could be done with prototypes. However, as the language matured and developers became more familiar with how prototypes work, it became clear that developers wanted more control over prototypes and easier ways to work with them. As a result, ECMAScript 6 introduced some improvements to prototypes.
+
+原型（prototypes）是 JavaScript 中继承的基础，ECMAScript 6 仍继续努力让原型变得更为强大。早期的 JavaScript 对原型的功能限制极为严重。然而，当语言逐渐成熟而且开发者也愈加熟悉原型的工作机制之后，开发者希望获得原型更多控制权的同时又能方便使用它们。于是 ECMAScipt 6 对原型做了一些改进。
 
 <br />
 
 #### 改变对象的原型（Changing an Object’s Prototype）
 
-Normally, the prototype of an object is specified when the object is created, via either a constructor or the Object.create() method. The idea that an object’s prototype remains unchanged after instantiation was one of the biggest assumptions in JavaScript programming through ECMAScript 5. ECMAScript 5 did add the Object.getPrototypeOf() method for retrieving the prototype of any given object, but it still lacked a standard way to change an object’s prototype after instantiation.
 
-ECMAScript 6 changes that assumption by adding the Object.setPrototypeOf() method, which allows you to change the prototype of any given object. The Object.setPrototypeOf() method accepts two arguments: the object whose prototype should change and the object that should become the first argument’s prototype. For example:
+一般情况下，原型在该对象由构造函数或 Object.create() 方法创建时出现。ECMAScript 5 下的 JavaScript 编程最重要的约定之一就是一个对象实例无法更改它的原型。即使 ECMAScript 5 添加了 Object.getPrototypeOf() 方法来提取给定对象的原型，对象实例依然缺乏修改其原型的标准方式。
+
+ECMAScript 6 通过添加 Object.setPrototypeOf() 方法来对该约定做了变更。它允许你改变任何给定对象实例的原型。Object.setPrototypeof() 方法接收两个参数：需要改变原型的对象和你期望的原型对象。如下例所示：
 
 ```
 let person = {
@@ -379,26 +383,30 @@ let dog = {
     }
 };
 
-// prototype is person
+// 原型为 person
 let friend = Object.create(person);
 console.log(friend.getGreeting());                      // "Hello"
 console.log(Object.getPrototypeOf(friend) === person);  // true
 
-// set prototype to dog
+// 改变原型为 dog
 Object.setPrototypeOf(friend, dog);
 console.log(friend.getGreeting());                      // "Woof"
 console.log(Object.getPrototypeOf(friend) === dog);     // true
 ```
 
-This code defines two base objects: person and dog. Both objects have a getGreeting() method that returns a string. The object friend first inherits from the person object, meaning that getGreeting() outputs "Hello". When the prototype becomes the dog object, person.getGreeting() outputs "Woof" because the original relationship to person is broken.
+该段代码定义了两个对象：person 与 dog ，它们拥有返回字符串的同名方法。friend 对象继承了 person 对象，意味从 friend 上调用 gretGreeting() 会输出 "Hello"。当原型变更为 dog 对象之后，friend.getGretting() 会输出 "Woof"，因为 friend 和 person 之间的联系已被切断。
 
 The actual value of an object’s prototype is stored in an internal-only property called [[Prototype]]. The Object.getPrototypeOf() method returns the value stored in [[Prototype]] and Object.setPrototypeOf() changes the value stored in [[Prototype]]. However, these aren’t the only ways to work with the value of [[Prototype]].
 
+对象原型的实际值由一个内部属性 [[Prototype]] 存储。Object.getPrototypeOf() 方法返回的就是 [[Prototype]] 的值，而 Object.setPrototypeOf() 则会更改它。不过，操作 [[Prototype]] 值的方法并不只有这些。
+
 <br />
+
 
 #### 使用 super 引用来方便获取 prototype（Easy Prototype Access with Super References）
 
-As previously mentioned, prototypes are very important for JavaScript and a lot of work went into making them easier to use in ECMAScript 6. Another improvement is the introduction of super references, which make accessing functionality on an object’s prototype easier. For example, to override a method on an object instance such that it also calls the prototype method of the same name, you’d do the following in ECMAScript 5:
+
+在上文中提到，原型对于 JavaScript 来讲至关重要，ECMAScript 6 也增强了它的易用性，包括使用 super 引用来方便的获取对象原型中的功能。例如，当你重写原型中的方法时需要调用该原型方法，在 ECMAScript 5 中你可能会这么做：
 
 ```
 let person = {
@@ -420,45 +428,45 @@ let friend = {
     }
 };
 
-// set prototype to person
+// 设定 friend 的原型为 person
 Object.setPrototypeOf(friend, person);
 console.log(friend.getGreeting());                      // "Hello, hi!"
 console.log(Object.getPrototypeOf(friend) === person);  // true
 
-// set prototype to dog
+// 设定 friend 的原型为 dog
 Object.setPrototypeOf(friend, dog);
 console.log(friend.getGreeting());                      // "Woof, hi!"
 console.log(Object.getPrototypeOf(friend) === dog);     // true
 ```
 
-In this example, getGreeting() on friend calls the prototype method of the same name. The Object.getPrototypeOf() method ensures the correct prototype is called, and then an additional string is appended to the output. The additional .call(this) ensures that the this value inside the prototype method is set correctly.
+在本例中，friend 在调用 getGreeting() 后需要使用同名的原型方法来输出额外的字符。附加的 .call(this) 保证原型方法拥有正确的 this 值。  
 
-Remembering to use Object.getPrototypeOf() and .call(this) to call a method on the prototype is a bit involved, so ECMAScript 6 introduced super. At its simplest, super is a pointer to the current object’s prototype, effectively the Object.getPrototypeOf(this) value. Knowing that, you can simplify the getGreeting() method as follows:
+使用 Object.getPrototypeOf() 和 .call(this) 来调用原型方法显得有些笨重，所以 ECMAScript 6 引入了 super。简单的讲，super 是指向当前函数原型的指针，其值等同于 Object.getPrototypeof(this)。了解之后，你可以如下简化 getGreeting() 方法：
 
 ```
 let friend = {
     getGreeting() {
-        // in the previous example, this is the same as:
+        // 相比上个例子，等同于：
         // Object.getPrototypeOf(this).getGreeting.call(this)
         return super.getGreeting() + ", hi!";
     }
 };
 ```
 
-The call to super.getGreeting() is the same as Object.getPrototypeOf(this).getGreeting.call(this) in this context. Similarly, you can call any method on an object’s prototype by using a super reference, so long as it’s inside a concise method. Attempting to use super outside of concise methods results in a syntax error, as in this example:
+上例中，调用 super.getGreeting() 等同于调用 Object.getPrototypeOf(this).getGreeing.call(this)。类似的是，你可以使用 super 引用来调用任何存在于原型中的方法。super 只能在简写方法中使用（concise methods），除此之外将发生语法错误，正如下例所示：
 
 ```
 let friend = {
     getGreeting: function() {
-        // syntax error
+        // 语法错误
         return super.getGreeting() + ", hi!";
     }
 };
 ```
 
-This example uses a named property with a function, and the call to super.getGreeting() results in a syntax error because super is invalid in this context.
+该例在命名之后使用了 function 关键字，所以调用 super.getGreeting() 会出现错误，因为在该上下文（context）中 super 是不可用的。
 
-The super reference is really powerful when you have multiple levels of inheritance, because in that case, Object.getPrototypeOf() no longer works in all circumstances. For example:
+当你使用了多重继承的时候，super 引用是相当强大的，因为该情况下 Object.getPrototypeOf() 并不适用于所有的场景，例如：
 
 ```
 let person = {
@@ -467,7 +475,7 @@ let person = {
     }
 };
 
-// prototype is person
+// 原型为 person
 let friend = {
     getGreeting() {
         return Object.getPrototypeOf(this).getGreeting.call(this) + ", hi!";
@@ -476,17 +484,17 @@ let friend = {
 Object.setPrototypeOf(friend, person);
 
 
-// prototype is friend
+// 原型为 friend
 let relative = Object.create(friend);
 
 console.log(person.getGreeting());                  // "Hello"
 console.log(friend.getGreeting());                  // "Hello, hi!"
-console.log(relative.getGreeting());                // error!
+console.log(relative.getGreeting());                // 错误！
 ```
 
-The call to Object.getPrototypeOf() results in an error when relative.getGreeting() is called. That’s because this is relative, and the prototype of relative is the friend object. When friend.getGreeting().call() is called with relative as this, the process starts over again and continues to call recursively until a stack overflow error occurs.
+调用 Object.getPrototypeOf() 发生了错误。这是因为 this 的值是 relative，而 relative 的原型是 friend 对象。当 this 为 relative 的情况下调用 friend.getGreeting().call() 时，进程反复运作并持续递归调用该方法，直到抛出栈溢出错误。
 
-That problem is difficult to solve in ECMAScript 5, but with ECMAScript 6 and super, it’s easy:
+这个问题在 ECMAScript 5 中很难解决，但是 ECMAScript 6 引入了 super 使得该问题变得小菜一碟：
 
 ```
 let person = {
@@ -495,7 +503,7 @@ let person = {
     }
 };
 
-// prototype is person
+// 原型为 person
 let friend = {
     getGreeting() {
         return super.getGreeting() + ", hi!";
@@ -504,7 +512,7 @@ let friend = {
 Object.setPrototypeOf(friend, person);
 
 
-// prototype is friend
+// 原型为 friend
 let relative = Object.create(friend);
 
 console.log(person.getGreeting());                  // "Hello"
@@ -512,32 +520,33 @@ console.log(friend.getGreeting());                  // "Hello, hi!"
 console.log(relative.getGreeting());                // "Hello, hi!"
 ```
 
-Because super references are not dynamic, they always refer to the correct object. In this case, super.getGreeting() always refers to person.getGreeting(), regardless of how many other objects inherit the method.
+因为 super 引用并非是动态的，所以它们总是指向正确的对象。在本例中，super.getGreeting() 总是指代 person.getGretting()，不论有多少对象继承了该方法。
 
 <br />
 
-### “方法” 的正式定义（A Formal Method Definition）
+### 何为 “方法”（A Formal Method Definition）
 
-Prior to ECMAScript 6, the concept of a “method” wasn’t formally defined. Methods were just object properties that contained functions instead of data. ECMAScript 6 formally defines a method as a function that has an internal [[HomeObject]] property containing the object to which the method belongs. Consider the following:
+
+在 ECMAScript 6 之前，“方法” 这一概念并未有过正式定义。方法泛指那些对象中值为函数而非数据的属性。ECMAScript 6 正式将方法定义为带有 [[HomeObject]] 内部属性的函数，该属性指出方法的拥有者。考虑如下的例子：
 
 ```
 let person = {
 
-    // method
+    // 方法
     getGreeting() {
         return "Hello";
     }
 };
 
-// not a method
+// 不是方法
 function shareGreeting() {
     return "Hi!";
 }
 ```
 
-This example defines person with a single method called getGreeting(). The [[HomeObject]] for getGreeting() is person by virtue of assigning the function directly to an object. The shareGreeting() function, on the other hand, has no [[HomeObject]] specified because it wasn’t assigned to an object when it was created. In most cases, this difference isn’t important, but it becomes very important when using super references.
+该例中定义了 person 和名为 getGreeting() 的方法。由于该函数被直接分配给了 person 对象，所以 getGretting() 内部的 [[HomeObject]] 值为 person。另一方面，shareGretting() 由于在创建时没有分配给任何对象，所以不包含 [[HomeObject]]。大部分情况下该差异并不十分重要，不过要使用 super 引用的时候另当别论。
 
-Any reference to super uses the [[HomeObject]] to determine what to do. The first step is to call Object.getPrototypeOf() on the [[HomeObject]] to retrieve a reference to the prototype. Then, the prototype is searched for a function with the same name. Last, the this binding is set and the method is called. Here’s an example:
+任何 super 引用都要由 [[HomeObject]] 来决定它们要做的工作。当使用时，首先做的是在 [[HomeObject]] 上调用 Object.getPrototypeOf() 来提取原型的引用，接下来在原型中寻找调用方法的命名。最后，绑定 this 值并调用该方法。下面有个例子：
 
 ```
 let person = {
@@ -546,7 +555,7 @@ let person = {
     }
 };
 
-// prototype is person
+// 原型为 person
 let friend = {
     getGreeting() {
         return super.getGreeting() + ", hi!";
@@ -557,22 +566,23 @@ Object.setPrototypeOf(friend, person);
 console.log(friend.getGreeting());  // "Hello, hi!"
 ```
 
-Calling friend.getGreeting() returns a string, which combines the value from person.getGreeting() with ", hi!". The [[HomeObject]] of friend.getGreeting() is friend, and the prototype of friend is person, so super.getGreeting() is equivalent to person.getGreeting.call(this)`.
+调用 friend.getGreeting()会返回 person.getGreeting() 与 ", hi!" 拼接后的字符串。friend.getGreeting() 的 [[HomeObject]] 值是 friend，该对象的原型是 person，所以 super.getGreeting() 等同于 person.getGreeting.call(this)。
 
 <br />
 
 ### 总结（Summary）
 
-Objects are the center of programming in JavaScript, and ECMAScript 6 made some helpful changes to objects that both make them easier to deal with and more powerful.
 
-ECMAScript 6 makes several changes to object literals. Shorthand property definitions make assigning properties with the same names as in-scope variables easier. Computed property names allow you to specify non-literal values as property names, which you’ve already been able to do in other areas of the language. Shorthand methods let you type a lot fewer characters in order to define methods on object literals, by completely omitting the colon and function keyword. ECMAScript 6 loosens the strict mode check for duplicate object literal property names as well, meaning you can have two properties with the same name in a single object literal without throwing an error.
+对象是 JavaScript 编程的核心，ECMAScript 6 对它做了一些有益的改进令其变得更加易用和强大。
 
-The Object.assign() method makes it easier to change multiple properties on a single object at once. This can be very useful if you use the mixin pattern. The Object.is() method performs strict equality on any value, effectively becoming a safer version of === when dealing with special JavaScript values.
+ECMAScrpit 6 为对象做了不少改进。简写属性定义让同作用域内的同名属性与变量之间的赋值更为简单。在其它位置应用的非字面值（non-literal value）可以被动态计算用做属性名。使用简写方法可以省略冒号与 function 关键字，让你在定义对象字面量方法的时候少敲了不少字母。ECMAScript 6 放宽了严格模式对于重复对象字面量属性的检查，意味着你可以在同一个对象字面量定义两个同名的属性而不抛出错误。
 
-Enumeration order for own properties is now clearly defined in ECMAScript 6. When enumerating properties, numeric keys always come first in ascending order followed by string keys in insertion order and symbol keys in insertion order.
+Object.assign() 方法简化了单个对象中多个属性的变动。当使用混入模式时非常有用。Object.is() 方法会针对传入的任何参数进行严格的比较，当处理 JavaScript 特殊值时结果比使用 === 更安全。
 
-It’s now possible to modify an object’s prototype after it’s already created, thanks to ECMAScript 6’s Object.setPrototypeOf() method.
+枚举属性的顺序在 ECMAScript 6 中变得明确。在枚举属性时，数字类型的键会升序并排在字符类型或 symbol 类型的键之前，后两者按照定义时的顺序保持不变。
 
-Finally, you can use the super keyword to call methods on an object’s prototype. The this binding inside a method invoked using super is set up to automatically work with the current value of this.
+现在对象实例可以去修改它的原型，多亏于 ECMAScript 6 的 Object.setPrototypeOf() 方法。
+
+最后，你可以使用 super 关键字来调用在对象原型上的方法。该方法在调用的时 this 值就已经绑定完毕。
 
 
