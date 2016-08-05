@@ -430,4 +430,163 @@ console.log(clonedColors);      //"[red,green,blue]"
 
 剩余项必须是解构语句中的最后项并且不能在后面添加逗号，因为该行为会抛出语法错误。
 
+<br />
+
+### 混合解构（Mixed Destructuring）
+
+
+可以创建更复杂的表达式来混合使用对象和数组解构。这样做你可以精准地获取对象与数组并存的数据结构中的信息。例如：
+
+```
+let node = {
+        type: "Identifier",
+        name: "foo",
+        loc: {
+            start: {
+                line: 1,
+                column: 1
+            },
+            end: {
+                line: 1,
+                column: 4
+            }
+        },
+        range: [0, 3]
+    };
+
+let {
+    loc: { start },
+    range: [ startIndex ]
+} = node;
+
+console.log(start.line);        // 1
+console.log(start.column);      // 1
+console.log(startIndex);        // 0
+```
+
+该段代码分别提取 node.loc.start 和 node.range[0] 的值并赋给 start 和 startIndex 。注意的是解构语句中的 loc: 和 range: 只是 node 对象中参考的对应属性。对 node 对象使用混合解构没有提取不出来的数据。该种实现的特别实用之处在于提取 JSON 中的数据时不必访问整个数据结构。
+
+<br />
+
+### 参数解构（Destructured Parameters）
+
+
+解构的另一个实用案例发生在传递函数参数的时刻。当 JavaScript 的函数需要接受大量的可选参数时，一个普遍的实践是创建一个带有额外属性的对象用来明确，像这样：
+
+```
+// properties on options represent additional parameters
+function setCookie(name, value, options) {
+
+    options = options || {};
+
+    let secure = options.secure,
+        path = options.path,
+        domain = options.domain,
+        expires = options.expires;
+
+    // code to set the cookie
+}
+
+// third argument maps to options
+setCookie("type", "js", {
+    secure: true,
+    expires: 60000
+});
+```
+
+很多 JavaScript 库都包含类似于上述写法的 setCookie() 函数。在该函数中，name 和 value 必须被传入参数，但是 secure，path，domain 和 expires 并无要求。既然这些可选参数没有顺序限制，与其列出每个参数名倒不如在一个对象中使用它们的命名作为属性。这种方式使用起来不错，但是你无法根据函数定义来确认它到底需要哪些可选参数，只能去查看函数主体。
+
+参数解构提供了另一种方案使得函数期望的参数变得明确。它使用对象或数组解构的使用形式取代了命名参数。为了查看参数解构的具体写法，请阅读下面经过重写的 setCookie() 函数：
+
+```
+function setCookie(name, value, { secure, path, domain, expires }) {
+
+    // code to set the cookie
+}
+
+setCookie("type", "js", {
+    secure: true,
+    expires: 60000
+});
+```
+
+该函数的行为和上例类似，区别在于前者的第三个参数使用解构来获取必要的数据。现在，setCookie() 的必须参数和可选参数变得一样明确。如果要将第三个参数设定为必要参数，那么要传给它的实参类型也是显而易见的。解构的参数和普通参数同样在未被传参的情况下值为 undefined 。
+
+<br />
+
+> 参数解构拥有目前为止你在本章见过的其它解构方式的所有能力。你可以使用默认参数，混合对象与数组解构，或者声明和对应属性命名不同的变量。
+
+<br />
+
+#### 必选的参数解构（Destructured Parameters are Required）
+
+
+参数解构有一个怪异之处：在默认情况下，未给参数解构传值会抛出一个错误。例如，上例中的 setCookie() 函数使用下面的方式调用会发生错误：
+
+```
+// 错误!
+setCookie("type", "js");
+```
+
+第三个参数未见踪影，所以它的值就是惯例的 undefined 。发生错误的原因是参数解构本质上是解构声明的简写形式，当 setCookie() 函数被调用时，JavaScript 引擎实际上会这么做：
+
+```
+function setCookie(name, value, options) {
+
+    let { secure, path, domain, expires } = options;
+
+    // code to set the cookie
+}
+```
+
+既然解构会在右侧的表达式计算结果为 null 或 undefined 时抛出错误，那么未给 setCookie() 函数传递第三个参数的结果也是显而易见了。
+
+如果你设想的参数解构是必须参数，那么以上的行为不会对你有太大影响。如果你想要将参数解构设定为可选，你可以使用默认参数来作为解决方案，像这样：
+
+```
+function setCookie(name, value, { secure, path, domain, expires } = {}) {
+
+    // ...
+}
+```
+
+该例向第三个参数提供了一个对象作为默认值。这意味着如果 setCookie() 的未被传入第三个参数，那么 secure，path，domain 和 expires 的值均为 undefined，而且没有错误被抛出。
+
+<br />
+
+#### 参数解构的默认值（Default Values for Destructured Parameters）
+
+
+你可以使用解构赋值表达式来向解构的参数指定默认值，只需在参数后面添加等于符号和做为默认的值。例如：
+
+```
+function setCookie(name, value,
+    {
+        secure = false,
+        path = "/",
+        domain = "example.com",
+        expires = new Date(Date.now() + 360000000)
+    } = {}
+) {
+
+    // ...
+}
+```
+
+该段代码中，每个解构后的参数都会有默认值，所以你不必对它们进行检查已确认它们是否被传入参数。同样，整个参数解构有一个空的对象做为默认值，于是该参数解构就是可选的。这些设定使得该函数声明看起来比一般的要复杂，但这是为了确保每个参数都有可用的值而做出的必要牺牲。
+
+<br />
+
+### 总结（Summary）
+
+解构使得在 JavaScript 中操作对象和数组变得容易。使用熟悉的对象字面量或数组字面量，你可以将数据结构拆分并只获取你感兴趣的信息。对象和数组解构分别允许你从对象和数组中提取信息。
+
+对象和数组解构能分别给属性或项设定默认值以便在出现 undefined 的时候修正，在赋值右侧的表达式计算结果为 null 和 undefined 的时候抛出错误。你也可以在深层嵌套的对象和数组中使用对象和数组解构来获取任意层级的数据。
+
+使用 var，let 或 const 的解构声明必须要初始化。解构赋值表达式可以用来代替任何赋值操作并且允许你解构对象的属性和使用已经存在的变量名。
+
+参数解构使用解构语法使得在函数参数中使用可选对象变得透明化。你实际感兴趣的数据可以使用命名参数详列。参数解构可以是对象形式，数组形式或混合形式，并同时拥有这些形式的全部功能。
+
+<br />
+
 
