@@ -159,7 +159,7 @@ ECMAScript 从第五版开始避免在 Object.prototype 上添加新的全局函
 
 <br />
 
-#### Object.is()（The Object.is() Method）
+#### Object.is() （The Object.is() Method）
 
 
 在 JavaSciprt 中当你想比较两个值时，你极有可能使用比较操作符（==）或严格比较操作符（===）。许多开发者为了避免在比较的过程中发生强制类型转换，更倾向于后者。但即使是严格等于操作符，它也不是万能的。例如，它认为 +0 和 -0 是相等的，虽然它们在 JavaScript 引擎中表示的方式不同。同样 NaN === NaN 会返回 false，所以必须使用 isNaN() 函数才能判断 NaN 。
