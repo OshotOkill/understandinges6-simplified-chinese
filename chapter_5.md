@@ -88,8 +88,6 @@ console.log(name);      // "foo"
 
 在本例中，node 对象中的 type 和 name 在声明处初始化，而另一个对同名变量在之后也被不同的值初始化。往下的一行使用了解构赋值表达式将两个变量的值更改为 node 对象对应属性的值。注意你必须在圆括号内才能使用解构表达式。这是因为暴露的花括号会被解析为块声明语句，而该语句不能存在于赋值操作符的左侧。圆括号的存在预示着之后的花括号不是块声明语句而应该被看作表达式，这样它才能正常工作。
 
-A destructuring assignment expression evaluates to the right side of the expression (after the =). That means you can use a destructuring assignment expression anywhere a value is expected. For instance, passing a value to a function:
-
 解构赋值表达式会计算右侧的值（= 右侧）。也就是说你可以在任何期望传值的位置使用表达式。例如，将值传给函数：
 
 ```
@@ -197,7 +195,8 @@ console.log(localName);     // "bar"
 
 ##### 嵌套的对象解构（Nested Object Destructuring）
 
-By using a syntax similar to object literals, you can navigate into a nested object structure to retrieve just the information you want. Here’s an example:
+
+使用类似于对象字面量的语法可以在对象嵌套的结构中提取你需要的数据。这里有个示例：
 
 ```
 let node = {
@@ -221,9 +220,9 @@ console.log(start.line);        // 1
 console.log(start.column);      // 1
 ```
 
-The destructuring pattern in this example uses curly braces to indicate that the pattern should descend into the property named loc on node and look for the start property. Remember from the last section that whenever there’s a colon in a destructuring pattern, it means the identifier before the colon is giving a location to inspect, and the right side assigns a value. When there’s a curly brace after the colon, that indicates that the destination is nested another level into the object.
+该例中使用的解构模式包含了花括号来指示在 node 属性 loc 的内部寻找 start 属性。上一节曾提到不论冒号在何处出现，左面的标识符是查找的参考对象而右侧的标识符是赋值的目标。当冒号的后面出现花括号时，代表寻找的目标在该对象更深的层级中。
 
-You can go one step further and use a different name for the local variable as well:
+你可以进一步对嵌套的属性使用别名来声明变量：
 
 ```
 let node = {
@@ -241,31 +240,194 @@ let node = {
         }
     };
 
-// extract node.loc.start
+// 提取 node.loc.start
 let { loc: { start: localStart }} = node;
 
 console.log(localStart.line);   // 1
 console.log(localStart.column); // 1
 ```
 
-In this version of the code, node.loc.start is stored in a new local variable called localStart. Destructuring patterns can be nested to an arbitrary level of depth, with all capabilities available at each level.
+在这种写法的代码中，node.loc.start 的值由新命名的 localStart 变量存储。解构可以在任意的嵌套深度工作，而且每一层级的功能都不会被削减。
 
-Object destructuring is very powerful and has a lot of options, but array destructuring offers some unique capabilities that allow you to extract information from arrays.
+对象解构十分强大而且形式多样，但数组解构提供了另一些独特的功能用来提取数组中的数据。
 
 <br />
 
-> ##### 语法陷阱（Syntax Gotcha）
-Be careful when using nested destructuring because you can inadvertently create a statement that has no effect. Empty curly braces are legal in object destructuring, however, they don’t do anything. For example:
+> ##### 语法注意（Syntax Gotcha）
+> 当在嵌套的数据结构中使用解构时要注意，你可能会无意间创建了无任何意义的语句。在对象解构时空的花括号是允许的，然而它们不会做任何事情。例如：
 
 ```
-// no variables declared!
+// 无任何变量声明！
 let { loc: {} } = node;
 ```
 
-> There are no bindings declared in this statement. Due to the curly braces on the right, loc is used as a location to inspect rather than a binding to create. In such a case, it’s likely that the intent was to use = to define a default value rather than : to define a location. It’s possible that this syntax will be made illegal in the future, but for now, this is a gotcha to look out for.
+> 在该声明语句中不存在任何绑定。因为冒号右侧的花括号中无内容，loc 是用来做参考对象而没有创建任何绑定。在该种情况下，该语句的意图应该是使用 = 来声明默认值而不是用 : 来定义参照对象。这种语法在将来可能会被判为违法，但是现在我们只能对它保持警惕。
 
 <br />
 
 ### 数组解构（Array Destructuring)
+
+
+数据解构的语法和对象解构看起来类似，只是将对象字面量替换成了数组字面量，而且解构操作的是数组内部的位置（索引）而不是对象中的命名属性，例如：
+
+```
+let colors = [ "red", "green", "blue" ];
+
+let [ firstColor, secondColor ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(secondColor);       // "green"
+```
+
+在这里，数组解构从 colors 数组中找到了 "red" 和 "green" 并将它们赋值给 fristColor 和 secondColor 变量。这些值的选择和它们在数组中的位置有关；实际的变量名称是任意的。任何没有在数组解构语句中显示声明的项都会被忽略掉。注意的是数组本身不会有任何影响：
+
+你可以在解构语句忽略一些项而只给你想要的项提供命名。例如，你若只想获取数组中的第三个元素，那么你不必给前两项提供命名。以下示例演示了该情况：
+
+```
+let colors = [ "red", "green", "blue" ];
+
+let [ , , thirdColor ] = colors;
+
+console.log(thirdColor);        // "blue"
+```
+
+这代码中使用了解构赋值来获取 colors 中的第三个元素。thirdColor 之前的逗号是先前元素的占位符。使用该种方法你可以轻松的获取数组中任意位置的值而不需要给其它项提供命名。
+
+和对象解构类似的是，你必须使用 var，let，const 对数组解构进行初始化。
+
+<br />
+
+##### 解构赋值表达式（Destructuring Assignment）
+
+
+你可以想要赋值的情况下使用数组的解构赋值表达式，但是和对象解构不同，没必要将它们包含在圆括号中，例如：
+
+```
+let colors = [ "red", "green", "blue" ],
+    firstColor = "black",
+    secondColor = "purple";
+
+[ firstColor, secondColor ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(secondColor);       // "green"
+```
+
+该段代码的解构赋值和上例类似。唯一的区别是 firstColr 和 secondColor 在事先已定义。大部分情况下，上述代码使你足够了解如何去使用数组的解构赋值表达式，但其实它还有一个额外的比较实用的用法。
+
+数组中的解构赋值表达式有一个独特的使用场景 —— 对两个变量的值进行交换。在排序算法中值交换操作是非常普遍的，在 ECMAScript 5 中则需要一个第三方变量，如下所示：
+
+```
+// 在 ECMAScript 5 中交换变量的值
+let a = 1,
+    b = 2,
+    tmp;
+
+tmp = a;
+a = b;
+b = tmp;
+
+console.log(a);     // 2
+console.log(b);     // 1
+```
+
+临时变量 tmp 对交换 a 和 b 的值来讲是必要的。不过在使用解构赋值表达式时，它就没有存在的理由了。这里演示了在 ECMAScript 6 中交换变量值的方式：
+
+```
+// 在 ECMAScript 6 中交换变量的值
+let a = 1,
+    b = 2;
+
+[ a, b ] = [ b, a ];
+
+console.log(a);     // 2
+console.log(b);     // 1
+```
+
+该例中的解构赋值表达式仿佛在进行镜像操作。表达式的左侧（等于符号之前）和其它数组解构案例别无二致，右侧则是为了交换值而创建的临时数组字面量。解构发生在临时数组上，将 b 和 a 的值分别传给左侧数组第一及第二个元素，效果等同于交换变量值。
+
+和对象的解构赋值表达式相同，若表达式右侧的计算值为 null 和 undefined，那么该解构赋值表达式会抛出错误。
+
+<br />
+
+##### 默认值（Default Values）
+
+
+数组中的解构赋值表达式同样可以在任意位置指定默认值。当某个位置的项未被传值或传入的值为 undefined，那么它的默认值会被使用。例如：
+
+```
+let colors = [ "red" ];
+
+let [ firstColor, secondColor = "green" ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(secondColor);       // "green"
+```
+
+在这段代码中，colors 数组只有一个项，所以 secondColor 不会进行值得匹配。既然它被设置了默认值，那么 secondColor 的值即为 "green" 而不是 undefined 。
+
+<br />
+
+##### 嵌套的数组解构（Nested Destructuring）
+
+
+你可以使用类似于解构嵌套对象的方式来解构嵌套的数组。在数组的内部添加一个数组即可在嵌套数组完成操作。像这样：
+
+```
+let colors = [ "red", [ "green", "lightgreen" ], "blue" ];
+
+// 之后
+
+let [ firstColor, [ secondColor ] ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(secondColor);       // "green"
+```
+
+这在里，secondColor 变量获得是 colors 数组中的 "green"。该项被包含在另一个数组中，所以解构语句中额外的数组添加是必须的。和对象相同，获取任意嵌套深度的值是允许的。
+
+<br />
+
+##### 剩余项（Rest Items）
+
+
+第三章介绍过剩余参数表达式在函数中的应用，而数组解构中有个类似的概念叫做剩余项。它使用 ... 语法来将剩余的项赋值给一个指定的变量，如下所示：
+
+```
+let colors = [ "red", "green", "blue" ];
+
+let [ firstColor, ...restColors ] = colors;
+
+console.log(firstColor);        // "red"
+console.log(restColors.length); // 2
+console.log(restColors[0]);     // "green"
+console.log(restColors[1]);     // "blue"
+```
+
+colors 中的首项会被赋值给 firstColor，而其余项会被添加到 restColors 这个新数组中。该数组因此会有两个项："green 和 "blue"。剩余项在提取数组中特定的项并保持其它项可用的情况下十分好用，而且还有另一种实用的方法。
+
+数组的复制在 JavaScript 中是一个容易忽视的问题。在 ECMAScript 5 中，开发者经常使用 concat() 方法来方便的克隆一个数组，例如：
+
+```
+// ECMAScript 5 中克隆数组的方法
+var colors = [ "red", "green", "blue" ];
+var clonedColors = colors.concat();
+
+console.log(clonedColors);      //"[red,green,blue]"
+```
+
+虽然 concat() 方法的本意是用来合并两个数组，但是没有给它传递参数的时候他会返回一个该数组的克隆。在 ECMAScript 6 中，你可以使用剩余项来完成同样的任务。实现如下：
+
+```
+// ECMAScript 6 中克隆数组的方法
+let colors = [ "red", "green", "blue" ];
+let [ ...clonedColors ] = colors;
+
+console.log(clonedColors);      //"[red,green,blue]"
+```
+
+在该例中，剩余项用来将 colors 数组中的项拷贝到 clonedColors 。虽然关于剩余项的复制意图看上去是否比 concat() 方法更为明确的争论是仁者见仁智者见智，但是它依然是个值得了解的使用方法。
+
+剩余项必须是解构语句中的最后项并且不能在后面添加逗号，因为该行为会抛出语法错误。
 
 
