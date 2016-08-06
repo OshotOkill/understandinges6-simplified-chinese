@@ -11,10 +11,10 @@ ECMAScript 6 正式为 JavaScript 添加了 set 和 map，本章介绍了这两�
 
 <br />
 
-### ECMAScript 5 中的 Set 与 Map（Sets and Maps in ECMAScript 5）
+### ECMAScript 5 中的 set 与 map（Sets and Maps in ECMAScript 5）
 
 
-在 ECMAScript 5 中，开发者使用对象属性来模拟 Set 和 Map，像这样：
+在 ECMAScript 5 中，开发者使用对象属性来模拟 set 和 map，像这样：
 
 ```
 let set = Object.create(null);
@@ -99,10 +99,10 @@ if (map.count) {
 
 <br />
 
-### ECMAScript 6 中的 Set（Sets in ECMAScript 6）
+### ECMAScript 6 中的 set（Sets in ECMAScript 6）
 
 
-ECMAScript 6 中的 Set 类型是一个博寒无重复元素的有序列表。Sets 允许对内部某元素是否存在进行快速检查，使得元素的追踪操作效率更高。
+ECMAScript 6 中的 set 类型是一个博寒无重复元素的有序列表。Set 允许对内部某元素是否存在进行快速检查，使得元素的追踪操作效率更高。
 
 <br />
 
@@ -134,9 +134,7 @@ console.log(set.size);    // 2
 
 因为 key1 和 key2 不会转换为字符串，所以它们 set 认为两者都是唯一的（记住，如果它们被转换为字符串，那么值都是 "[object Object]"）。
 
-If the add() method is called more than once with the same value, all calls after the first one are effectively ignored:
-
-如果 add() 方法由同一个参数调用了多次，那么首次之后的调用将会被忽略。
+如果 add() 方法由同一个参数调用了多次，那么首次之后的调用将会被忽略：
 
 ```
 let set = new Set();
@@ -147,22 +145,23 @@ set.add(5);     // duplicate - this is ignored
 console.log(set.size);    // 2
 ```
 
-You can initialize a set using an array, and the Set constructor will ensure that only unique values are used. For instance:
+你可以使用数组来初始化一个 set，而且 Set 构造函数会确保使用数组中唯一存在的元素。例如：
 
 ```
 let set = new Set([1, 2, 3, 4, 5, 5, 5, 5]);
 console.log(set.size);    // 5
 ```
 
-In this example, an array with duplicate values is used to initialize the set. The number 5 only appears once in the set even though it appears four times in the array. This functionality makes converting existing code or JSON structures to use sets easy.
+在该例中，带有重复元素的数组被用来初始化 set 。虽然在数组中数字 5 出现了 4 次，但 set 中只将它存入一次。这项功能可以方便的转换 JSON 结构中已存在的数据。
 
 <br />
 
-> The Set constructor actually accepts any iterable object as an argument. Arrays work because they are iterable by default, as are sets and maps. The Set constructor uses an iterator to extract values from the argument. (Iterables and iterators are discussed in detail in Chapter 8.)
+> Set 构造函数实际上可以接收任何可迭代（iterable）对象作为属性。数组是默认的可迭代类型，所以它可以作为 Set 的参数。同样 set 和 map 也都是可迭代类型。Set 构造函数使用迭代器从参数中提取相应值。（可迭代类型与迭代器将在第八章讨论）
 
 <br />
 
-You can test which values are in a set using the has() method, like this:
+你可以使用 has() 方法来查看某个值是否在 set 中，像这样：
+
 
 ```
 let set = new Set();
@@ -173,13 +172,14 @@ console.log(set.has(5));    // true
 console.log(set.has(6));    // false
 ```
 
-Here, set.has(6) would return false because the set doesn’t have that value.
+在这里，因为 set 中不包含 6 ，所以 set.has(6) 会返回 false 。
 
 <br />
 
-#### Removing Values
+#### 移除项（Removing Values）
 
-It’s also possible to remove values from a set. You can remove single value by using the delete() method, or you can remove all values from the set by calling the clear() method. This code shows both in action:
+
+将 set 中的值移除也是可以做到的。你可以使用 delete() 方法来销毁单个值，或者调用 clear() 方法来清空整个 set。下面的代码演示了这些操作：
 
 ```
 let set = new Set();
@@ -199,30 +199,31 @@ console.log(set.has("5"));  // false
 console.log(set.size);      // 0
 ```
 
-After the delete() call, only 5 is gone; after the clear() method executes, set is empty.
+在调用 delete() 之后，只有 5 被移除；而 clear() 方法的执行使得 set 内部被清空。
 
-All of this amounts to a very easy mechanism for tracking unique ordered values. However, what if you want to add items to a set and then perform some operation on each item? That’s where the forEach() method comes in.
+这些方法提供了一个方便的机制用来追踪有序的唯一值。不过，给 set 添加项之后该怎样遍历它们呢？forEcah() 方法解决了这个问题。
 
 <br />
 
-#### The forEach() Method for Sets
-
-If you’re used to working with arrays, then you may already be familiar with the forEach() method. ECMAScript 5 added forEach() to arrays to make working on each item in an array without setting up a for loop easier. The method proved popular among developers, and so the same method is available on sets and works the same way.
-
-The forEach() method is passed a callback function that accepts three arguments:
-
-1. The value from the next position in the set
-2. The same value as the first argument
-3. The set from which the value is read
+#### Set 中的 forEach() 方法（The forEach() Method for Sets）
 
 
-The strange difference between the set version of forEach() and the array version is that the first and second arguments to the callback function are the same. While this might look like a mistake, there’s a good reason for the behavior.
+如果你曾处理过数组，那么 forEach() 方法你可能非常熟悉。ECMAScript 5 给数组添加了 forEach() 使得遍历操作每一项变得更加方便，不再需要循环。开发者在实践中享受到了好处并逐渐推广了它，于是 set 也顺势添加了该方法并且功能保持不变。
 
-The other objects that have forEach() methods (arrays and maps) pass three arguments to their callback functions. The first two arguments for arrays and maps are the value and the key (the numeric index for arrays).
+forEach() 方法接收一个含有三个参数的回调函数：
 
-Sets do not have keys, however. The people behind the ECMAScript 6 standard could have made the callback function in the set version of forEach() accept two arguments, but that would have made it different from the other two. Instead, they found a way to keep the callback function the same and accept three arguments: each value in a set is considered to be both the key and the value. As such, the first and second argument are always the same in forEach() on sets to keep this functionality consistent with the other forEach() methods on arrays and maps.
+1. 下一位置的值
+2. 和首个参数的值相同
+3. 操作的 set 本身
 
-Other than the difference in arguments, using forEach() is basically the same for a set as it is for an array. Here’s some code that shows the method at work:
+比较奇怪的是 set 实现的 forEach() 方法和数组存在的差异在于接收的前两个参数是相同的。虽然这看来不大对劲，但却有意而为之的。
+
+其它包含 forEach() 方法的对象（数组和 map）在该方法的回调函数中也会接收三个参数。前两个参数分别为下一位置的值和键（其中数组版本中的键为数字索引）。
+
+但是 set 并不包含键。制定 ECMAScript 6 标准的相关人员本可以在 set 中设定 forEach() 的回调函数只接受两个参数。不过他们却另辟蹊径的找到了统一回调函数的办法：set 中的每一项既是键也是值。于是 set 为了和数组与 map 中的 forEach() 方法保持一致，将回调函数中的前两个参数设为相同。
+
+
+除了参数个数的差异外，set 版本的 forEach() 和 数组基本相同。以下是一些代码来展示该方法是怎样工作的：
 
 ```
 let set = new Set([1, 2]);
@@ -233,7 +234,7 @@ set.forEach(function(value, key, ownerSet) {
 });
 ```
 
-This code iterates over each item in the set and outputs the values passed to the forEach() callback function. Each time the callback function executes, key and value are the same, and ownerSet is always equal to set. This code outputs:
+该段代码将数组中的每一项添加到 set 中然后将值传递给 forEach() 的回调函数。回调函数每一次执行时，key 和 value 都是相同的，同时 ownerSet 则等同于 set。下面是输出结果： 
 
 ```
 1 1
@@ -242,7 +243,7 @@ true
 true
 ```
 
-Also the same as arrays, you can pass a this value as the second argument to forEach() if you need to use this in your callback function:
+结果和使用数组是相同的，你可以给 forEach() 传入第二个参数 this 以便你在该方法中使用它。
 
 ```
 let set = new Set([1, 2]);
@@ -261,7 +262,7 @@ let processor = {
 processor.process(set);
 ```
 
-In this example, the processor.process() method calls forEach() on the set and passes this as the this value for the callback. That’s necessary so this.output() will correctly resolve to the processor.output() method. The forEach() callback function only makes use of the first argument, value, so the others are omitted. You can also use an arrow function to get the same effect without passing the second argument, like this:
+在上例中，processor.process() 方法在 set 上调用 forEach() 并将 this 值传递给回调函数。这对于 this.output() 会正确调用 processor.ouput() 是不可或缺的。forEach() 中的回调函数只需要首个参数， value，其它的都会忽略掉。你也可以使用箭头函数来替代作为第二个参数传递的 this，像这样：
 
 ```
 let set = new Set([1, 2]);
@@ -278,15 +279,17 @@ let processor = {
 processor.process(set);
 ```
 
-The arrow function in this example reads this from the containing process() function, and so it should correctly resolve this.output() to a processor.output() call.
+该例中的箭头函数会读取包含它的 process() 函数中的 this 值，所以 this.output() 会正确的调用 processor.output() 。
 
-Keep in mind that while sets are great for tracking values and forEach() lets you work on each value sequentially, you can’t directly access a value by index like you can with an array. If you need to do so, then the best option is to convert the set into an array.
+需要留心的是，虽然 set 可以很好的进行值的跟踪而且 forEach() 可以顺序处理其中的每一项，但是你无法使用下标来访问其中的值。如果你想这么做，最佳的方案还是将它转化为数组。
 
 <br />
 
-#### Converting a Set to an Array
+#### 将 set 转化为数组（Converting a Set to an Array）
 
 It’s easy to convert an array into a set because you can pass the array to the Set constructor. It’s also easy to convert a set back into an array using the spread operator. Chapter 3 introduced the spread operator (...) as a way to split items in an array into separate function parameters. You can also use the spread operator to work on iterable objects, such as sets, to convert them into arrays. For example:
+
+将数组转化为 set 相当容易，你只需将数组传递给 Set 构造函数。使用扩展运算符将 set 转化为数组也并不复杂。第三章中介绍的扩展运算符（...）可以拆分数组中的项并传递给函数参数。你同样可以在可迭代对象上使用扩展运算符，例如 set，并将它转化为数组。例如：
 
 ```
 let set = new Set([1, 2, 3, 3, 3, 4, 5]),
