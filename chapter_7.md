@@ -287,7 +287,6 @@ processor.process(set);
 
 #### 将 set 转化为数组（Converting a Set to an Array）
 
-It’s easy to convert an array into a set because you can pass the array to the Set constructor. It’s also easy to convert a set back into an array using the spread operator. Chapter 3 introduced the spread operator (...) as a way to split items in an array into separate function parameters. You can also use the spread operator to work on iterable objects, such as sets, to convert them into arrays. For example:
 
 将数组转化为 set 相当容易，你只需将数组传递给 Set 构造函数。使用扩展运算符将 set 转化为数组也并不复杂。第三章中介绍的扩展运算符（...）可以拆分数组中的项并传递给函数参数。你同样可以在可迭代对象上使用扩展运算符，例如 set，并将它转化为数组。例如：
 
@@ -298,9 +297,9 @@ let set = new Set([1, 2, 3, 3, 3, 4, 5]),
 console.log(array);             // [1,2,3,4,5]
 ```
 
-Here, a set is initially loaded with an array that contains duplicates. The set removes the duplicates, and then the items are placed into a new array using the spread operator. The set itself still contains the same items (1, 2, 3, 4, and 5) it received when it was created. They’ve just been copied to a new array.
+以上，set 在初始时读取了一个包含重复值的数组。set 清除掉了重复值之后，使用了扩展操作符将 set 中的项传入了一个新的数组当中。set 仍然包含创建时的项（1，2，3，4 和 5）。他们只是被复制到了新的数组中。
 
-This approach is useful when you already have an array and want to create an array without duplicates. For example:
+该实践在遇到清除已创建数组中的重复值的需求时特别好用。例如：
 
 ```
 function eliminateDuplicates(items) {
@@ -313,7 +312,7 @@ let numbers = [1, 2, 3, 3, 3, 4, 5],
 console.log(noDuplicates);      // [1,2,3,4,5]
 ```
 
-In the eliminateDuplicates() function, the set is just a temporary intermediary used to filter out duplicate values before creating a new array that has no duplicates.
+在 eliminateDuplicates() 函数中，set 只是被当作临时的代理以便在创建新的数组之前过滤掉重复项。
 
 #### Weak Sets
 The Set type could alternately be called a strong set, because of the way it stores object references. An object stored in an instance of Set is effectively the same as storing that object inside a variable. As long as a reference to that Set instance exists, the object cannot be garbage collected to free memory. For example:
