@@ -314,8 +314,12 @@ console.log(noDuplicates);      // [1,2,3,4,5]
 
 在 eliminateDuplicates() 函数中，set 只是被当作临时的代理以便在创建新的数组之前过滤掉重复项。
 
-#### Weak Sets
-The Set type could alternately be called a strong set, because of the way it stores object references. An object stored in an instance of Set is effectively the same as storing that object inside a variable. As long as a reference to that Set instance exists, the object cannot be garbage collected to free memory. For example:
+<br />
+
+#### weak set（Weak Sets）
+
+
+set 类型根据它存储对象的方式，也被称为 strong set。一个对象存储在 set 内部或存储于一个变量在效果上是等同的。只要对该 Set 实例的引用存在，那么存储的对象在垃圾回收以释放内存的时候无法被销毁，例如：
 
 ```
 let set = new Set(),
@@ -324,25 +328,25 @@ let set = new Set(),
 set.add(key);
 console.log(set.size);      // 1
 
-// eliminate original reference
+// 销毁引用
 key = null;
 
 console.log(set.size);      // 1
 
-// get the original reference back
+// 重新获得了引用
 key = [...set][0];
 ```
 
-In this example, setting key to null clears one reference of the key object, but another remains inside set. You can still retrieve key by converting the set to an array with the spread operator and accessing the first item. That result is fine for most programs, but sometimes, it’s better for references in a set to disappear when all other references disappear. For instance, if your JavaScript code is running in a web page and wants to keep track of DOM elements that might be removed by another script, you don’t want your code holding onto the last reference to a DOM element. (That situation is called a memory leak.)
+在本例中，将 key 设置为 null 只是清除了对 key 对象的一个引用，但是其它引用还存于 set 内部。你仍然可以使用扩展运算符将 set 转化为 数组后获取它。在大部分编程中这个结果是可以接受的，但某些时候，当其它引用解除之后 set 内部能自动解除相关引用是再好不过的。例如，当在一个网页中使用 JavaScript 追踪一些可能在之后会被销毁 DOM 元素，你不希望有任何残留的 DOM 元素引用存在。（这种情况称其为内存泄漏）
 
-To alleviate such issues, ECMAScript 6 also includes weak sets, which only store weak object references and cannot store primitive values. A weak reference to an object does not prevent garbage collection if it is the only remaining reference.
+为了减少这些情况的出现，ECMAScript 6 同时引入了 weak set 。该类型不允许存储原始值而专门存储弱对象引用。由于弱引用不会被当做剩余存在的引用，所以它不会阻止垃圾回收。
 
 <br />
 
-#### Creating a Weak Set
+#### 创建 weak set（Creating a Weak Set）
 
 
-Weak sets are created using the WeakSet constructor and have an add() method, a has() method, and a delete() method. Here’s an example that uses all three:
+weak set 由 WeakSet 构造函数创建并包含 add()，has() 和 delete() 方法。下面的例子使用了这些方法：
 
 ```
 let set = new WeakSet(),
@@ -358,7 +362,7 @@ set.delete(key);
 console.log(set.has(key));      // false
 ```
 
-Using a weak set is a lot like using a regular set. You can add, remove, and check for references in the weak set. You can also seed a weak set with values by passing an iterable to the constructor:
+weak set 的用法和一般的 set 类似。你可以添加，移除，查看引用，也可以给构造函数传入一个可迭代类型：
 
 ```
 let key1 = {},
@@ -369,41 +373,351 @@ console.log(set.has(key1));     // true
 console.log(set.has(key2));     // true
 ```
 
-In this example, an array is passed to the WeakSet constructor. Since this array contains two objects, those objects are added into the weak set. Keep in mind that an error will be thrown if the array contains any non-object values, since WeakSet can’t accept primitive values.
+本例中一个数组被传给了 WeakSet 构造函数。因为数组中包含了两个对象，于是它们被添加到了 weak set 中。需要注意的是若数组中包含了非对象元素，一个错误会被抛出，因为 WeakSet 不接受原始值。
 
 <br />
 
-#### Key Differences Between Set Types
+#### set 类型之间的差异（Key Differences Between Set Types）
 
-The biggest difference between weak sets and regular sets is the weak reference held to the object value. Here’s an example that demonstrates that difference:
+
+weak set 和 一般 set 的最大区别是前者存储的是弱对象引用。下面的例子解释了两者的差异：
 
 ```
 let set = new WeakSet(),
     key = {};
 
-// add the object to the set
+// 将对象添加给 set
 set.add(key);
 
 console.log(set.has(key));      // true
 
-// remove the last strong reference to key, also removes from weak set
+// 销毁了最后剩余的强引用，weak set 中的引用也随即消失
 key = null;
 ```
 
-After this code executes, the reference to key in the weak set is no longer accessible. It is not possible to verify its removal because you would need one reference to that object to pass to the has() method. This can make testing weak sets a little confusing, but you can trust that the reference has been properly removed by the JavaScript engine.
+当该段代码执行后，weak set 中的引用就无法访问了。不过要验证它是不可能的，因为 has() 方法需要传递一个对象的引用（weak set 之外的引用已不存在）。虽然这让包含 weak set 的测试变得有些困惑，但至少你可以确定该引用已经彻底不存在于 JavaScript 引擎当中。
 
 These examples show that weak sets share some characteristics with regular sets, but there are some key differences. Those are:
 
-1. In a WeakSet instance, the add() method, has() method, and delete() method all throw an error when passed a non-object.
-2. Weak sets are not iterables and therefore cannot be used in a for-of loop.
-3. Weak sets do not expose any iterators (such as the keys() and values() methods), so there is no way to programmatically determine the contents of a weak set.
-4. Weak sets do not have a forEach() method.
-5. Weak sets do not have a size property.
+这些例子演示了 weak set 和一般 set 的相同特称，但是它们有一些关键的差异，例如：
+
+1. 当调用 add()，has() 或 delete() 方法传入了一个非对象参数时，一个错误会被抛出。
+2. weak set 不是可迭代类型，因此不能被用在 for-of 循环中。
+3. weak set 无法暴露出自身的迭代器（例如 keys() 和 values() 方法），所以没有任何编程手段来确定 weak set 中的内容
+4. weak set 没有 forEach() 方法。
+5. weak set 没有 size 属性。
 
 
-The seemingly limited functionality of weak sets is necessary in order to properly handle memory. In general, if you only need to track object references, then you should use a weak set instead of a regular set.
+这些针对 weak set 显而易见的功能限制对于正确的内存操作来说必不可少。一般情况下，如果你只想追踪对象的引用，你应该是用 weak set 而不是 set 。
 
-Sets give you a new way to handle lists of values, but they aren’t useful when you need to associate additional information with those values. That’s why ECMAScript 6 also adds maps.
+set 给了你处理一系列值的新方式，不过若想给这些值添加附加信息则显得捉襟见肘。ECMAScript 6 因此添加了 map 。
 
 <br />
 
+### ECMAScript 6 中的 map（Maps in ECMAScript 6）
+
+
+ECMAScript 6 中的 map 类型包含一组有序的键值对，其中键和值可以是任何类型。键的比较结果由 Object.is() 来决定，所以你可以同时使用 5 和 "5" 做为键来存储，因为它们是不同的类型。这和使用对象属性做为值的方法大相径庭，因为对象的属性会被强制转换为字符串类型。 
+
+你可以使用 set() 方法给 map 添加键和对应的值，并在之后调用 get() 方法传入键名来提取值。例如：
+
+```
+let map = new Map();
+map.set("title", "Understanding ES6");
+map.set("year", 2016);
+
+console.log(map.get("title"));      // "Understanding ES6"
+console.log(map.get("year"));       // 2016
+```
+
+该例中存储了两个键值对。"title" 键保存了一个字符串，"year" 键保存了一个数字类型。get() 方法在之后被调用并提取出了两者的值。如果键在 map 中不存在，get() 方法会返回 undefined 。
+
+你也可以将对象用作键，这也是使用对象属性创建 map 时无法做到的。查看下例：
+
+```
+let map = new Map(),
+    key1 = {},
+    key2 = {};
+
+map.set(key1, 5);
+map.set(key2, 42);
+
+console.log(map.get(key1));         // 5
+console.log(map.get(key2));         // 42
+```
+
+该段代码使用了 key1 和 key2 对象做为键并在 map 中存储了两个值。因为这些键不会被强制转换成其它类型，所以每个对象都是唯一的。这允许你给对象添加额外信息但不需要操作该对象本身。
+
+<br />
+
+#### map 方法（Map Methods）
+
+
+map 的一些方法效果和 set 相同。这是有意而为的，允许你使用熟悉的方式来和 map 与 set 交互。以下三个方法 map 和 set 都能使用： 
+
+* has(key) - 判断给定的 key 是否在 map 中存在
+* delete(key) - 移除 map 中的 key 及对应的值
+* clear() - 移除 map 中所有的键值对
+
+map 同样包含 size 属性指明它包含了多少键值对。下面的代码用不同的方式演示了上述三种方法和 size 属性：
+
+```
+let map = new Map();
+map.set("name", "Nicholas");
+map.set("age", 25);
+
+console.log(map.size);          // 2
+
+console.log(map.has("name"));   // true
+console.log(map.get("name"));   // "Nicholas"
+
+console.log(map.has("age"));    // true
+console.log(map.get("age"));    // 25
+
+map.delete("name");
+console.log(map.has("name"));   // false
+console.log(map.get("name"));   // undefined
+console.log(map.size);          // 1
+
+map.clear();
+console.log(map.has("name"));   // false
+console.log(map.get("name"));   // undefined
+console.log(map.has("age"));    // false
+console.log(map.get("age"));    // undefined
+console.log(map.size);          // 0
+```
+
+和 set 一样，map 的 size 属性总是反映出包含键值对的数目。在向本例中的 map 实例添加了 "name" 和 "age" 键之后，调用 has() 并传入已存在的键名自然会返回 true。在 "name" 键被 delete() 方法移除后，has() 方法在传入 "name" 之后调用会返回 false，同时 size 属性的值会减 1 。调用 clear() 方法移除了剩下的所有键值对，所以 has() 和 size 分别返回 false 与 0 。
+
+clear() 方法能极快的将大量的数据从 map 中移除，反之 map 也有一种方法能使大量的数据迅速入驻。
+
+<br />
+
+#### 初始化 map（Map Initialization）
+
+
+和 set 类似，你可以将数据存入数组并传给 Map 构造函数来初始化它。数组中的每一项必须也是数组，后者包含的两项中前者作为键，后者为对应值。因此整个 map 被带有两个项的数组所填充。
+
+```
+let map = new Map([["name", "Nicholas"], ["age", 25]]);
+
+console.log(map.has("name"));   // true
+console.log(map.get("name"));   // "Nicholas"
+console.log(map.has("age"));    // true
+console.log(map.get("age"));    // 25
+console.log(map.size);          // 2
+```
+
+"name" 和 "age" 作为键在调用构造函数时传入并初始化了该 map 。虽然数组中包含数组看起来有些奇怪，不过这对键的精准描述时必须的，因为键可以是任何类型。将键放入数组是唯一可以在添加给 map 之前不被强制执行类型转换的办法。
+
+<br />
+
+#### map 中的 forEach 方法（The forEach Method on Maps）
+
+
+map 的 forEach() 方法类似于 set 和 数组，它同样接收一个含有三个参数的回调函数：
+
+1. map 中下一位置的值
+2. 该值对应的键
+3. 正在读取的 map 本身
+
+
+这些回调函数参数的行为更接近数组中的 forEach() 方法，前两个参数分别是值和键（数组中是值的数字索引）。这里有个示例：
+
+```
+let map = new Map([ ["name", "Nicholas"], ["age", 25]]);
+
+map.forEach(function(value, key, ownerMap) {
+    console.log(key + " " + value);
+    console.log(ownerMap === map);
+});
+```
+
+forEach() 的回调函数输出了传给它的信息。其中 value 与 key 被直接输出，ownerMap 用来和 map 比较是否相等。以下为输出结果：
+
+```
+name Nicholas
+true
+age 25
+true
+```
+
+键值对按照存入 map 中的顺序依次传给 forEach() 中的回调函数。这里和数组有些不同，后者 forEach() 中的回调函数是按照数组中数字索引的顺序来读取每一项。
+
+<br />
+
+> 你也可以给 forEach() 传入第二个参数来制定回调函数中的 this 值，其行为和 set 中的 forEach() 一致。
+
+<br />
+
+#### weak map（Weak Maps）
+
+
+weak map 和 map 的关系就像 weak set 和 set 一样：前者都是一种存储弱对象引用的方式。在 weak map 中，所有的键必须是对象（否则会抛出错误），而且这些对象都是弱引用，不会干扰垃圾回收。当 weak map 中的键在 weak map 之外不存在引用的时候，该键及对应的值会被移除。
+
+weak map 的最佳实践是创建一个对象并和网页中的特定 DOM 元素关联。例如，某些作用于网页的 JavaScript 库会为每一个绑定的 DOM 元素维护一个由该库中衍生的自定义对象，并将其映射到作为缓存的对象内部。
+
+该实现棘手的部分在于，当 DOM 元素不存在于网页中之后要销毁该元素关联的对象。否则，库就会保持一个无效的 DOM 元素引用并造成潜在的内存泄漏影响。若使用 weak map，库依然可以将对象与每个 DOM 元素相关联，而且在该 元素不存在的时候还能自动销毁相关联对象。 
+
+<br />
+
+> 必须注意的是，弱引用指的是键的弱引用，而不只是值的弱引用。将对象存储为 weak map 中的值仍然会在其余引用不存在的情况下妨碍垃圾回收。
+
+<br />
+
+##### 使用 weak map（Using Weak Maps）
+
+
+ECMAScript 6 中的 WeakMap 类型是无序键值对的集合，其中键必须是非 null 的对象，值可以是任意类型。WeakMap 和 Map 相似的地方在于都能使用 set() 和 get() 来分别添加及移除数据：
+
+```
+let map = new WeakMap(),
+    element = document.querySelector(".element");
+
+map.set(element, "Original");
+
+let value = map.get(element);
+console.log(value);             // "Original"
+
+// 移除该元素
+element.parentNode.removeChild(element);
+element = null;
+
+// 现在 weak map 的内部为空
+```
+
+该例中存储了一对键值。element 键为一个 DOM 元素并存储了一个对应的字符串值。当传递该 DOM 元素给 get() 方法之后对应的值会被提取。当 DOM 元素从文档（document）中移除并将变量设置为 null 后，相应的数据就会在 weak map 中销毁。
+
+和 weak set 类似的是，没有任何办法可以确认 weak map 是否为空，因为它不存在 size 属性。由于没有剩余的引用存在，你无法通过给 get() 方法传入引用来提取相应的值，而且该值也已经被清除了。当垃圾回收器运行时占有的内存会被自动释放。
+
+<br />
+
+##### 初始化 weak map（Weak Map Initialization）
+
+
+若想初始化 weak map，只需将数组传递给 WeakMap 构造函数。和一般的 map 初始化相同，数组内部的元素必须是包含两项的数组，前一项是个非 null 的对象作键，后一项则是值（任意类型）。例如：
+
+```
+let key1 = {},
+    key2 = {},
+    map = new WeakMap([[key1, "Hello"], [key2, 42]]);
+
+console.log(map.has(key1));     // true
+console.log(map.get(key1));     // "Hello"
+console.log(map.has(key2));     // true
+console.log(map.get(key2));     // 42
+```
+
+key1 和 key2 对象作为键传给了 weak map，get() 和 has() 方法可以访问它们。若 WeakMap 接收的键值对中存在非对象的键，那么一个错误会被抛出。
+
+<br />
+
+##### weak map 的方法（Weak Map Methods）
+
+Weak maps have only two additional methods available to interact with key-value pairs. There is a has() method to determine if a given key exists in the map and a delete() method to remove a specific key-value pair. There is no clear() method because that would require enumerating keys, and like weak sets, that isn’t possible with weak maps. This example uses both the has() and delete() methods:
+
+```
+let map = new WeakMap(),
+    element = document.querySelector(".element");
+
+map.set(element, "Original");
+
+console.log(map.has(element));   // true
+console.log(map.get(element));   // "Original"
+
+map.delete(element);
+console.log(map.has(element));   // false
+console.log(map.get(element));   // undefined
+```
+
+Here, a DOM element is once again used as the key in a weak map. The has() method is useful for checking to see if a reference is currently being used as a key in the weak map. Keep in mind that this only works when you have a non-null reference to a key. The key is forcibly removed from the weak map by the delete() method, at which point has() returns false and get() returns undefined.
+
+<br />
+
+##### 私有对象数据（Private Object Data）
+
+While most developers consider the main use case of weak maps to be associated data with DOM elements, there are many other possible uses (and no doubt, some that have yet to be discovered). One practical use of weak maps is to store data that is private to object instances. All object properties are public in ECMAScript 6, and so you need to use some creativity to make data accessible to objects, but not accessible to everything. Consider the following example:
+
+```
+function Person(name) {
+    this._name = name;
+}
+
+Person.prototype.getName = function() {
+    return this._name;
+};
+```
+
+This code uses the common convention of a leading underscore to indicate that a property is considered private and should not be modified outside the object instance. The intent is to use getName() to read this._name and not allow the _name value to change. However, there is nothing standing in the way of someone writing to the _name property, so it can be overwritten either intentionally or accidentally.
+
+In ECMAScript 5, it’s possible to get close to having truly private data, by creating an object using a pattern such as this:
+
+```
+var Person = (function() {
+
+    var privateData = {},
+        privateId = 0;
+
+    function Person(name) {
+        Object.defineProperty(this, "_id", { value: privateId++ });
+
+        privateData[this._id] = {
+            name: name
+        };
+    }
+
+    Person.prototype.getName = function() {
+        return privateData[this._id].name;
+    };
+
+    return Person;
+}());
+```
+
+This example wraps the definition of Person in an IIFE that contains two private variables, privateData and privateId. The privateData object stores private information for each instance while privateId is used to generate a unique ID for each instance. When the Person constructor is called, a nonenumerable, nonconfigurable, and nonwritable _id property is added.
+
+Then, an entry is made into the privateData object that corresponds to the ID for the object instance; that’s where the name is stored. Later, in the getName() function, the name can be retrieved by using this._id as the key into privateData. Because privateData is not accessible outside of the IIFE, the actual data is safe, even though this._id is exposed publicly.
+
+The big problem with this approach is that the data in privateData never disappears because there is no way to know when an object instance is destroyed; the privateData object will always contain extra data. This problem can be solved by using a weak map instead, as follows:
+
+```
+let Person = (function() {
+
+    let privateData = new WeakMap();
+
+    function Person(name) {
+        privateData.set(this, { name: name });
+    }
+
+    Person.prototype.getName = function() {
+        return privateData.get(this).name;
+    };
+
+    return Person;
+}());
+```
+
+This version of the Person example uses a weak map for the private data instead of an object. Because the Person object instance itself can be used as a key, there’s no need to keep track of a separate ID. When the Person constructor is called, a new entry is made into the weak map with a key of this and a value of an object containing private information. In this case, that value is an object containing only name. The getName() function retrieves that private information by passing this to the privateData.get() method, which fetches the value object and accesses the name property. This technique keeps the private information private, and destroys that information whenever an object instance associated with it is destroyed.
+
+##### weak map 的实践与限制（Weak Map Uses and Limitations）
+When deciding whether to use a weak map or a regular map, the primary decision to consider is whether you want to use only object keys. Anytime you’re going to use only object keys, then the best choice is a weak map. That will allow you to optimize memory usage and avoid memory leaks by ensuring that extra data isn’t kept around after it’s no longer accessible.
+
+Keep in mind that weak maps give you very little visibility into their contents, so you can’t use the forEach() method, the size property, or the clear() method to manage the items. If you need some inspection capabilities, then regular maps are a better choice. Just be sure to keep an eye on memory usage.
+
+Of course, if you only want to use non-object keys, then regular maps are your only choice.
+
+<br />
+
+### 总结（Summary）
+
+ECMAScript 6 formally introduces sets and maps into JavaScript. Prior to this, developers frequently used objects to mimic both sets and maps, often running into problems due to the limitations associated with object properties.
+
+Sets are unordered lists of unique values. Values are considered unique if they are not equivalent according to the Object.is() method. Sets automatically remove duplicate values, so you can use a set to filter an array for duplicates and return the result. Sets aren’t subclasses of arrays, so you cannot randomly access a set’s values. Instead, you can use the has() method to determine if a value is contained in the set and the size property to inspect the number of values in the set. The Set type also has a forEach() method to process each set value.
+
+Weak sets are special sets that can contain only objects. The objects are stored with weak references, meaning that an item in a weak set will not block garbage collection if that item is the only remaining reference to an object. Weak set contents can’t be inspected due to the complexities of memory management, so it’s best to use weak sets only for tracking objects that need to be grouped together.
+
+Maps are unordered key-value pairs where the key can be any data type. Similar to sets, duplicate keys are determined by a call to the Object.is() method, which means you can have a numeric key 5 and a string "5" as two separate keys. A value of any data type can be associated with a key using the set() method, and that value can later be retrieved by using the get() method. Maps also have a size property and a forEach() method to allow for easier item access.
+
+Weak maps are a special type of map that can only have object keys. As with weak sets, an object key reference is weak and doesn’t prevent garbage collection when it’s the only remaining reference to an object. When a key is garbage collected, the value associated with the key is also removed from the weak map. This memory management aspect makes weak maps uniquely suited for correlating additional information with objects whose lifecycles are managed outside of the code accessing them.
+
+<br />
