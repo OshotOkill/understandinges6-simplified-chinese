@@ -9,6 +9,10 @@ ECMAScript 2015 （ES6）是 ECMAScript 发展的重要里程碑，给前端开�
 本书的英文原版可以在线上[免费观看](https://leanpub.com/understandinges6/read), 也是我个人翻译的动力之一，由于本人只是出于兴趣而且水平实在有限，难免翻译的过程中会出现错误，希望读者能够谅解。我也尽量推荐去阅读英文原版，既原汁原味又能锻炼自身的英语水平。如遇到错误或有更好，更专业的翻译方式，欢迎向该书报出 [issue](https://github.com/OshotOkill/understandinges6-simplified-chinese/issues) 或提交 [PR](https://github.com/OshotOkill/understandinges6-simplified-chinese/pulls)
 
 <br />
+
+> 汉化正在进行中，勘误和修正将在汉化完全之后施行。
+
+<br />
 ### 目录
 
 
