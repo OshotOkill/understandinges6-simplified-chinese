@@ -8,7 +8,7 @@
 * [第四章 - 扩展的对象功能](chapter_4.md)
 * [第五章 - 解构](chapter_5.md)
 * [第六章 - Symbols 与 Symbols属性（施工中）](chapter_6.md)
-* [第七章 - Set 与 Map（正在施工）](chapter_7.md)
+* [第七章 - Set 与 Map](chapter_7.md)
 * [第八章 - 迭代器与生成器（施工中）](chapter_8.md)
 * [第九章 - 类（施工中）](chapter_9.md)
 * [第十章 - 改进的数组功能（施工中）](chapter_10.md)
