@@ -1,14 +1,16 @@
 # 迭代器与生成器（Iterators and Generators）
 
-Many programming languages have shifted from iterating over data with for loops, which require initializing variables to track position in a collection, to using iterator objects that programmatically return the next item in a collection. Iterators make working with collections of data easier, and ECMAScript 6 adds iterators to JavaScript. When coupled with new array methods and new types of collections (such as sets and maps), iterators are key for efficient data processing, and you will find them in many parts of the language. There’s a new for-of loop that works with iterators, the spread (...) operator uses iterators, and iterators even make asynchronous programming easier.
 
-This chapter covers the many uses of iterators, but first, it’s important to understand the history behind why iterators were added to JavaScript.
+许多编程语言都做了这样的转变：迭代集合中的数据不再使用需要初始化变量并作为索引的 for 循环，转而使用迭代器（iterator）对象来程序化地返回集合中下一位置的项。迭代器使得集合的操作变得更容易，ECMAScript 6 也将其添加到了 JavaScript 当中。当迭代器和数组方法以及新添加的集合类型（如 set 和 map）结合之后，它就成为了高效处理数据的关键，而且该语言中很多部分都有迭代器的身影，例如新添加的 for-of 循环，扩展（...）运算符等。迭代器甚至还能简化异步编程。
+
+本章涵盖了迭代器的许多实践，但首先，了解 JavaScript 添加迭代器的背景和缘由是很重要的。
 
 <br />
 
-### The Loop Problem
+### 循环问题（The Loop Problem）
 
-If you’ve ever programmed in JavaScript, you’ve probably written code that looks like this:
+
+如果你曾使用过 JavaScript 来编程，那么你可能会见过下面的代码：
 
 ```
 var colors = ["red", "green", "blue"];
@@ -18,19 +20,20 @@ for (var i = 0, len = colors.length; i < len; i++) {
 }
 ```
 
-This standard for loop tracks the index into the colors array with the i variable. The value of i increments each time the loop executes if i isn’t larger than the length of the array (stored in len).
+这里使用了标准的 for 循环形式，使用变量 i 作为跟踪的索引。每次迭代 i 都会增加直到 i 大于数组的长度（存储在 len 中）
 
-While this loop is fairly straightforward, loops grow in complexity when you nest them and need to keep track of multiple variables. Additional complexity can lead to errors, and the boilerplate nature of the for loop lends itself to more errors as similar code is written in multiple places. Iterators are meant to solve that problem.
+虽然该循环看上去确实简洁明了，但是当循环出现嵌套后复杂度会增加，同时还需要追踪多个变量。额外的复杂度易引出错误的发生，而且 for 循环天然的范例样式会书写在多个位置导致更多的错误出现。迭代器就是为了解决这个问题。
 
 <br />
 
-### What are Iterators?
+### 什么是迭代器（What are Iterators?）
 
-Iterators are just objects with a specific interface designed for iteration. All iterator objects have a next() method that returns a result object. The result object has two properties: value, which is the next value, and done, which is a boolean that’s true when there are no more values to return. The iterator keeps an internal pointer to a location within a collection of values and with each call to the next() method, it returns the next appropriate value.
 
-If you call next() after the last value has been returned, the method returns done as true and value contains the return value for the iterator. That return value is not part of the data set, but rather a final piece of related data, or undefined if no such data exists. An iterator’s return value is similar to a function’s return value in that it’s a final way to pass information to the caller.
+迭代器只是带有特殊接口的对象。所有迭代器对象都带有 next() 方法并返回一个包含两个属性的结果对象。这些属性分别是 value 和 done，前者代表下一个位置的值，后者在没有更多值可供迭代的时候为 true 。迭代器带有一个内部指针，来指向集合中某个值的位置。当 next() 方法调用后，指针下一位置的值会被返回。
 
-With that in mind, creating an iterator using ECMAScript 5 is fairly straightforward:
+若你在末尾的值被返回之后继续调用 next()，那么返回的 done 属性值为 true，value 的值则由迭代器设定。该值并不属于数据集，而是专门为数据关联的附加信息，如若该信息并未指定则返回 undefined 。迭代器返回的值和函数返回值有些类似，因为两者都是返回给调用者信息的最终手段。
+
+了解上述的说明后，在 ECMAScript 5 中创建一个迭代器变得十分简单：
 
 ```
 function createIterator(items) {
@@ -63,26 +66,29 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-The createIterator() function returns an object with a next() method. Each time the method is called, the next value in the items array is returned as value. When i is 3, done becomes true and the ternary conditional operator that sets value evaluates to undefined. These two results fulfill the special last case for iterators in ECMAScript 6, where next() is called on an iterator after the last piece of data has been used.
+createIterator() 函数返回一个带有 next() 方法的对象。每次调用该方法时，数组中下一位置的值会传给 value 并返回它。当 i 递增为 3 之后，返回的对象中 done 属性为 true，而 value 的值则是三元运算符的计算结果：undefind 。在数据集末尾之后的迭代，即末尾的数据返回之后再调用 next()，这两个属性值的结果也符合 ECMAScript 6 中的迭代器的规范。
 
-As this example shows, writing iterators that behave according to the rules laid out in ECMAScript 6 is a bit complex.
+从以上的示例来看，根据 ECMAScript 6 规范模拟实现的迭代器还是有些复杂。
 
-Fortunately, ECMAScript 6 also provides generators, which make creating iterator objects much simpler.
+幸运的是，ECMAScript 6 还提供了生成器，使得迭代器对象的创建容易了许多。
 
 <br />
 
-### What Are Generators?
-A generator is a function that returns an iterator. Generator functions are indicated by a star character (*) after the function keyword and use the new yield keyword. It doesn’t matter if the star is directly next to function or if there’s some whitespace between it and the * character, as in this example:
+### 什么是生成器（What Are Generators?）
+
+
+生成器是返回迭代器的函数。生成器函数由 function 关键字和之后的星号（*）标识，同时还能使用新的 yield
+关键字。星号的位置不能论是放在 function 关键字的后面还是在它们插入空格都是随意的，如下例所示：
 
 ```
-// generator
+// 生成器
 function *createIterator() {
     yield 1;
     yield 2;
     yield 3;
 }
 
-// generators are called like regular functions but return an iterator
+// 调用生成器类似于调用函数，但是前者返回一个迭代器
 let iterator = createIterator();
 
 console.log(iterator.next().value);     // 1
@@ -90,11 +96,11 @@ console.log(iterator.next().value);     // 2
 console.log(iterator.next().value);     // 3
 ```
 
-The * before createIterator() makes this function a generator. The yield keyword, also new to ECMAScript 6, specifies values the resulting iterator should return when next() is called, in the order they should be returned. The iterator generated in this example has three different values to return on successive calls to the next() method: first 1, then 2, and finally 3. A generator gets called like any other function, as shown when iterator is created.
+createIterator() 前面的星号指示该函数是个生成器。ECMAScript 6 新引入的 yield 关键字指定迭代器调用 next() 时按顺序返回的值。本例中的生成的迭代器在 next() 方法调用后成功地返回了三个值：先是 1，接着是 2，最后是 3 。一个生成器可以被当做函数调用并创建迭代器。
 
-Perhaps the most interesting aspect of generator functions is that they stop execution after each yield statement. For instance, after yield 1 executes in this code, the function doesn’t execute anything else until the iterator’s next() method is called. At that point, yield 2 executes. This ability to stop execution in the middle of a function is extremely powerful and leads to some interesting uses of generator functions (discussed in the “Advanced Iterator Functionality” section).
+或许生成器函数中最有意思的部分是，当执行流遇到 yield 语句时，该生成器就停止运转了。例如，当 yield 1 执行之后，该生成器函数就不会执行其它任何部分的代码直到迭代器再次调用 next() 。在那时，yield 2 会被执行。生成器函数在运行时能被中断执行的能力非常强大而且引出了很多有意思用法（在之后的 “迭代器高级用法” 小节介绍）。
 
-The yield keyword can be used with any value or expression, so you can write generator functions that add items to iterators without just listing the items one by one. For example, here’s one way you could use yield inside a for loop:
+yield 关键字可以和值或者是表达式一起使用，所以你可以通过生成器给迭代器添加一些项而并非手动地让迭代器一个接一个地返回它们。例如，下面演示了在 for 循环内部使用 yield：
 
 ```
 function *createIterator(items) {
@@ -110,30 +116,34 @@ console.log(iterator.next());           // "{ value: 2, done: false }"
 console.log(iterator.next());           // "{ value: 3, done: false }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 
-// for all further calls
+// 再进一步调用
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-This example passes an array called items to the createIterator() generator function. Inside the function, a for loop yields the elements from the array into the iterator as the loop progresses. Each time yield is encountered, the loop stops, and each time next() is called on iterator, the loop picks up with the next yield statement.
+该例中 createIterator() 生成器函数被传入了一个数组。在函数内部，一个循环正在执行并把数组中的值返还给迭代器。每次遇到 yield 时，循环就会停止，而每次 next() 被调用时，循环又会继续运行直到再一次遇到 yield 语句。
 
-Generator functions are an important feature of ECMAScript 6, and since they are just functions, they can be used in all the same places. The rest of this section focuses on other useful ways to write generators.
+生成器函数是 ECMAScript 6 引入的重要的特性之一。既然它是函数，那么它可以用在所有函数可用的位置上。本小节其余的部分则专注于其它且实用的方法来书写生成器。
 
-> **注意**： The yield keyword can only be used inside of generators. Use of yield anywhere else is a syntax error, including functions that are inside of generators, such as:
+<br />
+
+> **注意**： yield 关键字只能用在生成器内部。在其它地方甚至是生成器内部的函数中使用都会抛出语法错误，例如：
 
 ```
 function *createIterator(items) {
 
     items.forEach(function(item) {
 
-        // syntax error
+        // 语法错误
         yield item + 1;
     });
 }
 ```
 
-> > Even though yield is technically inside of createIterator(), this code is a syntax error because yield cannot cross function boundaries. In this way, yield is similar to return, in that a nested function cannot return a value for its containing function.
+> 尽管在严格意义上讲 yield 确实是在 createIterator() 内部，该段代码抛出语法错误的原因是 yield 无法跨越函数边界。某种程度上来说它和 return 比较类似，因为容器函数不能将内部函数的返回值直接作为自身的返回值。
 
-#### Generator Function Expressions
+<br />
+
+#### 生成器函数表达式（Generator Function Expressions）
 
 You can use function expressions to create generators by just including a star (*) character between the function keyword and the opening parenthesis. For example:
 
