@@ -116,7 +116,7 @@ console.log(iterator.next());           // "{ value: 2, done: false }"
 console.log(iterator.next());           // "{ value: 3, done: false }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 
-// 再进一步调用
+// 进一步调用
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
@@ -139,13 +139,14 @@ function *createIterator(items) {
 }
 ```
 
-> 尽管在严格意义上讲 yield 确实是在 createIterator() 内部，该段代码抛出语法错误的原因是 yield 无法跨越函数边界。某种程度上来说它和 return 比较类似，因为容器函数不能将内部函数的返回值直接作为自身的返回值。
+> 尽管在严格意义上讲 yield 确实是在 createIterator() 内部，但 yield 是无法跨越函数边界的。某种程度上来说它和 return 比较类似，因为容器函数不能将内部函数的返回值直接作为自身的返回值。
 
 <br />
 
 #### 生成器函数表达式（Generator Function Expressions）
 
-You can use function expressions to create generators by just including a star (*) character between the function keyword and the opening parenthesis. For example:
+
+你可以使用函数表达式来创建生成器，只需在 function 关键字和圆括号之间添加星号（*）。例如：
 
 ```
 let createIterator = function *(items) {
@@ -161,21 +162,23 @@ console.log(iterator.next());           // "{ value: 2, done: false }"
 console.log(iterator.next());           // "{ value: 3, done: false }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 
-// for all further calls
+// 进一步调用
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-In this code, createIterator() is a generator function expression instead of a function declaration. The asterisk goes between the function keyword and the opening parentheses because the function expression is anonymous. Otherwise, this example is the same as the previous version of the createIterator() function, which also used a for loop.
+
+该段代码中，createIterator() 是个生成器函数表达式而非函数声明。星号在 function 关键字和圆括号之间是因为函数表达式是匿名的。除此之外其它部分和上例是相同的，而且内部都含有 for 循环。
 
 <br />
 
-> Creating an arrow function that is also a generator is not possible
+> 无法使用箭头函数来创建生成器。
 
 <br />
 
-#### Generator Object Methods
+#### 对象中的生成器方法（Generator Object Methods）
 
-Because generators are just functions, they can be added to objects, too. For example, you can make a generator in an ECMAScript 5-style object literal with a function expression:
+
+生成器本身只是函数，因此可以添加它们到对象中。例如，你可以使用 ECMAScript 5 风格的对象字面量来创建函数表达式：
 
 ```
 var o = {
@@ -190,7 +193,7 @@ var o = {
 let iterator = o.createIterator([1, 2, 3]);
 ```
 
-You can also use the ECMAScript 6 method shorthand by prepending the method name with a star (*):
+你也可以使用 ECMAScript 6 的简写方法并将星号（*）放在方法名前面：
 
 ```
 var o = {
@@ -205,21 +208,25 @@ var o = {
 let iterator = o.createIterator([1, 2, 3]);
 ```
 
-These examples are functionally equivalent to the example in the “Generator Function Expressions” section; they just use different syntax. In the shorthand version, because the createIterator() method is defined with no function keyword, the star is placed immediately before the method name, though you can leave whitespace between the star and the method name.
+这些示例中的生成器和上一节 “生成器函数表达式” 中演示的功能相同；仅在语法方面有一些差异。在简写的生成器方法中，由于 createIterator() 方法没有 function 关键字，因此只能将星号放在方法名前面，当然你也可以在它们之间添加空白符。
 
 <br />
 
-### Iterables and for-of
+### 可迭代类型与 for-of（Iterables and for-of）
 
-Closely related to iterators, an iterable is an object with a Symbol.iterator property. The well-known Symbol.iterator symbol specifies a function that returns an iterator for the given object. All collection objects (arrays, sets, and maps) and strings are iterables in ECMAScript 6 and so they have a default iterator specified. Iterables are designed to be used with a new addition to ECMAScript: the for-of loop.
+
+与迭代器紧密相关的是，可迭代类型是指那些包含 Symbol.iterator 属性的对象。该知名的 symbol 类型定义了返回迭代器的函数。在 ECMAScript 6 中，所有的集合对象（数组，set 和 map）与字符串都是可迭代类型，因此它们都有默认的迭代器。可迭代类型是为了 ECMAScript 新添加的 for-of 循环而设计的。
 
 <br />
 
-> All iterators created by generators are also iterables, as generators assign the Symbol.iterator property by default.
+> 所有由生成器创建的迭代器都是可迭代类型，因为生成器在默认情况下会自赋值给 Symbol.iterator 属性。
 
-At the beginning of this chapter, I mentioned the problem of tracking an index inside a for loop. Iterators are the first part of the solution to that problem. The for-of loop is the second part: it removes the need to track an index into a collection entirely, leaving you free to focus on working with the contents of the collection.
+<br />
 
-A for-of loop calls next() on an iterable each time the loop executes and stores the value from the result object in a variable. The loop continues this process until the returned object’s done property is true. Here’s an example:
+
+在本章的开头我曾提到过在 for 循环中追踪索引的弊端。迭代器只是解决该问题的第一部分。for-of 循环则是第二部分：完全不需要在集合中追踪索引，让你更专注于集合内容的操作。
+
+for-lof 循环会在可迭代类型每次迭代执行后调用 next() 并将结果对象存储在变量中。循环会持续进行直到结果对象的 done 属性为 true。如下所示：
 
 ```
 let values = [1, 2, 3];
@@ -237,19 +244,20 @@ This code outputs the following:
 3
 ```
 
-This for-of loop first calls the Symbol.iterator method on the values array to retrieve an iterator. (The call to Symbol.iterator happens behind the scenes in the JavaScript engine itself.) Then iterator.next() is called, and the value property on the iterator’s result object is read into num. The num variable is first 1, then 2, and finally 3. When done on the result object is true, the loop exits, so num is never assigned the value of undefined.
+for-of 循环首先会调用 values 数组的 Symbol.iterator 方法来获取迭代器（Symbol.iterator 方法由幕后的 JavaScript 引擎调用）。之后再调用 iterator.next() 并将结果对象中的 value 属性值，即 1，2，3，依次赋给 num 变量。当检测到结果对象中的 done 为 true，循环会退出，所以 num 不会被赋值为 undefined 。
 
-If you are simply iterating over values in an array or collection, then it’s a good idea to use a for-of loop instead of a for loop. The for-of loop is generally less error-prone because there are fewer conditions to keep track of. Save the traditional for loop for more complex control conditions.
-
-<br />
-
-> **注意**：The for-of statement will throw an error when used on, a non-iterable object, null, or undefined.
+如果你只想简单的迭代数组或集合中的元素，那么 for-of 循环比 for 要更好。for-of 一般不容易出错，因为要追踪的条件更少。所以还是把 for 循环留给复杂控制条件的需求吧。
 
 <br />
 
-#### Accessing the Default Iterator
+> **注意**：对非可迭代对象，null 和 undefind 使用 for-of 会抛出错误。
 
-You can use Symbol.iterator to access the default iterator for an object, like this:
+<br />
+
+#### 访问默认迭代器（Accessing the Default Iterator）
+
+
+你可以使用 Symbol.iterator 来访问对象默认的迭代器，像这样。
 
 ```
 let values = [1, 2, 3];
@@ -261,9 +269,9 @@ console.log(iterator.next());           // "{ value: 3, done: false }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-This code gets the default iterator for values and uses that to iterate over the items in the array. This is the same process that happens behind-the-scenes when using a for-of loop.
+这段代码中获取了 values 默认的迭代器并迭代数组中的项。该过程和 for-of 循环幕后的操作流程是相同的。
 
-Since Symbol.iterator specifies the default iterator, you can use it to detect whether an object is iterable as follows:
+既然 Symbol.iterator 定义了默认的迭代器，你可以如下使用它来确定一个对象是否可迭代：
 
 ```
 function isIterable(object) {
@@ -278,15 +286,16 @@ console.log(isIterable(new WeakMap())); // false
 console.log(isIterable(new WeakSet())); // false
 ```
 
-The isIterable() function simply checks to see if a default iterator exists on the object and is a function. The for-of loop does a similar check before executing.
+isIterable() 函数简单地查看对象是否有默认的并且类型为函数的迭代器。for-of 在执行前也会做相似的检查。
 
-So far, the examples in this section have shown ways to use Symbol.iterator with built-in iterable types, but you can also use the Symbol.iterator property to create your own iterables.
+目前为止，本章的示例已说明如何使用可迭代对象内部的 Symbol.iterator，其实你还可以通过定义 Symbol.iterator 属性来创建自有的可迭代类型。
 
 <br />
 
-#### Creating Iterables
+#### 创建可迭代类型（Creating Iterables）
 
-Developer-defined objects are not iterable by default, but you can make them iterable by creating a Symbol.iterator property containing a generator. For example:
+
+开发者自定义的对象默认是不可迭代类型，但是你可以为它们创建 Symbol.iterator 属性并指定一个生成器来使这些对象可迭代。例如：
 
 ```
 let collection = {
@@ -308,7 +317,7 @@ for (let x of collection) {
 }
 ```
 
-This code outputs the following:
+该段代码输出:
 
 ```
 1
@@ -316,37 +325,44 @@ This code outputs the following:
 3
 ```
 
-First, the example defines a default iterator for an object called collection. The default iterator is created by the Symbol.iterator method, which is a generator (note the star still comes before the name). The generator then uses a for-of loop to iterate over the values in this.items and uses yield to return each one. Instead of manually iterating to define values for the default iterator of collection to return, the collection object relies on the default iterator of this.items to do the work.
-
-> “Delegating Generators” later in this chapter describes a different approach to using the iterator of another object.
-
-Now you’ve seen some uses for the default array iterator, but there are many more iterators built in to ECMAScript 6 to make working with collections of data easy.
+首先，示例中创建了 collection 对象并包含一个默认的迭代器。该迭代器由 Symbol.iteartor 这个生成器方法来创建（注意星号仍然在方法名之前）。之后生成器使用 for-of 循环来迭代 this.items 中的元素并使用 yield 来返回它们。collection 对象依赖于默认的迭代器和 this.items 来工作，而非手动设定由默认迭代器返回的值。
 
 <br />
 
-### Built-in Iterators
-
-Iterators are an important part of ECMAScript 6, and as such, you don’t need to create your own iterators for many built-in types; the language includes them by default. You only need to create iterators when the built-in iterators don’t serve your purpose, which will most frequently be when defining your own objects or classes. Otherwise, you can rely on built-in iterators to do your work. Perhaps the most common iterators to use are those that work on collections.
+> 本章之后的 “生成器委托” 一节会描述如何使用其它对象中的迭代器。
 
 <br />
 
-#### Collection Iterators
+现在你已经见识了数组默认迭代器的用法，然而 ECMAScript 6 还内置了许多迭代器使得操作集合中的数据更加轻松。
 
-ECMAScript 6 has three types of collection objects: arrays, maps, and sets. All three have the following built-in iterators to help you navigate their content:
+<br />
 
-* entries() - Returns an iterator whose values are a key-value pair
-* values() - Returns an iterator whose values are the values of the collection
-* keys() - Returns an iterator whose values are the keys contained in the collection
+### 内置的迭代器（Built-in Iterators）
+
+
+迭代器是 ECMAScript 6 重要的一部分，你不需要为大部分内置类型创建自己的迭代器，因为 JavaScript 语言已经包含了它们。只有当这些内置的迭代器无法做出符合需求的行为时，你才需要考虑自行创建它们，尤其是在定义自己的对象和类的时候。否则，你完全可以用内置的迭代器去完成一些工作。或许使用迭代器最频繁是集合。
+
+<br />
+
+#### 集合迭代器（Collection Iterators）
+
+
+ECMAScript 6 内置了三种类型的集合对象：数组，map 和 set 。它们都有如下内置的迭代器供你浏览数据。
+
+* entries() - 返回一个数据集为集合中的键值对的迭代器
+* values() - 返回一个数据集为集合中的值的迭代器
+* keys() - 返回一个数据集为集合中的键的迭代器
  
-You can retrieve an iterator for a collection by calling one of these methods.
+你可以使用上述方法之一来提取集合中的迭代器。
 
 <br />
 
-#####The entries() Iterator
+##### entries() 迭代器（The entries() Iterator）
 
-The entries() iterator returns a two-item array each time next() is called. The two-item array represents the key and value for each item in the collection. For arrays, the first item is the numeric index; for sets, the first item is also the value (since values double as keys in sets); for maps, the first item is the key.
 
-Here are some examples that use this iterator:
+当每次 next() 被调用后，entries() 迭代器会返回包含两个项的数组。该数组中的项分别是集合中每一项的键和值。对于数组来讲，键是数字索引；对于 set ，每一项的键和值相同；而 map 则是正常返回每一项。
+
+这里有一些该迭代器的演示：
 
 ```
 let colors = [ "red", "green", "blue" ];
@@ -369,7 +385,7 @@ for (let entry of data.entries()) {
 }
 ```
 
-The console.log() calls give the following output:
+console.log() 会做如下输出：
 
 ````
 [0, "red"]
@@ -382,13 +398,14 @@ The console.log() calls give the following output:
 ["format", "ebook"]
 ```
 
-This code uses the entries() method on each type of collection to retrieve an iterator, and it uses for-of loops to iterate the items. The console output shows how the keys and values are returned in pairs for each object.
+该段代码对每一个集合类型都使用了 entries() 方法以便获取对应的迭代器，之后使用 for-of 循环来迭代各自的项。控制台的输出清晰地显示了每个类型在每次迭代的返回结果。
 
 <br />
 
-##### The values() Iterator
+##### values() 迭代器（The values() Iterator）
 
-The values() iterator simply returns values as they are stored in the collection. For example:
+
+values() 迭代器简单地返回了集合中每一项的值，正如它们在集合中的表现的那样，例如：
 
 ```
 let colors = [ "red", "green", "blue" ];
@@ -411,7 +428,7 @@ for (let value of data.values()) {
 }
 ```
 
-This code outputs the following:
+这段代码输出如下：
 
 ```
 "red"
@@ -424,13 +441,15 @@ This code outputs the following:
 "ebook"
 ```
 
-Calling the values() iterator, as in this example, returns the exact data contained in each collection without any information about that data’s location in the collection.
+在本例中，调用 values() 迭代器返回了各自类型中对应的数据而并不需要获知数据在集合中的位置。
 
 <br />
 
-##### The keys() Iterator
+##### keys() 迭代器（the keys() Iterator）
 
 The keys() iterator returns each key present in a collection. For arrays, it only returns numeric keys, never other own properties of the array. For sets, the keys are the same as the values, and so keys() and values() return the same iterator. For maps, the keys() iterator returns each unique key. Here’s an example that demonstrates all three:
+
+keys() 迭代器返回集合中每一项的键。其中数组除了数字索引之外不会返回其它属性。由于 set 中的键和值相同，所以 keys() 和 values() 返回了相同的迭代器。对于 map 来讲，keys() 迭代器会返回每一项中的键。以下示例演示了这三种集合：
 
 ```
 let colors = [ "red", "green", "blue" ];
@@ -453,7 +472,7 @@ for (let key of data.keys()) {
 }
 ```
 
-This example outputs the following:
+该例做出如下输出：
 
 ```
 0
@@ -466,13 +485,14 @@ This example outputs the following:
 "format"
 ```
 
-The keys() iterator fetches each key in colors, tracking, and data, and those keys are printed from inside the three for-of loops. For the array object, only numeric indices are printed, which would still happen even if you added named properties to the array. This is different from the way the for-in loop works with arrays, because the for-in loop iterates over properties rather than just the numeric indices.
+keys() 迭代器获取了 colors，tracking 和 data 各自所有的键，并将它们在 for-of 中打印输出。数组对象只会有索引数字输出，即使你尝试给数组添加命名属性也无济于事。这和 for-in 循环有些不同，因为 for-in 会迭代数组所有的属性而不仅仅是数字索引。
 
 <br />
 
-##### Default Iterators for Collection Types
+##### 集合类型的默认迭代器（Default Iterators for Collection Types）
 
-Each collection type also has a default iterator that is used by for-of whenever an iterator isn’t explicitly specified. The values() method is the default iterator for arrays and sets, while the entries() method is the default iterator for maps. These defaults make using collection objects in for-of loops a little easier. For instance, consider this example:
+
+每种集合类型都包含一个默认的迭代器以供 for-of 循环显式或隐式的使用。数组和 set 默认的迭代器是 values() 方法，而 map 则是 entries() 。这些默认设定能方便 for-of 循环迭代集合对象。例如，考虑如下的例子：
 
 ```
 let colors = [ "red", "green", "blue" ];
@@ -482,23 +502,23 @@ let data = new Map();
 data.set("title", "Understanding ECMAScript 6");
 data.set("format", "print");
 
-// same as using colors.values()
+// 等效于调用 colors.values()
 for (let value of colors) {
     console.log(value);
 }
 
-// same as using tracking.values()
+// 等效于调用 tracking.values()
 for (let num of tracking) {
     console.log(num);
 }
 
-// same as using data.entries()
+// 等效于调用 using data.entries()
 for (let entry of data) {
     console.log(entry);
 }
 ```
 
-No iterator is specified, so the default iterator functions will be used. The default iterators for arrays, sets, and maps are designed to reflect how these objects are initialized, so this code outputs the following:
+由于集合未指定任何迭代器，所以默认的迭代器会被使用。默认迭代器是为了反映如何给数组，set 和 map做初始化而设计的，所以这段代码会输出：
 
 ```
 "red"
@@ -511,13 +531,13 @@ No iterator is specified, so the default iterator functions will be used. The de
 ["format", "print"]
 ```
 
-Arrays and sets return their values by default, while maps return the same array format that can be passed into the Map constructor. Weak sets and weak maps, on the other hand, do not have built-in iterators. Managing weak references means there’s no way to know exactly how many values are in these collections, which also means there’s no way to iterate over them.
+数组和 set 默认返回每一项的值，而 map 则返回每一项（可以再次直接传给 Map 构造函数）。另一方面，weak set 和 weak map 没有内置的迭代器。使用弱引用就意味着没有办法可以确切的获知集合中究竟有多少项，于是迭代它们也是不可能的。
 
 <br />
 
-> #### Destructuring and for-of Loops
+> #### 解构与 for-of 循环（Destructuring and for-of Loops）
 
->The behavior of the default constructor for maps is also helpful when used in for-of loops with destructuring, as in this example:
+> Map 构造函数的默认行为有助于在 for-of 循环中使用解构。如下所示：
 
 ```
 let data = new Map();
@@ -525,19 +545,20 @@ let data = new Map();
 data.set("title", "Understanding ECMAScript 6");
 data.set("format", "ebook");
 
-// same as using data.entries()
+// 等效于调用 data.entries()
 for (let [key, value] of data) {
     console.log(key + "=" + value);
 }
 ```
 
-> The for-of loop in this code uses a destructured array to assign key and value for each entry in the map. In this way, you can easily work with keys and values at the same time without needing to access a two-item array or going back to the map to fetch either the key or the value. Using a destructured array for maps makes the for-of loop equally useful for maps as it is for sets and arrays.
+> 该例中的 for-of 循环在每次迭代都使用了数组解构来获取键和值。在该形式下，你可以轻松地同时使用键和值，而不需操作一个含有两个元素的数组或重新返回 map 并手动获取键和值。对 map 使用解构让 for-of 能平等地对待所有集合类型。
 
 <br />
 
-#### String Iterators
+#### 字符串迭代器（String Iterators）
 
-JavaScript strings have slowly become more like arrays since ECMAScript 5 was released. For example, ECMAScript 5 formalized bracket notation for accessing characters in strings (that is, using text[0] to get the first character, and so on). But bracket notation works on code units rather than characters, so it cannot be used to access double-byte characters correctly, as this example demonstrates:
+
+在 ECMAScript 5 发布之后，字符串就慢慢的变的越来越像数组。例如 ECMAScript 5 正式对字符串启用了方括号语法来访问字符（例如，text[0] 可以获得该字符串中的首个字符，等等）。不过实际上，方括号语法访问的是编码单元（code unit）而非字符本身，所以当获取双字节字符时会有意想不到的结果，如下例所示：
 
 ```
 var message = "A ð ®· B";
@@ -547,7 +568,7 @@ for (let i=0; i < message.length; i++) {
 }
 ```
 
-This code uses bracket notation and the length property to iterate over and print a string containing a Unicode character. The output is a bit unexpected:
+这段代码使用方括号和 length 属性来迭代和打印一个包含 Unicode 字符的字符串，输出的结果有些出乎意料：
 
 ```
 A
@@ -558,9 +579,11 @@ A
 B
 ```
 
-Since the double-byte character is treated as two separate code units, there are four empty lines between A and B in the output.
+因为双字节字符被当作两个编码单元对待，所以输出的结果中 A 与 B 之间会有四个空行。
 
 Fortunately, ECMAScript 6 aims to fully support Unicode (see Chapter 2), and the default string iterator is an attempt to solve the string iteration problem. As such, the default iterator for strings works on characters rather than code units. Changing this example to use the default string iterator with a for-of loop results in more appropriate output. Here’s the tweaked code:
+
+幸好，ECMAScript 6 的目标是完全支持 Unicode（查看第二章），所以字符串的默认迭代器就是为了解决字符的迭代问题而做的努力。于是，字符串默认迭代器作用的是字符本身而非编码单元。将上例中的循环重构为 for-of 会得出更合适的结果。下面是修改过的代码： 
 
 ```
 var message = "A ð ®· B";
@@ -570,7 +593,7 @@ for (let c of message) {
 }
 ```
 
-This outputs the following:
+输出的内容如下：
 
 ```
 A
@@ -580,15 +603,16 @@ A
 B
 ```
 
-This result is more in line with what you’d expect when working with characters: the loop successfully prints the Unicode character, as well as all the rest.
+这个字符串迭代的结果更符合你的预期：循环会正确的打印 Unicode 和其它字符。
 
 <br />
 
-#### NodeList Iterators
+#### NodeList 的迭代器（NodeList Iterators）
 
-The Document Object Model (DOM) has a NodeList type that represents a collection of elements in a document. For those who write JavaScript to run in web browsers, understanding the difference between NodeList objects and arrays has always been a bit difficult. Both NodeList objects and arrays use the length property to indicate the number of items, and both use bracket notation to access individual items. Internally, however, a NodeList and an array behave quite differently, which has led to a lot of confusion.
 
-With the addition of default iterators in ECMAScript 6, the DOM definition of NodeList (included in the HTML specification rather than ECMAScript 6 itself) includes a default iterator that behaves in the same manner as the array default iterator. That means you can use NodeList in a for-of loop or any other place that uses an object’s default iterator. For example:
+文档对象模型（Document Object Model, DOM）中包含了一个 NodeList 类型用来表示一些 DOM 元素的集合。对于那些面向浏览器编程的 JavaScript 开发者来讲，了解 NodeList 对象和 NodeList 数组之间的区别有些棘手。它们都含有代表项数目的 lengh 属性；都可以使用方括号来访问单独的项。然而在内部实现上，NodeList 数组的表现有些不同，导致一些困惑出现。
+
+在 ECMAScript 6 添加了默认迭代器之后，关于 NodeList DOM 规范（实际上它是由 HTML 规范定义而非 ECMAScript 6）中也添加了默认迭代器，而且它和数组的默认迭代器行为是一致的。这意味着你可以使用 for-of 循环或在任何对象默认迭代器的内部来迭代 NodeList。例如：
 
 ```
 var divs = document.getElementsByTagName("div");
@@ -598,7 +622,7 @@ for (let div of divs) {
 }
 ```
 
-This code calls getElementsByTagName() to retrieve a NodeList that represents all of the <div> elements in the document object. The for-of loop then iterates over each element and outputs the element IDs, effectively making the code the same as it would be for a standard array.
+该段代码调用 getElementsByTagName() 来获取一个包含 document 对象中所有 <div> 元素的 NodeList。之后 for-of 循环会像迭代一个标准数组一样获取每一个元素并输出元素的 ID。
 
 <br />
 
