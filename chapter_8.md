@@ -581,8 +581,6 @@ B
 
 因为双字节字符被当作两个编码单元对待，所以输出的结果中 A 与 B 之间会有四个空行。
 
-Fortunately, ECMAScript 6 aims to fully support Unicode (see Chapter 2), and the default string iterator is an attempt to solve the string iteration problem. As such, the default iterator for strings works on characters rather than code units. Changing this example to use the default string iterator with a for-of loop results in more appropriate output. Here’s the tweaked code:
-
 幸好，ECMAScript 6 的目标是完全支持 Unicode（查看第二章），所以字符串的默认迭代器就是为了解决字符的迭代问题而做的努力。于是，字符串默认迭代器作用的是字符本身而非编码单元。将上例中的循环重构为 for-of 会得出更合适的结果。下面是修改过的代码： 
 
 ```
@@ -626,9 +624,10 @@ for (let div of divs) {
 
 <br />
 
-### The Spread Operator and Non-Array Iterables
+### 扩展运算符与非数组可迭代类型（The Spread Operator and Non-Array Iterables）
 
-Recall from Chapter 7 that the spread operator (...) can be used to convert a set into an array. For example:
+
+首先回顾一下在第七章中讨论过的使用扩展运算符将 set 转换为数组的示例：
 
 ```
 let set = new Set([1, 2, 3, 3, 3, 4, 5]),
@@ -637,7 +636,7 @@ let set = new Set([1, 2, 3, 3, 3, 4, 5]),
 console.log(array);             // [1,2,3,4,5]
 ```
 
-This code uses the spread operator inside an array literal to fill in that array with the values from set. The spread operator works on all iterables and uses the default iterator to determine which values to include. All values are read from the iterator and inserted into the array in the order in which values where returned from the iterator. This example works because sets are iterables, but it can work equally well on any iterable. Here’s another example:
+这段代码对数组字面量使用扩展运算符以向其填充 set 中的元素。扩展运算符可以和任意的可迭代类型搭配并使用默认的迭代器来决定包含哪些值。迭代器会按顺序返回数据集中所有的项并依次插入到数组当中。该例中由于 set 是可迭代类型所以代码能正常运行，不过使用其它迭代类型也无可厚非，例如：
 
 ```
 let map = new Map([ ["name", "Nicholas"], ["age", 25]]),
@@ -646,9 +645,9 @@ let map = new Map([ ["name", "Nicholas"], ["age", 25]]),
 console.log(array);         // [ ["name", "Nicholas"], ["age", 25]]
 ```
 
-Here, the spread operator converts map into an array of arrays. Since the default iterator for maps returns key-value pairs, the resulting array looks like the array that was passed during the new Map() call.
+在这里，扩展运算符将 map 转换为包含数组的数组。由于 map 默认的迭代器返回的是键值对，所以转换之后的数组从形式上看和传入 new Map() 中的参数相同。
 
-You can use the spread operator in an array literal as many times as you want, and you can use it wherever you want to insert multiple items from an iterable. Those items will just appear in order in the new array at the location of the spread operator. For example:
+你可以不限次数的在数组字面量内使用扩展运算符，而且你可以随时将多个项插入到可迭代对象中。项的位置会根据插入的顺序决定，例如：
 
 ```
 let smallNumbers = [1, 2, 3],
@@ -659,23 +658,24 @@ console.log(allNumbers.length);     // 7
 console.log(allNumbers);    // [0, 1, 2, 3, 100, 101, 102]
 ```
 
-The spread operator is used to create allNumbers from the values in smallNumbers and bigNumbers. The values are placed in allNumbers in the same order the arrays are added when allNumbers is created: 0 is first, followed by the values from smallNumbers, followed by the values from bigNumbers. The original arrays are unchanged, though, as their values have just been copied into allNumbers.
+在创建 allNumbers 的时候对 smallNumbers 和 bigNumbers 使用了扩展运算符。allNumbers 中的元素按照创建时插入数组的顺序排列：0 在开头，接着是 smallNumbers 中的项，紧随着的是 bigNumbers 的元素。原始数组并未发生改变，allNumbers 只是复制了它们的元素。
 
-Since the spread operator can be used on any iterable, it’s the easiest way to convert an iterable into an array. You can convert strings into arrays of characters (not code units) and NodeList objects in the browser into arrays of nodes.
+既然扩展运算符可以用在任意的可迭代类型上，那么它就成为了将可迭代类型转换为数组最简单的办法。你可以将字符串和浏览器中的 NodeList 对象分别转换为包含字符（不是编码单元）或 DOM 节点的数组。
 
-Now that you understand the basics of how iterators work, including for-of and the spread operator, it’s time to look at some more complex uses of iterators.
-
-<br />
-
-### Advanced Iterator Functionality
-
-You can accomplish a lot with the basic functionality of iterators and the convenience of creating them using generators. However, iterators are much more powerful when used for tasks other than simply iterating over a collection of values. During the development of ECMAScript 6, a lot of unique ideas and patterns emerged that encouraged the creators to add more functionality. Some of those additions are subtle, but when used together, can accomplish some interesting interactions.
+目前你已经明白了迭代器以及 for-of 和扩展运算符的基本工作原理，现在是时候去了解一下关于迭代器更复杂的用法。
 
 <br />
 
-#### Passing Arguments to Iterators
+### 迭代器高级用法（Advanced Iterator Functionality）
 
-Throughout this chapter, examples have shown iterators passing values out via the next() method or by using yield in a generator. But you can also pass arguments to the iterator through the next() method. When an argument is passed to the next() method, that argument becomes the value of the yield statement inside a generator. This capability is important for more advanced functionality such as asynchronous programming. Here’s a basic example:
+
+迭代器的基本用法和使用生成器创建它们的便利已经能完成很多的工作了。然而，迭代器仅用来迭代集合中的项就有些大材小用，实际上当它们被用作任务管理时更能体现出迭代器的强大之处。在 ECMAScript 6 的发展过程中，一些独特的想法和模式互相碰撞并激发创作者实现更多的功能。一些附加的用法可能微不足道，但将它们聚集在一起后能实现很多有意思的交互。
+
+<br />
+
+#### 向迭代器传入参数（Passing Arguments to Iterators）
+
+在本章中，所有的示例都使用迭代器的 next() 方法或生成器的 yield 语句来获取相关值，其实你也可以通过迭代器的 next() 方法进行传值。当你向 next() 方法传入参数时，生成器使用该参数作为 yield 语句的值。该特性对于一些高级用法尤其是异步编程至关重要。下面是个基本的例子：
 
 ```
 function *createIterator() {
@@ -692,27 +692,30 @@ console.log(iterator.next(5));          // "{ value: 8, done: false }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-The first call to next() is a special case where any argument passed to it is lost. Since arguments passed to next() become the values returned by yield, an argument from the first call to next() could only replace the first yield statement in the generator function if it could be accessed before that yield statement. That’s not possible, so there’s no reason to pass an argument the first time next() is called.
+首次调用的 next() 有些特殊，传给它的任何参数都会被忽略。因为传递给 next() 的参数会作为已返回的 yield 语句的值，那么首次调用传给 next() 的参数必须要在返回首个 yield 语句之前可供访问。显然这是不可能的，所以没有理由给首次调用的 next() 方法传参。
 
-On the second call to next(), the value 4 is passed as the argument. The 4 ends up assigned to the variable first inside the generator function. In a yield statement including an assignment, the right side of the expression is evaluated on the first call to next() and the left side is evaluated on the second call to next() before the function continues executing. Since the second call to next() passes in 4, that value is assigned to first and then execution continues.
+当第二次调用 next() 时，4 作为参数被传入。在生成器函数内部该参数最终会赋值给 first 变量。因为该 yield 语句包含赋值操作，右侧的表达式会在首次调用 next() 时候计算，左侧的表达式会在第二次调用 next() 之后函数继续执行之前求值。因为第二次调用 next() 的时候传入了参数 4，该参数会被赋值给 first，之后函数继续执行。
 
-The second yield uses the result of the first yield and adds two, which means it returns a value of six. When next() is called a third time, the value 5 is passed as an argument. That value is assigned to the variable second and then used in the third yield statement to return 8.
+第二个 yield 使用了首个 yield 语句的结果并进行加法操作，返回的值为 6 。接下来 next() 会被第三次调用，此时 5 被作为参数传入。该值会被赋给 second 变量并在第三个 yield 语句中使用，返回的结果为 8 。
 
-It’s a bit easier to think about what’s happening by considering which code is executing each time execution continues inside the generator function. Figure 8-1 uses colors to show the code being executed before yielding.
-
-<br />
-
-![](https://leanpub.com/site_images/understandinges6/fg0601.png) 　　　　　　　　　　　Figure 8-1: Code execution inside a generator
+如果考虑生成器函数内部在每次运行时都执行了哪些代码，思路可能会清晰一些。图 8-1 用颜色区分了每次 yield 之前代码的执行情况。
 
 <br />
 
-The color yellow represents the first call to next() and all the code executed inside of the generator as a result. The color aqua represents the call to next(4) and the code that is executed with that call. The color purple represents the call to next(5) and the code that is executed as a result. The tricky part is how the code on the right side of each expression executes and stops before the left side is executed. This makes debugging complicated generators a bit more involved than debugging regular functions.
+![](https://leanpub.com/site_images/understandinges6/fg0601.png) 　　　　　　　　　　　　　　　　　　　图 8-1: 生成器内部的代码执行
+
+<br />
+
+
+黄颜色代表第一次调用 next() 之后生成器内部代码的执行情况。湖蓝色代表的是调用 next(4) 运行的代码。紫色则是 next(5) 调用之后执行的代码。难点在于去理解每个表达式右侧的代码是如何在左侧的代码执行之前就中断的。这使得生成器的调试相比一般函数有些复杂。
 
 So far, you’ve seen that yield can act like return when a value is passed to the next() method. However, that’s not the only execution trick you can do inside a generator. You can also cause iterators throw an error.
 
+目前，你已经见识了当传参给 next() 方法之后 yield 的表现和 return 十分神似。不过，这还不是生成器唯一运行技巧。你还可以让迭代器抛出一个错误。
+
 <br />
 
-#### Throwing Errors in Iterators
+#### 在迭代器中抛出错误（Throwing Errors in Iterators）
 
 It’s possible to pass not just data into iterators but also error conditions. Iterators can choose to implement a throw() method that instructs the iterator to throw an error when it resumes. This is an important capability for asynchronous programming, but also for flexibility inside generators, where you want to be able to mimic both return values and thrown errors (the two ways of exiting a function). You can pass an error object to throw() that should be thrown when the iterator continues processing. For example:
 
@@ -735,7 +738,7 @@ In this example, the first two yield expressions are evaluated as normal, but wh
 <br />
 
 ![](https://leanpub.com/site_images/understandinges6/fg0602.png)
-　　　　　　　　　　　　Figure 8-2: Throwing an error inside a generator
+　　　　　　　　　　　　　Figure 8-2: Throwing an error inside a generator
             
 <br />
 
@@ -775,7 +778,7 @@ The next() and throw() methods control execution inside an iterator when using y
 
 <br />
 
-#### Generator Return Statements
+#### 返回语句的生成器（Generator Return Statements）
 
 Since generators are functions, you can use the return statement both to exit early and specify a return value for the last call to the next() method. In most examples in this chapter, the last call to next() on an iterator returns undefined, but you can specify an alternate value by using return as you would in any other function. In a generator, return indicates that all processing is done, so the done property is set to true and the value, if provided, becomes the value field. Here’s an example that simply exits early using return:
 
@@ -818,7 +821,7 @@ Here, the value 42 is returned in the value field on the second call to the next
 
 <br />
 
-#### Delegating Generators
+#### 生成器代理（Delegating Generators）
 
 In some cases, combining the values from two iterators into one is useful. Generators can delegate to other generators using a special form of yield with a star (*) character. As with generator definitions, where the star appears doesn’t matter, as long as the star falls between the yield keyword and the generator function name. Here’s an example:
 
@@ -923,7 +926,7 @@ Generator delegation using the return value is a very powerful paradigm that all
 
 <br />
 
-### Asynchronous Task Running
+### 运行异步任务（Asynchronous Task Running）
 
 A lot of the excitement around generators is directly related to asynchronous programming. Asynchronous programming in JavaScript is a double-edged sword: simple tasks are easy to do asynchronously, while complex tasks become an errand in code organization. Since generators allow you to effectively pause code in the middle of execution, they open up a lot of possibilities related to asynchronous processing.
 
@@ -946,7 +949,7 @@ The fs.readFile() method is called with the filename to read and a callback func
 
 <br />
 
-#### A Simple Task Runner
+#### 一个简单的任务运行器（A Simple Task Runner）
 
 Because yield stops execution and waits for the next() method to be called before starting again, you can implement asynchronous calls without managing callbacks. To start, you need a function that can call a generator and start the iterator, such as this:
 
@@ -993,7 +996,7 @@ This example just outputs three numbers to the console, which simply shows that 
 
 <br />
 
-#### Task Running With Data
+#### 附加数据的任务运行器（Task Running With Data）
 
 The easiest way to pass data through the task runner is to pass the value specified by yield into the next call to the next() method. To do so, you need only pass result.value, as in this code:
 
@@ -1036,7 +1039,9 @@ run(function*() {
 
 This example outputs two values to the console: 1 and 4. The value 1 comes from yield 1, as the 1 is passed right back into the value variable. The 4 is calculated by adding 3 to value and passing that result back to value. Now that data is flowing between calls to yield, you just need one small change to allow asynchronous calls.
 
-#### Asynchronous Task Runner
+<br />
+
+#### 异步任务运行器（Asynchronous Task Runner）
 
 The previous example passed static data back and forth between yield calls, but waiting for an asynchronous process is slightly different. The task runner needs to know about callbacks and how to use them. And since yield expressions pass their values into the task runner, that means any function call must return a value that somehow indicates the call is an asynchronous operation that the task runner should wait for.
 
@@ -1134,7 +1139,7 @@ Of course, there are downsides to the pattern used in these examples–namely th
 
 <br />
 
-### Summary
+### 总结（Summary）
 
 Iterators are an important part of ECMAScript 6 and are at the root of several key language elements. On the surface, iterators provide a simple way to return a sequence of values using a simple API. However, there are far more complex ways to use iterators in ECMAScript 6.
 
