@@ -1,16 +1,5 @@
 # 类（Introducing JavaScript Classes）
 
-Class-Like Structures in ECMAScript 5
-Class Declarations
-Class Expressions
-Classes as First-Class Citizens
-Accessor Properties
-Computed Member Names
-Generator Methods
-Static Members
-Inheritance with Derived Classes
-Using new.target in Class Constructors
-Summary
 
 Unlike most formal object-oriented programming languages, JavaScript didn’t support classes and classical inheritance as the primary way of defining similar and related objects when it was created. This left many developers confused, and from pre-ECMAScript 1 all the way through ECMAScript 5, many libraries created utilities to make JavaScript look like it supports classes. While some JavaScript developers do feel strongly that the language doesn’t need classes, the number of libraries created specifically for this purpose led to the inclusion of classes in ECMAScript 6.
 
@@ -18,7 +7,21 @@ While exploring ECMAScript 6 classes, it’s helpful to understand the underlyin
 
 <br />
 
-### Class-Like Structures in ECMAScript 5
+* [Class-Like Structures in ECMAScript 5](#Class-Like Structures in ECMAScript 5)
+* [Class Declarations](#Class Declarations)
+* [Class Expressions](#Class Expressions)
+* [Classes as First-Class Citizens](#Classes as First-Class Citizens)
+* [Accessor Properties](#Accessor Properties)
+* [Computed Member Names](#Computed Member Names)
+* [Generator Methods](#Generator Methods)
+* [Static Members](#Static Members)
+* [Inheritance with Derived Classes](#Inheritance with Derived Classes)
+* [Using new.target in Class Constructors](#Using new.target in Class Constructors)
+* [Summary](#Summary)
+
+<br />
+
+### <a name="Class-Like Structures in ECMAScript 5"> Class-Like Structures in ECMAScript 5 </a>
 
 In ECMAScript 5 and earlier, JavaScript had no classes. The closest equivalent to a class was creating a constructor and then assigning methods to the constructor’s prototype, an approach typically called creating a custom type. For example:
 
@@ -44,7 +47,7 @@ This basic pattern underlies a lot of the class-mimicking JavaScript libraries, 
 
 <br />
 
-### Class Declarations
+### <a name="Class Declarations"> Class Declarations </a>
 
 The simplest class form in ECMAScript 6 is the class declaration, which looks similar to classes in other languages.
 
@@ -157,7 +160,7 @@ Foo = "baz";
 
 <br />
 
-### Class Expressions
+### <a name="Class Expressions"> Class Expressions </a>
 
 Classes and functions are similar in that they have two forms: declarations and expressions. Function and class declarations begin with an appropriate keyword (function or class, respectively) followed by an identifier. Functions have an expression form that doesn’t require an identifier after function, and similarly, classes have an expression form that doesn’t require an identifier after class. These class expressions are designed to be used in variable declarations or passed into functions as arguments.
 
@@ -266,7 +269,7 @@ While named class expressions behave differently from named function expressions
 
 <br />
 
-### Classes as First-Class Citizens
+### <a name="Classes as First-Class Citizens"> Classes as First-Class Citizens </a>
 
 In programming, something is said to be a first-class citizen when it can be used as a value, meaning it can be passed into a function, returned from a function, and assigned to a variable. JavaScript functions are first-class citizens (sometimes they’re just called first class functions), and that’s part of what makes JavaScript unique.
 
@@ -313,7 +316,7 @@ The examples in this chapter so far have focused on classes with methods. But yo
 
 <br />
 
-### Accessor Properties
+### <a name="Accessor Properties"> Accessor Properties </a>
 
 While own properties should be created inside class constructors, classes allow you to define accessor properties on the prototype. To create a getter, use the keyword get followed by a space, followed by an identifier; to create a setter, do the same using the keyword set. For example:
 
@@ -377,7 +380,7 @@ As with previous examples, this one shows just how much code you can save by usi
 
 <br />
 
-### Computed Member Names
+### <a name="Computed Member Names"> Computed Member Names </a>
 
 The similarities between object literals and classes aren’t quite over yet. Class methods and accessor properties can also have computed names. Instead of using an identifier, use square brackets around an expression, which is the same syntax used for object literal computed names. For example:
 
@@ -428,7 +431,7 @@ You’ve seen that there are a lot of similarities between classes and object li
 
 <br />
 
-### Generator Methods
+### <a name="Generator Methods"> Generator Methods </a>
 
 When Chapter 8 introduced generators, you learned how to define a generator on an object literal by prepending a star (*) to the method name. The same syntax works for classes as well, allowing any method to be a generator. Here’s an example:
 
@@ -484,7 +487,7 @@ Adding methods and accessor properties to a class prototype is useful when you w
 
 <br />
 
-### Static Members
+### <a name="Static Members"> Static Members </a>
 
 Adding additional methods directly onto constructors to simulate static members is another common pattern in ECMAScript 5 and earlier. For example:
 
@@ -536,7 +539,7 @@ The PersonClass definition has a single static method called create(). The metho
 
 <br />
 
-### Inheritance with Derived Classes
+### <a name="Inheritance with Derived Classes"> Inheritance with Derived Classes </a>
 
 Prior to ECMAScript 6, implementing inheritance with custom types was an extensive process. Proper inheritance required multiple steps. For instance, consider this example:
 
@@ -982,7 +985,7 @@ In general, you should use the Symbol.species property whenever you might want t
 
 <br />
 
-### Using new.target in Class Constructors
+### <a name="Using new.target in Class Constructors"> Using new.target in Class Constructors </a>
 
 In Chapter 3, you learned about new.target and how its value changes depending on how a function is called. You can also use new.target in class constructors to determine how the class is being invoked. In the simple case, new.target is equal to the constructor function for the class, as in this example:
 
@@ -1052,7 +1055,7 @@ In this example, the Shape class constructor throws an error whenever new.target
 
 <br />
 
-### Summary
+### <a name="Summary"> Summary </a>
 
 ECMAScript 6 classes make inheritance in JavaScript easier to use, so you don’t need to throw away any existing understanding of inheritance you might have from other languages. ECMAScript 6 classes start out as syntactic sugar for the classical inheritance model of ECMAScript 5, but add a lot of features to reduce mistakes.
 
