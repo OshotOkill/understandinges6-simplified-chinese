@@ -329,7 +329,7 @@ for (let x of collection) {
 
 <br />
 
-> 本章之后的 “生成器委托” 一节会描述如何使用其它对象中的迭代器。
+> 本章之后的 “生成器代理” 一节会描述如何使用其它对象中的迭代器。
 
 <br />
 
@@ -709,42 +709,41 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 黄颜色代表第一次调用 next() 之后生成器内部代码的执行情况。湖蓝色代表的是调用 next(4) 运行的代码。紫色则是 next(5) 调用之后执行的代码。难点在于去理解每个表达式右侧的代码是如何在左侧的代码执行之前就中断的。这使得生成器的调试相比一般函数有些复杂。
 
-So far, you’ve seen that yield can act like return when a value is passed to the next() method. However, that’s not the only execution trick you can do inside a generator. You can also cause iterators throw an error.
-
-目前，你已经见识了当传参给 next() 方法之后 yield 的表现和 return 十分神似。不过，这还不是生成器唯一运行技巧。你还可以让迭代器抛出一个错误。
+目前，你已经见识了当传参给 next() 方法之后 yield 的表现和 return 十分神似。不过，这还不是生成器唯一的运行技巧。你还可以让迭代器抛出一个错误。
 
 <br />
 
 #### 在迭代器中抛出错误（Throwing Errors in Iterators）
 
-It’s possible to pass not just data into iterators but also error conditions. Iterators can choose to implement a throw() method that instructs the iterator to throw an error when it resumes. This is an important capability for asynchronous programming, but also for flexibility inside generators, where you want to be able to mimic both return values and thrown errors (the two ways of exiting a function). You can pass an error object to throw() that should be thrown when the iterator continues processing. For example:
+
+不仅是数据，错误条件（error conditions）也能传入给迭代器。通过使用 throw() 方法，迭代器可以选择在某一次迭代抛出错误。这不仅对于异步编程来讲是相当重要的能力，而且生成器也变得更加灵活，因为你可以自行决定到底是返回值还是抛出错误（退出函数执行的两种方式）。你可以通过传递 Error 对象给 throw() 方法来让迭代器继续运行的时候抛出错误。例如：
 
 ```
 function *createIterator() {
     let first = yield 1;
-    let second = yield first + 2;       // yield 4 + 2, then throw
-    yield second + 3;                   // never is executed
+    let second = yield first + 2;       // yield 4 + 2, 之后抛出错误
+    yield second + 3;                   // 不会执行
 }
 
 let iterator = createIterator();
 
 console.log(iterator.next());                   // "{ value: 1, done: false }"
 console.log(iterator.next(4));                  // "{ value: 6, done: false }"
-console.log(iterator.throw(new Error("Boom"))); // error thrown from generator
+console.log(iterator.throw(new Error("Boom"))); // 由生成器抛出错误
 ```
 
-In this example, the first two yield expressions are evaluated as normal, but when throw() is called, an error is thrown before let second is evaluated. This effectively halts code execution similar to directly throwing an error. The only difference is the location in which the error is thrown. Figure 8-2 shows which code is executed at each step.
+在该例中，前两个 yield 表达式计算一切正常，但调用了 throw() 之后，let second 还未计算就会抛出错误。这种中断代码执行的行为类似于直接抛出错误。唯一的区别是中断的位置可能不同。图 8-2 展示了每一步代码的执行情况。
 
 <br />
 
 ![](https://leanpub.com/site_images/understandinges6/fg0602.png)
-　　　　　　　　　　　　　Figure 8-2: Throwing an error inside a generator
+　　　　　　　　　　　　　　　　　　　图 8-2: 在生成器中抛出错误
             
 <br />
 
-In this figure, the color red represents the code executed when throw() is called, and the red star shows approximately when the error is thrown inside the generator. The first two yield statements are executed, and when throw() is called, an error is thrown before any other code executes.
+图中，红色的部分表示调用 throw()，红色的星号代表生成器抛出错误的大概位置。前两个 yield 声明被执行后，throw() 被调用，于是在代码执行之前一个错误会被抛出。
 
-Knowing this, you can catch such errors inside the generator using a try-catch block:
+到了解了这些之后，你可以在生成器内部使用 try-catch 块来捕捉这些错误：
 
 ```
 function *createIterator() {
@@ -754,7 +753,7 @@ function *createIterator() {
     try {
         second = yield first + 2;       // yield 4 + 2, then throw
     } catch (ex) {
-        second = 6;                     // on error, assign a different value
+        second = 6;                     // 有错误发生，给 second 赋另外的值
     }
     yield second + 3;
 }
@@ -764,23 +763,22 @@ let iterator = createIterator();
 console.log(iterator.next());                   // "{ value: 1, done: false }"
 console.log(iterator.next(4));                  // "{ value: 6, done: false }"
 console.log(iterator.throw(new Error("Boom"))); // "{ value: 9, done: false }"
-console.log(iterator.next());                   // "{ value: undefined, done:\
- true }"
+console.log(iterator.next());                   // "{ value: undefined, done: true }"
 ```
 
-In this example, a try-catch block is wrapped around the second yield statement. While this yield executes without error, the error is thrown before any value can be assigned to second, so the catch block assigns it a value of six. Execution then flows to the next yield and returns nine.
+本例中，一个 try-catch 块包裹了第二个 yield 语句。虽然该句执行时没有任何问题，但由于迭代器强制将错误传入块中，而且在抛出错误之前不会有任何代码会执行，于是执行流跳转到了 catch 块内将 second 赋值为 6 ，接着再执行到下一个 yield 语句并返回 9 。
 
-Notice that something interesting happened: the throw() method returned a result object just like the next() method. Because the error was caught inside the generator, code execution continued on to the next yield and returned the next value, 9.
+要注意一件有趣的事情发生了：throw() 方法和 next() 方法返回相同形式的结果对象。这是因为生成器内部捕捉到了错误，并继续执行直到下个 yield 的位置并返回 9 。
 
-It helps to think of next() and throw() as both being instructions to the iterator. The next() method instructs the iterator to continue executing (possibly with a given value) and throw() instructs the iterator to continue executing by throwing an error. What happens after that point depends on the code inside the generator.
+更好的理解方式是把 next() 和 throw() 都当作迭代器的指令。next() 方法指示迭代器继续执行（或许还会传值），而 throw() 指示迭代器继续执行的同时并抛出错误。至于这些指令如何处理，这就由生成器内部的代码来决定。
 
-The next() and throw() methods control execution inside an iterator when using yield, but you can also use the return statement. But return works a bit differently than it does in regular functions, as you will see in the next section.
+next() 和 throw() 方法根据 yield 来控制迭代器内部的执行，其实 return 语句也是可以使用的。不过 return 的行为和在普通函数中不太一样，下一节你会看到它们的差异。
 
 <br />
 
-#### 返回语句的生成器（Generator Return Statements）
+#### 包含 return 语句的生成器（Generator Return Statements）
 
-Since generators are functions, you can use the return statement both to exit early and specify a return value for the last call to the next() method. In most examples in this chapter, the last call to next() on an iterator returns undefined, but you can specify an alternate value by using return as you would in any other function. In a generator, return indicates that all processing is done, so the done property is set to true and the value, if provided, becomes the value field. Here’s an example that simply exits early using return:
+既然生成器本质上是函数，你可以使用 return 语句来让它提前执行完毕并针对 next() 的调用来指定一个返回值。在本章的大部分实例中，最后一次在迭代器上调用 next() 会返回 undefined，不过你可以像在普通函数中那样使用 return 语句来指定另外的返回值。生成器会将 return 语句的出现判断为所有的任务已处理完毕，所以 done 属性会被赋值为 true，如果指定了返回值那么它会被赋给 value 属性。下面的示例演示了 return 是怎样让生成器提前执行完毕的：
 
 ```
 function *createIterator() {
@@ -796,9 +794,9 @@ console.log(iterator.next());           // "{ value: 1, done: false }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-In this code, the generator has a yield statement followed by a return statement. The return indicates that there are no more values to come, and so the rest of the yield statements will not execute (they are unreachable).
+该段代码中，生成器同时使用了 yield 和 return 语句。return 表明已经没有值可供迭代，所以剩余的 yield 语句不会被执行（它们是不可达的）。
 
-You can also specify a return value that will end up in the value field of the returned object. For example:
+你也可以指定一个返回值来赋给结果对象中的 value 属性，例如：
 
 ```
 function *createIterator() {
@@ -813,17 +811,17 @@ console.log(iterator.next());           // "{ value: 42, done: true }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-Here, the value 42 is returned in the value field on the second call to the next() method (which is the first time that done is true). The third call to next() returns an object whose value property is once again undefined. Any value you specify with return is only available on the returned object one time before the value field is reset to undefined.
+在这里，第二次调用 next() 方法返回的 value 属性值为 42（同时 done 属性也是第一次为 true）。而第三次调用 next() 时返回的 value 属性又变回了 undefined 。任何指定的返回值只能被结果对象使用一次，之后再次调用 next() 的 value 属性值仍为 undefined 。
 
 <br />
 
-> The spread operator and for-of ignore any value specified by a return statement. As soon as they see done is true, they stop without reading the value. Iterator return values are helpful, however, when delegating generators.
+> 扩展运算符和 for-of 会忽略 return 语句的返回值。如果返回对象的 done 为 true，它们就会停止读取 value 属性。然而，当使用生成器代理时 return 会相当有用。
 
 <br />
 
 #### 生成器代理（Delegating Generators）
 
-In some cases, combining the values from two iterators into one is useful. Generators can delegate to other generators using a special form of yield with a star (*) character. As with generator definitions, where the star appears doesn’t matter, as long as the star falls between the yield keyword and the generator function name. Here’s an example:
+在某些情况下，将两个迭代器集中到一起会更实用。生成器可以使用 yield 和星号（*）这种特殊形式来代理其它生成器。根据生成器的规范，星号在哪里出现并无要求，只要它的位置在 yield 和生成器函数名的中间即可。如下所示：
 
 ```
 function *createNumberIterator() {
@@ -852,9 +850,9 @@ console.log(iterator.next());           // "{ value: true, done: false }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-In this example, the createCombinedIterator() generator delegates first to createNumberIterator() and then to createColorIterator(). The returned iterator appears, from the outside, to be one consistent iterator that has produced all of the values. Each call to next() is delegated to the appropriate iterator until the iterators created by createNumberIterator() and createColorIterator() are empty. Then the final yield is executed to return true.
+本例中，createCombinedIterator() 生成器先后代理了 createNumberIterator() 和 createColorIteartor() 。从迭代器返回的值来看，它等价于只使用一个迭代器并返回了所有的值。每一次调用 next() 都会由恰当的代理迭代器处理直到 createNumberIterator() 和 createColorIterator() 没有值可供迭代。之后最终的 yield 执行并返回 true 。
 
-Generator delegation also lets you make further use of generator return values. This is the easiest way to access such returned values and can be quite useful in performing complex tasks. For example:
+生成器代理能让你以最简单的方式进一步使用生成器返回的值，同时在处理复杂的任务时也相当有用。例如：
 
 ```
 function *createNumberIterator() {
@@ -884,9 +882,9 @@ console.log(iterator.next());           // "{ value: "repeat", done: false }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-Here, the createCombinedIterator() generator delegates to createNumberIterator() and assigns the return value to result. Since createNumberIterator() contains return 3, the returned value is 3. The result variable is then passed to createRepeatingIterator() as an argument indicating how many times to yield the same string (in this case, three times).
+在这里，createCombinedIteartor() 生成器代理了 createNumberIterator() 并将它的返回值赋给 result 变量。createNumberIterator() 包含 return 3 语句，那么它的返回值就是 3 。之后 result 变量作为参数回传入 createRepeatingIterator() 以指示 yield 相同字符串的此书（在本例中是三次）。
 
-Notice that the value 3 was never output from any call to the next() method. Right now, it exists solely inside the createCombinedIterator() generator. But you can output that value as well by adding another yield statement, such as:
+注意 3 从未被 next() 方法输出。目前它只存在于 createCombinedIterator() 生成器的内部。不过你可以添加额外的 yield 语句来输出它们。例如：
 
 ```
 function *createNumberIterator() {
@@ -918,19 +916,22 @@ console.log(iterator.next());           // "{ value: "repeat", done: false }"
 console.log(iterator.next());           // "{ value: undefined, done: true }"
 ```
 
-In this code, the extra yield statement explicitly outputs the returned value from the createNumberIterator() generator.
+在这段代码中，显式添加了额外的 yield 语句来输出 createNumberIterator() 生成器的返回值。
 
-Generator delegation using the return value is a very powerful paradigm that allows for some very interesting possibilities, especially when used in conjunction with asynchronous operations.
+实用返回值的生成器代理是一种非常强大的编程范式，允许一些有趣的想法变为现实，特别是与异步操作一同使用的时候。
 
-> You can use yield * directly on strings (such as yield * "hello") and the string’s default iterator will be used.
+<br />
+
+> 你可以直接在字符串上使用 yield *（例如 yield * "hello"），字符串会使用默认的迭代器。
 
 <br />
 
 ### 运行异步任务（Asynchronous Task Running）
 
-A lot of the excitement around generators is directly related to asynchronous programming. Asynchronous programming in JavaScript is a double-edged sword: simple tasks are easy to do asynchronously, while complex tasks become an errand in code organization. Since generators allow you to effectively pause code in the middle of execution, they open up a lot of possibilities related to asynchronous processing.
 
-The traditional way to perform asynchronous operations is to call a function that has a callback. For example, consider reading a file from the disk in Node.js:
+使用生成器进行异步编程有很多的兴奋点。在 JavaScript 中异步编程是把双刃剑：简单的任务很容易实现异步，当任务变得复杂的时候源代码的组织会是个大问题。因为生成器允许你在执行的过程中暂停，使用它们处理异步流程就增加了很多可能性。
+
+异步操作的传统做法是在它结束之后调用回调函数。例如，考虑如下 Node.js 读取文件的代码：
 
 ```
 let fs = require("fs");
@@ -945,42 +946,43 @@ fs.readFile("config.json", function(err, contents) {
 });
 ```
 
-The fs.readFile() method is called with the filename to read and a callback function. When the operation is finished, the callback function is called. The callback checks to see if there’s an error, and if not, processes the returned contents. This works well when you have a small, finite number of asynchronous tasks to complete, but gets complicated when you need to nest callbacks or otherwise sequence a series of asynchronous tasks. This is where generators and yield are helpful.
+fs.readFile() 方法包含 filename 参数和一个回调函数。当该操作完成后，回调函数开始执行。回调函数会检查是否有错误发生，如果没有问题则会处理返回的相应内容。在异步任务简单且有限的情况下，这种实现还算可以，一旦需要嵌套多个回调函数或者处理一大批异步任务时，代码会变得极其复杂。生成器和 yield 正好解决了这个问题。
 
 <br />
 
 #### 一个简单的任务运行器（A Simple Task Runner）
 
-Because yield stops execution and waits for the next() method to be called before starting again, you can implement asynchronous calls without managing callbacks. To start, you need a function that can call a generator and start the iterator, such as this:
+
+因为 yield 可以中断执行，并在继续运行之前等待 next() 方法的调用，你可以不使用回调函数来实现异步调用。首先，你需要一个函数来调用生成器以便让迭代器开始运行，例如这样：
 
 ```
 function run(taskDef) {
 
-    // create the iterator, make available elsewhere
+    // 创建迭代器，使它们可以在别处使用
     let task = taskDef();
 
-    // start the task
+    // 任务开始执行
     let result = task.next();
 
-    // recursive function to keep calling next()
+    // 递归函数持续调用 next()
     function step() {
 
-        // if there's more to do
+        // 如果任务未完成
         if (!result.done) {
             result = task.next();
             step();
         }
     }
 
-    // start the process
+    // 开始递归
     step();
 
 }
 ```
 
-The run() function accepts a task definition (a generator function) as an argument. It calls the generator to create an iterator and stores the iterator in task. The task variable is outside the function so it can be accessed by other functions; I will explain why later in this section. The first call to next() begins the iterator and the result is stored for later use. The step() function checks to see if result.done is false and, if so, calls next() before recursively calling itself. Each call to next() stores the return value in result, which is always overwritten to contain the latest information. The initial call to step() starts the process of looking at the result.done variable to see whether there’s more to do.
+run() 函数接收一个已定义的任务（生成器函数）作为参数。该函数内部调用生成器来创建迭代器并将其存储在 task 中。task 变量在（step）函数外部，所以它能被其它函数访问；本小节后面我会解释缘由。首次调用 next() 令迭代器开始运行并存储其结果以便之后使用。step() 函数检查 result.done 是否为 false，如果答案为是那么在递归自身之前先调用 next() 方法。每次调用 next() 都会将结果存储在 result 中，它总是会被最新的信息覆盖。首次调用 step() 会开始递归并查看 result.done 以判断是否还有更多的工作要做。
 
-With this implementation of run(), you can run a generator containing multiple yield statements, such as:
+随着 run() 的实现，你可以运行一个带有多个 yield 语句的生成器。例如：
 
 ```
 run(function*() {
@@ -992,40 +994,41 @@ run(function*() {
 });
 ```
 
-This example just outputs three numbers to the console, which simply shows that all calls to next() are being made. However, just yielding a couple of times isn’t very useful. The next step is to pass values into and out of the iterator.
+该例只是简单地在控制台上输出了三个数字以演示所有 next() 的调用结果。然而，仅仅调用了几次 yield 并不是那么实用。下一步要实现的是给迭代器传值或提取迭代器返回的值。
 
 <br />
 
 #### 附加数据的任务运行器（Task Running With Data）
 
-The easiest way to pass data through the task runner is to pass the value specified by yield into the next call to the next() method. To do so, you need only pass result.value, as in this code:
+
+给任务运行器传入数据最简单的办法是将上一次 yield 返回的值传给下一次调用的 next() 方法。为此你只需传入result.value，如下所示：
 
 ```
 function run(taskDef) {
 
-    // create the iterator, make available elsewhere
+    // 创建迭代器，使它们可以在别处使用
     let task = taskDef();
 
-    // start the task
+    // 任务开始执行
     let result = task.next();
 
-    // recursive function to keep calling next()
+    // 递归函数持续调用 next()
     function step() {
 
-        // if there's more to do
+        // 如果任务未完成
         if (!result.done) {
             result = task.next(result.value);
             step();
         }
     }
 
-    // start the process
+    // 开始递归
     step();
 
 }
 ```
 
-Now that result.value is passed to next() as an argument, it’s possible to pass data between yield calls, like this:
+既然 result.value 成为了 next() 的参数，那么在 yield 调用之间传递数据成为了可能，如下：
 
 ```
 run(function*() {
@@ -1037,7 +1040,7 @@ run(function*() {
 });
 ```
 
-This example outputs two values to the console: 1 and 4. The value 1 comes from yield 1, as the 1 is passed right back into the value variable. The 4 is calculated by adding 3 to value and passing that result back to value. Now that data is flowing between calls to yield, you just need one small change to allow asynchronous calls.
+该例在控制台上输出了两个值：1 和 4 。1 由 yield 1 而来，因为它在返回之后又被传入并赋值给 value 。4 由变量 value 与 3 做加法运算而来，并将运算结果赋值给 value 。现在数据已经可以在 yield 调用之间流动，你只需一个小小的改变即可进行异步调用。
 
 <br />
 
@@ -1045,7 +1048,11 @@ This example outputs two values to the console: 1 and 4. The value 1 comes from 
 
 The previous example passed static data back and forth between yield calls, but waiting for an asynchronous process is slightly different. The task runner needs to know about callbacks and how to use them. And since yield expressions pass their values into the task runner, that means any function call must return a value that somehow indicates the call is an asynchronous operation that the task runner should wait for.
 
+以上的例子中实现了在 yield 调用之间反复传递静态数据，但是等待异步处理的过程则有些不同。任务运行器需要明确回调函数如何使用这些数据。既然 yield 表达式会将值返回给任务运行器，就意味着任何函数的调用都必须返回一个值并以某种方式说明该调用是个异步操作，使得任务运行器处于待机状态。
+
 Here’s one way you might signal that a value is an asynchronous operation:
+
+下面是标识包含异步操作的一种方法：
 
 ```
 function fetchData() {
@@ -1056,6 +1063,8 @@ function fetchData() {
 ```
 
 For the purposes of this example, any function meant to be called by the task runner will return a function that executes a callback. The fetchData() function returns a function that accepts a callback function as an argument. When the returned function is called, it executes the callback function with a single piece of data (the "Hi!" string). The callback argument needs to come from the task runner to ensure executing the callback correctly interacts with the underlying iterator. While the fetchData() function is synchronous, you can easily extend it to be asynchronous by calling the callback with a slight delay, such as:
+
+该例的目的是让任何由任务运行器调用的方函数返回另一个函数以供回调函数的执行。fetchData() 函数会返回一个参数为回调函数的函数。当返回的函数被调用后，回调函数和一块额外的数据（"Hi!" 字符串）一起执行。该作为参数的回调函数需要由任务运行器提供以确保回调函数能和当前的迭代器正确交互并执行。虽然 fetchData() 函数是同步的，你可以延迟回调函数的执行以将它改造为异步函数，例如：
 
 ```
 function fetchData() {
@@ -1069,21 +1078,25 @@ function fetchData() {
 
 This version of fetchData() introduces a 50ms delay before calling the callback, demonstrating that this pattern works equally well for synchronous and asynchronous code. You just have to make sure each function that wants to be called using yield follows the same pattern.
 
+该版本的 fetchData() 在调用回调函数之前添加了 50ms 的延迟，目的是为了证实该模式同步和异步代码都可以使用。你只需保证遵循该模式的同时使用 yield 来返回每个要调用的函数即可。
+
 With a good understanding of how a function can signal that it’s an asynchronous process, you can modify the task runner to take that fact into account. Anytime result.value is a function, the task runner will execute it instead of just passing that value to the next() method. Here’s the updated code:
+
+当对函数如何标识自己包含异步操作有深入地了解之后，你可以将任务运行器以上述方式改造。当 result.value 为函数的时候，任务运行器会执行它而不是将它直接返回给 next() 方法。下面是重构的代码：
 
 ```
 function run(taskDef) {
 
-    // create the iterator, make available elsewhere
+    // 创建迭代器，使它们可以在别处使用
     let task = taskDef();
 
-    // start the task
+    // 任务开始执行
     let result = task.next();
 
-    // recursive function to keep calling next()
+    // 递归函数持续调用 next()
     function step() {
 
-        // if there's more to do
+        // 如果任务未完成
         if (!result.done) {
             if (typeof result.value === "function") {
                 result.value(function(err, data) {
@@ -1103,15 +1116,15 @@ function run(taskDef) {
         }
     }
 
-    // start the process
+    // 开始递归
     step();
 
 }
 ```
 
-When result.value is a function (checked with the === operator), it is called with a callback function. That callback function follows the Node.js convention of passing any possible error as the first argument (err) and the result as the second argument. If err is present, then that means an error occurred and task.throw() is called with the error object instead of task.next() so an error is thrown at the correct location. If there is no error, then data is passed into task.next() and the result is stored. Then, step() is called to continue the process. When result.value is not a function, it is directly passed to the next() method.
+当 result.value 是个函数（使用 === 操作符检查），它会和回调函数一起被调用。该回调函数按照 Node.js 的惯例将潜在的错误作为第一个参数（err）并将结果作为第二个参数。如果 err 存在就意味着有错误发生并调用 task.throw() 和传入 error 对象而非调用 task.next() 以便让错误在正确的地方抛出。如果没有错误，那么 data 会传入 task.next() 并存储返回结果给 result。之后 step() 会再次被调用以继续接下来的任务。当 result.value 不是函数时，它会直接传给 next() 方法。
 
-This new version of the task runner is ready for all asynchronous tasks. To read data from a file in Node.js, you need to create a wrapper around fs.readFile() that returns a function similar to the fetchData() function from the beginning of this section. For example:
+这个新版本的任务运行器已经做好了处理异步任务的准备。为了在 Node.js 中读取文件，你需要创建一个容器来包裹 fs.readFile() 以便让返回的函数和本节开始示例中 fetchData() 调用后的结果更为接近，例如：
 
 ```
 let fs = require("fs");
@@ -1123,7 +1136,7 @@ function readFile(filename) {
 }
 ```
 
-The readFile() method accepts a single argument, the filename, and returns a function that calls a callback. The callback is passed directly to the fs.readFile() method, which will execute the callback upon completion. You can then run this task using yield as follows:
+readfile() 方法接收 filename 参数，并返回一个内部调用回调函数的函数。该回调函数会直接传给 fs.readFile() 方法并在异步方法结束后执行。你可以像下面这样使用 yield 来运行这个任务：
 
 ```
 run(function*() {
@@ -1133,28 +1146,29 @@ run(function*() {
 });
 ```
 
-This example is performing the asynchronous readFile() operation without making any callbacks visible in the main code. Aside from yield, the code looks the same as synchronous code. As long as the functions performing asynchronous operations all conform to the same interface, you can write logic that reads like synchronous code.
+该例在未给主要代码显式书写回调函数的同时实现了异步的 readFile() 操作。除了 yield 之外，该段代码看起来和同步无异。只要包含异步操作的函数和上述 fs.readFile() 接口一致，你就可以使用该例来书写从视觉上认为是同步的逻辑。
 
-Of course, there are downsides to the pattern used in these examples–namely that you can’t always be sure a function that returns a function is asynchronous. For now, though, it’s only important that you understand the theory behind the task running. Using promises offers more powerful ways of scheduling asynchronous tasks, and Chapter 11 covers this topic further.
+当然，这些实例中使用的模式也有不利的一面，因为你无法确定返回函数的函数是否是异步的。不过现在的重点是让你理解任务运行背后的原理。promise 提供了能更完善的办法来安排处理异步任务，而且第十一章会进一步探讨它。
 
 <br />
 
 ### 总结（Summary）
 
-Iterators are an important part of ECMAScript 6 and are at the root of several key language elements. On the surface, iterators provide a simple way to return a sequence of values using a simple API. However, there are far more complex ways to use iterators in ECMAScript 6.
 
-The Symbol.iterator symbol is used to define default iterators for objects. Both built-in objects and developer-defined objects can use this symbol to provide a method that returns an iterator. When Symbol.iterator is provided on an object, the object is considered an iterable.
+迭代器是 ECMAScript 6 非常重要的一部分，同时也是 JavaScript 某些关键元素的核心。从表面上看，迭代器提供了一种简约的办法来使用简单的 API 返回一系列元素。然而 ECMAScript 6 还有更复杂的方式来运用迭代器。
 
-The for-of loop uses iterables to return a series of values in a loop. Using for-of is easier than iterating with a traditional for loop because you no longer need to track values and control when the loop ends. The for-of loop automatically reads all values from the iterator until there are no more, and then it exits.
+对象使用 Symbol.iterator 这个 symbol 类型来定义默认的迭代器。不论是语言内置的还是开发者自定义的对象都能使用这个 symbol 来定义一个返回迭代器的方法。当对象含有 Symbol.iterator 时，它就是可迭代类型。
 
-To make for-of easier to use, many values in ECMAScript 6 have default iterators. All the collection types–that is, arrays, maps, and sets–have iterators designed to make their contents easy to access. Strings also have a default iterator, which makes iterating over the characters of the string (rather than the code units) easy.
+for-of 循环使用可迭代类型来循环返回一系列的元素。相比传统的 for 循环，for-of 在迭代上更为简单，因为你无需跟踪索引值和设定循环结束条件。for-of 循环会自动读取迭代器返回的值并在没有多余项可供迭代的情况下退出。
 
-The spread operator works with any iterable and makes converting iterables into arrays easy, too. The conversion works by reading values from an iterator and inserting them individually into an array.
+为了能让 for-of 更简单地使用，ECMAScript 6 很多类型都内置了迭代器，包括所有的集合类型 —— 数组，map，set ，它们各自的默认迭代器能方便地访问自身内容。同样字符串也含有默认的迭代器能轻松地返回每个字符（而非编码单元。
 
-A generator is a special function that automatically creates an iterator when called. Generator definitions are indicated by a star (*) character and use of the yield keyword to indicate which value to return for each successive call to the next() method.
+扩展运算符可以对可迭代类型使用并且能方便地将它们转换为数组，方式是通过读取迭代器的值来逐个将它们插入。
 
-Generator delegation encourages good encapsulation of iterator behavior by letting you reuse existing generators in new generators. You can use an existing generator inside another generator by calling yield * instead of yield. This process allows you to create an iterator that returns values from multiple iterators.
+生成器是一种特殊的函数，能在被调用后自动创建一个迭代器。生成器由星号（*）定义并由 yield 关键字来决定每次调用 next() 方法的返回值。
 
-Perhaps the most interesting and exciting aspect of generators and iterators is the possibility of creating cleaner-looking asynchronous code. Instead of needing to use callbacks everywhere, you can set up code that looks synchronous but in fact uses yield to wait for asynchronous operations to complete.
+生成器代理通过在新的生成器中重用已有的生成器来鼓励封装迭代器的工作。你可以使用在另一个生成器内部调用 yield * 而非 yield 来使用已存在的生成器。这些操作能创建可以返回多个迭代器的值的单个迭代器。
+
+或许生成器和迭代器最有趣且令人兴奋的能力是书写整洁有序的异步代码。你可以在使用 yield 等待异步操作完成的同时书写看似同步的代码，而不再需要到处放置回调函数。
 
 <br />
