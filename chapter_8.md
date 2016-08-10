@@ -1046,7 +1046,6 @@ run(function*() {
 
 #### 异步任务运行器（Asynchronous Task Runner）
 
-The previous example passed static data back and forth between yield calls, but waiting for an asynchronous process is slightly different. The task runner needs to know about callbacks and how to use them. And since yield expressions pass their values into the task runner, that means any function call must return a value that somehow indicates the call is an asynchronous operation that the task runner should wait for.
 
 以上的例子中实现了在 yield 调用之间反复传递静态数据，但是等待异步处理的过程则有些不同。任务运行器需要明确回调函数如何使用这些数据。既然 yield 表达式会将值返回给任务运行器，就意味着任何函数的调用都必须返回一个值并以某种方式说明该调用是个异步操作，使得任务运行器处于待机状态。
 
@@ -1062,8 +1061,6 @@ function fetchData() {
 }
 ```
 
-For the purposes of this example, any function meant to be called by the task runner will return a function that executes a callback. The fetchData() function returns a function that accepts a callback function as an argument. When the returned function is called, it executes the callback function with a single piece of data (the "Hi!" string). The callback argument needs to come from the task runner to ensure executing the callback correctly interacts with the underlying iterator. While the fetchData() function is synchronous, you can easily extend it to be asynchronous by calling the callback with a slight delay, such as:
-
 该例的目的是让任何由任务运行器调用的方函数返回另一个函数以供回调函数的执行。fetchData() 函数会返回一个参数为回调函数的函数。当返回的函数被调用后，回调函数和一块额外的数据（"Hi!" 字符串）一起执行。该作为参数的回调函数需要由任务运行器提供以确保回调函数能和当前的迭代器正确交互并执行。虽然 fetchData() 函数是同步的，你可以延迟回调函数的执行以将它改造为异步函数，例如：
 
 ```
@@ -1076,11 +1073,7 @@ function fetchData() {
 }
 ```
 
-This version of fetchData() introduces a 50ms delay before calling the callback, demonstrating that this pattern works equally well for synchronous and asynchronous code. You just have to make sure each function that wants to be called using yield follows the same pattern.
-
 该版本的 fetchData() 在调用回调函数之前添加了 50ms 的延迟，目的是为了证实该模式同步和异步代码都可以使用。你只需保证遵循该模式的同时使用 yield 来返回每个要调用的函数即可。
-
-With a good understanding of how a function can signal that it’s an asynchronous process, you can modify the task runner to take that fact into account. Anytime result.value is a function, the task runner will execute it instead of just passing that value to the next() method. Here’s the updated code:
 
 当对函数如何标识自己包含异步操作有深入地了解之后，你可以将任务运行器以上述方式改造。当 result.value 为函数的时候，任务运行器会执行它而不是将它直接返回给 next() 方法。下面是重构的代码：
 
