@@ -6,7 +6,7 @@ JavaScript 语言的核心特性是由 ECMA-262 标准定义的，而这个标�
 
 #### ECMASciprt 6 的诞生之路
 
-在2007年，JavaScript 已行至于交叉路口。AjSax 的流行宣告了动态 web 应用时代的到来，然而 JavaScript 自1999年 ECMA-262 发布了第三版（ES3）以后便从未发生变化，于是 TC-39 委员会便承担了发布下一版的任务，收集了大批草案并命名为 ECMAScript 4。ECMAScript 4 的变革范围十分广泛，语言的各个部分都有大大小小的变化。 添加的新特性中包括一些新语法，模块，类，传统的继承方式（classical inheritance），私有对象成员，可选类型注解（optional type annotations），以及其它等等。
+在2007年，JavaScript 已行至于交叉路口。Ajax 的流行宣告了动态 web 应用时代的到来，然而 JavaScript 自1999年 ECMA-262 发布了第三版（ES3）以后便从未发生变化，于是 TC-39 委员会便承担了发布下一版的任务，收集了大批草案并命名为 ECMAScript 4。ECMAScript 4 的变革范围十分广泛，语言的各个部分都有大大小小的变化。 添加的新特性中包括一些新语法，模块，类，传统的继承方式（classical inheritance），私有对象成员，可选类型注解（optional type annotations），以及其它等等。
 
 ECMAScript 4 的变动之大造成了 TC-39 委员会内部的分歧，一部分成员认为这些更改有些过火了。于是一组来自于雅虎，谷歌和微软的成员便自行撰写了下一代 ECMAScript 的草案，称其为 ECMAScript 3.1 ，其中 “3.1” 代表在已有标准之上的小增集。
 
@@ -158,7 +158,9 @@ doSomething();          // error!
 
 你可以向英文原版提交 issue，建议或者PR： [https://github.com/nzakas/understandinges6](https://github.com/nzakas/understandinges6)
 
-如果你在阅读的过程中抱有疑问，也可以发送邮件给：[http://groups.google.com/group/zakasbooks.](http://groups.google.com/group/zakasbooks.)
+简体中文版在这里报出 [issue](https://github.com/OshotOkill/understandinges6-simplified-chinese/issues) 和提交 [PR](https://github.com/OshotOkill/understandinges6-simplified-chinese/pulls)
+
+如果你在阅读的过程中抱有疑问，也可以发送邮件给作者：[http://groups.google.com/group/zakasbooks.](http://groups.google.com/group/zakasbooks.)
 
 <br />
 
