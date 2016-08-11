@@ -8,7 +8,7 @@ While exploring ECMAScript 6 classes, it’s helpful to understand the underlyin
 <br />
 
 * [Class-Like Structures in ECMAScript 5](#Class-Like-Structures-in-ECMAScript-5)
-* [Class Declarations](#Class Declarations)
+* [Class Declarations](#Class-Declarations)
 * [Class Expressions](#Class Expressions)
 * [Classes as First-Class Citizens](#Classes as First-Class Citizens)
 * [Accessor Properties](#Accessor Properties)
@@ -160,7 +160,7 @@ Foo = "baz";
 
 <br />
 
-### <a name="Class Expressions"> Class Expressions </a>
+### <a name="Class-Expressions"> Class Expressions </a>
 
 Classes and functions are similar in that they have two forms: declarations and expressions. Function and class declarations begin with an appropriate keyword (function or class, respectively) followed by an identifier. Functions have an expression form that doesn’t require an identifier after function, and similarly, classes have an expression form that doesn’t require an identifier after class. These class expressions are designed to be used in variable declarations or passed into functions as arguments.
 
