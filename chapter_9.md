@@ -1,29 +1,30 @@
 # 类（Introducing JavaScript Classes）
 
 
-Unlike most formal object-oriented programming languages, JavaScript didn’t support classes and classical inheritance as the primary way of defining similar and related objects when it was created. This left many developers confused, and from pre-ECMAScript 1 all the way through ECMAScript 5, many libraries created utilities to make JavaScript look like it supports classes. While some JavaScript developers do feel strongly that the language doesn’t need classes, the number of libraries created specifically for this purpose led to the inclusion of classes in ECMAScript 6.
+和大多数面向对象的语言（object-oriented programming language）不同，JavaScript 在诞生之初并不支持使用类和传统的类继承并作为主要的定义方式来创建相似或关联的对象。这很令开发者困惑，而且在早于 ECMAScript 1 到 ECMAScript 5 这段时期，很多库都创建了一些实用工具（utility）来让 JavaScript 从表层上支持类。尽管一些 JavaScript 开发者强烈主张该语言不需要类，但由于大量的库都对类做了实现，ECMAScript 6 也顺势将其引入。
 
-While exploring ECMAScript 6 classes, it’s helpful to understand the underlying mechanisms that classes use, so this chapter starts by discussing how ECMAScript 5 developers achieved class-like behavior. As you will see after that, however, ECMAScript 6 classes aren’t exactly the same as classes in other languages. There’s a uniqueness about them that embraces the dynamic nature of JavaScript.
-
-<br />
-
-* [Class-Like Structures in ECMAScript 5](#https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Class-Like-Structures-in-ECMAScript-5)
-* [Class Declarations](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Class-Declarations)
-* [Class Expressions](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Summary#Class-Expressions)
-* [Classes as First-Class Citizens](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Classes-as-First-Class-Citizens)
-* [Accessor Properties](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Accessor-Properties)
-* [Computed Member Names](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Computed-Member-Names)
-* [Generator Methods](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Generator-Methods)
-* [Static Members](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Static-Members)
-* [Inheritance with Derived Classes](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Inheritance-with-Derived-Classes)
-* [Using new.target in Class Constructors](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Using-newtarget-in-Class-Constructors)
-* [Summary](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Summary)
+在探索 ECMAScript 6 类的过程中，理解类的幕后机制是很有帮助的，所以本章会首先探讨开发者是怎样在 ECMAScript 5 中模拟类的实现的。而且在之后的小节内，你也会发现 ECMAScript 6 中的类和其他语言相比并不是完全等同的，目的是为了和 JavaScript 与生俱来的动态特性相配合。
 
 <br />
 
-### <a name="Class-Like-Structures-in-ECMAScript-5"> Class-Like Structures in ECMAScript 5 </a>
+* [Class-Like Structures in ECMAScript 5](#Class-Like-Structures-in-ECMAScript-5)
+* [Class Declarations](#Class-Declarations)
+* [Class Expressions](#Class-Expressions)
+* [Classes as First-Class Citizens](#Classes-as-First-Class-Citizens)
+* [Accessor Properties](#Accessor-Properties)
+* [Computed Member Names](#Computed-Member-Names)
+* [Generator Methods](#Generator-Methods)
+* [Static Members](#Static-Members)
+* [Inheritance with Derived Classes](#Inheritance-with-Derived-Classes)
+* [Using new.target in Class Constructors](#Using-newtarget-in-Class-Constructors)
+* [Summary](#Summary)
 
-In ECMAScript 5 and earlier, JavaScript had no classes. The closest equivalent to a class was creating a constructor and then assigning methods to the constructor’s prototype, an approach typically called creating a custom type. For example:
+<br />
+
+### <a name="Class-Like-Structures-in-ECMAScript-5"> ECMAScript 5 中的类结构（Class-Like Structures in ECMAScript 5） </a>
+
+
+在 ECMAScript 5 或更早的版本中，JavaScript 没有类。和类这个概念及行为最接近的是创建一个构造函数并在构造函数的原型上添加方法，这种实现也被称为自定义的类型创建，例如：
 
 ```
 function PersonType(name) {
@@ -35,43 +36,46 @@ PersonType.prototype.sayName = function() {
 };
 
 let person = new PersonType("Nicholas");
-person.sayName();   // outputs "Nicholas"
+person.sayName();   // 输出 "Nicholas"
 
 console.log(person instanceof PersonType);  // true
 console.log(person instanceof Object);      // true
 ```
 
-In this code, PersonType is a constructor function that creates a single property called name. The sayName() method is assigned to the prototype so the same function is shared by all instances of the PersonType object. Then, a new instance of PersonType is created via the new operator. The resulting person object is considered an instance of PersonType and of Object through prototypal inheritance.
+在本例中，PersonType 是带有单个属性 name 的构造函数。sayName() 方法会添加到 PersonType 的原型上以共享给所有的实例。之后 PersonType 的一个实例由 new 操作符创建。该 person 对象根据原型继承会被同时视为 PersonType 和 Object 的实例。
 
-This basic pattern underlies a lot of the class-mimicking JavaScript libraries, and that’s where ECMAScript 6 classes start.
-
-<br />
-
-### <a name="Class-Declarations"> Class Declarations </a>
-
-The simplest class form in ECMAScript 6 is the class declaration, which looks similar to classes in other languages.
+很多 JavaScript 库都是用这种基本的模式来对类进行模拟，同时这也是 ECMAScript 6 类的基础。
 
 <br />
 
-#### A Basic Class Declaration
-Class declarations begin with the class keyword followed by the name of the class. The rest of the syntax looks similar to concise methods in object literals, without requiring commas between them. For example, here’s a simple class declaration:
+### <a name="Class-Declarations"> 类声明（Class Declarations） </a>
+
+
+在 ECMAScript 6 中类存在的最简单的形式就是类声明，它看起来和其他语言中的类无异。
+
+<br />
+
+#### 一个基本的类声明（A Basic Class Declaration）
+
+
+类声明包含 class 关键字和紧随其后的命名。剩下的语法看起来和对象字面量中的简写方法类似，不过在它们之间不需要逗号分隔。例如，下面就是一个简单的类声明：
 
 ```
 class PersonClass {
 
-    // equivalent of the PersonType constructor
+    // 等效于 PersonType 构造函数
     constructor(name) {
         this.name = name;
     }
 
-    // equivalent of PersonType.prototype.sayName
+    // 等效于 PersonType.prototype.sayName
     sayName() {
         console.log(this.name);
     }
 }
 
 let person = new PersonClass("Nicholas");
-person.sayName();   // outputs "Nicholas"
+person.sayName();   // 输出 "Nicholas"
 
 console.log(person instanceof PersonClass);     // true
 console.log(person instanceof Object);          // true
@@ -80,36 +84,39 @@ console.log(typeof PersonClass);                    // "function"
 console.log(typeof PersonClass.prototype.sayName);  // "function"
 ```
 
-The class declaration PersonClass behaves quite similarly to PersonType from the previous example. But instead of defining a function as the constructor, class declarations allow you to define the constructor directly inside the class with the special constructor method name. Since class methods use the concise syntax, there’s no need to use the function keyword. All other method names have no special meaning, so you can add as many methods as you want.
+PersonClass 类声明的行为和上个例子中的 PersonType 类似。作为构造函数的替代，类声明允许你直接在类的内部使用命名为 constructor 的方法来定义构造函数。因为类的方法使用简写语法，所以不需要 function 关键字。至于其它的方法并没有什么特殊的含义，你可以随意添加的需要的方法。
 
-> Own properties, properties that occur on the instance rather than the prototype, can only be created inside a class constructor or method. In this example, name is an own property. I recommend creating all possible own properties inside the constructor function so a single place in the class is responsible for all of them.
+> 自有属性：属性只出现在实例而不是原型上，而且只能由构造函数和方法来创建。在本例中，name 就是自有属性。我建议尽可能的将所有自有属性创建在构造函数中，这样当查找属性时可以做到一目了然。
 
-Interestingly, class declarations are just syntactic sugar on top of the existing custom type declarations. The PersonClass declaration actually creates a function that has the behavior of the constructor method, which is why typeof PersonClass gives "function" as the result. The sayName() method also ends up as a method on PersonClass.prototype in this example, similar to the relationship between sayName() and PersonType.prototype in the previous example. These similarities allow you to mix custom types and classes without worrying too much about which you’re using.
+有意思的是，类声明只是上例中自定义类型的语法糖。PersonClass 声明实际上创建了一个行为和 constructor 方法相同的构造函数，这也是 typeof PersonClass 返回 "function" 的原因。sayName() 在本例中作为 PersonClass.prototype 的方法，和上个示例中 sayName() 和 PersonType.prototype 关系一致。这些相似度允许你混合使用自定义类型和类而不需要纠结使用方式。
 
 <br />
 
-#### Why to Use the Class Syntax
+#### 为何使用类声明（Why to Use the Class Syntax）
 
-Despite the similarities between classes and custom types, there are some important differences to keep in mind:
 
-1. Class declarations, unlike function declarations, are not hoisted. Class declarations act like let declarations and so exist in the temporal dead zone until execution reaches the declaration.
-2. All code inside of class declarations runs in strict mode automatically. There’s no way to opt-out of strict mode inside of classes.
-3. All methods are non-enumerable. This is a significant change from custom types, where you need to use Object.defineProperty() to make a method non-enumerable.
-4. All methods lack an internal [[Construct]] method and will throw an error if you try to call them with new.
-5. Calling the class constructor without new throws an error.
-6. Attempting to overwrite the class name within a class method throws an error.
+先不管类和自定义类型之间的相似程度，有以下重要的几点差异是必须熟记的：
+
+1. 类声明和函数定义不同，它们是不会被提升的。类声明的行为和 let 比较相似，所以当执行流作用到类声明之前类会存在于暂存性死区（temporal dead zone）内。
+2. 类声明中的代码自动运行在严格模式下，同时没有任何办法可以手动切换到非严格模式。
+3. 所有的方法都是不可枚举的（non-enumerable），这和自定义类型相比是个显著的差异，因为后者需要使用 Object.defineProperty() 才能定义不可枚举的方法。
+4. 所有的方法都不能使用 new 来调用，因为它们没有内部方法 [[Construct]]。
+5. 不使用 new 来调用类构造函数会抛出错误。
+6. 试图在方法内部重写类名的行为会抛出错误。
 
 With all of this in mind, the PersonClass declaration from the previous example is directly equivalent to the following code, which doesn’t use the class syntax:
 
+记住了以上几点后，PersonClass 声明等同如下未使用类语法的代码：
+
 ```
-// direct equivalent of PersonClass
+// 完全等效于 PersonClass
 let PersonType2 = (function() {
 
     "use strict";
 
     const PersonType2 = function(name) {
 
-        // make sure the function was called with new
+        // 确保方法由 new 调用
         if (typeof new.target === "undefined") {
             throw new Error("Constructor must be called with new.");
         }
@@ -120,7 +127,7 @@ let PersonType2 = (function() {
     Object.defineProperty(PersonType2.prototype, "sayName", {
         value: function() {
 
-            // make sure the method wasn't called with new
+            // 确保方法不被 new 调用
             if (typeof new.target !== "undefined") {
                 throw new Error("Method cannot be called with new.");
             }
@@ -136,19 +143,20 @@ let PersonType2 = (function() {
 }());
 ```
 
-First, notice that there are two PersonType2 declarations: a let declaration in the outer scope and a const declaration inside the IIFE. This is how class methods are forbidden from overwriting the class name while code outside the class is allowed to do so. The constructor function checks new.target to ensure that it’s being called with new; if not, an error is thrown. Next, the sayName() method is defined as nonenumerable, and the method checks new.target to ensure that it wasn’t called with new. The final step returns the constructor function.
+首先要注意这里有两个 PersonType2 的声明，分别由 let 和 const 在外部作用域与 IIFE 内部创建。这说明了为何类名只能在类外部而不能由内部方法来改写。构造函数会检查 new.target 以确保由 new 来调用；否则会抛出一个错误。接下来，sayName() 方法被设定为不可枚举，同时检查 new.target 属性确保不被 new 来调用。最后将该构造函数返回。
 
-This example shows that while it’s possible to do everything classes do without using the new syntax, the class syntax simplifies all of the functionality significantly.
+该例说明了虽然 class 能做到的不使用新语法也能完全做到，但是相比之下 class 的语法明显更为简洁。
 
 <br />
 
-> #### Constant Class Names
-The name of a class is only specified as if using const inside of the class itself. That means you can overwrite the class name outside of the class but not inside a class method. For example:
+> #### 恒定的类名（Constant Class Names）
+> 
+>   在类的内部，类名被视为由 const 声明的常量。这意味着你只有在类的外部才能对类名进行重写。例如：
 
 ```
 class Foo {
    constructor() {
-       Foo = "bar";    // throws an error when executed
+       Foo = "bar";    // 执行后抛出错误
    }
 }
 
@@ -156,36 +164,38 @@ class Foo {
 Foo = "baz";
 ```
 
-> In this code, the Foo inside the class constructor is a separate binding from the Foo outside the class. The internal Foo is defined as if it’s a const and cannot be overwritten. An error is thrown when the constructor attempts to overwrite Foo with any value. But since the external Foo is defined as if it’s a let declaration, you can overwrite its value at any time.
+> 在这段代码中，类构造函数内部的 Foo 和类外部的 Foo 并不是同一个绑定。内部的 Foo 行为类似于 const 声明的变量，因此它不能被重写，否则会抛出错误。不过外部的 Foo 被视作由 let 声明的变量，所以你可以不限次数的重写它。
 
 <br />
 
-### <a name="Class-Expressions"> Class Expressions </a>
+### <a name="Class-Expressions"> 类表达式（Class Expressions） </a>
 
-Classes and functions are similar in that they have two forms: declarations and expressions. Function and class declarations begin with an appropriate keyword (function or class, respectively) followed by an identifier. Functions have an expression form that doesn’t require an identifier after function, and similarly, classes have an expression form that doesn’t require an identifier after class. These class expressions are designed to be used in variable declarations or passed into functions as arguments.
+
+类和函数的相似之处在于它们都有两种存在形式：声明和表达式。函数和类声明由关键字开始（分别为 function 和 class），之后为标识符。函数表达式不要求在 function 关键字后添加标识符，类表达式同理。设计类表达式的目的主要是为了将它赋值给变量或者传参给函数。
 
 <br />
 
-#### A Basic Class Expression
+#### 一个基本的类表达式（A Basic Class Expression）
 
-Here’s the class expression equivalent of the previous PersonClass examples, followed by some code that uses it:
+
+以下代码是等效于上例中类声明的类表达式：
 
 ```
 let PersonClass = class {
 
-    // equivalent of the PersonType constructor
+    // 等效于 PersonType 构造函数
     constructor(name) {
         this.name = name;
     }
 
-    // equivalent of PersonType.prototype.sayName
+    // 等效于 PersonType.prototype.sayName
     sayName() {
         console.log(this.name);
     }
 };
 
 let person = new PersonClass("Nicholas");
-person.sayName();   // outputs "Nicholas"
+person.sayName();   // 输出 "Nicholas"
 
 console.log(person instanceof PersonClass);     // true
 console.log(person instanceof Object);          // true
@@ -194,29 +204,34 @@ console.log(typeof PersonClass);                    // "function"
 console.log(typeof PersonClass.prototype.sayName);  // "function"
 ```
 
-As this example demonstrates, class expressions do not require identifiers after class. Aside from the syntax, class expressions are functionally equivalent to class declarations.
+由该例所示，类表达式不需要在 class 后面使用标识符。除此之外，类表达式在功能上和类声明是相同的。
 
 In anonymous class expressions, as in the previous example, PersonClass.name is an empty string. When using a class declaration, PersonClass.name would be "PersonClass".
 
+在该匿名类表达式中，PersonClass.name 是个空的字符串。如果使用了类声明，那么 PersonClass.name 的值为 "PersonClass"。
+
+* 注：译者在这里测试发现表达式和声明都会返回类名，原文有误？
+
 <br />
 
-> Whether you use class declarations or class expressions is mostly a matter of style. Unlike function declarations and function expressions, both class declarations and class expressions are not hoisted, and so the choice has little bearing on the runtime behavior of the code. The only significant difference is that anonymous class expressions have a name property that is an empty string while class declarations always have a name property equal to the class name (for instance, PersonClass.name is "PersonClass" when using a class declaration).
+> 不论你使用类声明还是类表达式都取决于你的习惯。与函数声明和函数表达式不同，类声明和表达式都不会被提升。所以定义类的方式对运行时（runtime）的代码不会有什么影响。唯一显著的区别是匿名函数表达式的 name 属性为空字符串而类声明的 name 属性始终为类名（例如，使用类声明时 PersonClass.name 为 "PersonClass"）。
 
 <br />
 
-#### Named Class Expressions
+#### 具名类表达式（Named Class Expressions）
 
-The previous section used an anonymous class expression in the example, but just like function expressions, you can also name class expressions. To do so, include an identifier after the class keyword like this:
+
+上一节的示例中使用了匿名类表达式，不过和函数表达式一样，你也可以使用具名类表达式。要想这么做，只需像这样在 class 关键字后添加标识符:
 
 ```
 let PersonClass = class PersonClass2 {
 
-    // equivalent of the PersonType constructor
+    // 等效于 PersonType 构造函数
     constructor(name) {
         this.name = name;
     }
 
-    // equivalent of PersonType.prototype.sayName
+    // 等效于 PersonType.prototype.sayName
     sayName() {
         console.log(this.name);
     }
@@ -226,17 +241,17 @@ console.log(typeof PersonClass);        // "function"
 console.log(typeof PersonClass2);       // "undefined"
 ```
 
-In this example, the class expression is named PersonClass2. The PersonClass2 identifier exists only within the class definition so that it can be used inside the class methods (such as the sayName() method in this example). Outside the class, typeof PersonClass2 is "undefined" because no PersonClass2 binding exists there. To understand why this is, look at an equivalent declaration that doesn’t use classes:
+在本例中，类表达式被命名为 PersonClass2 。该标识符只存在于定义的类内部，所以它只能由类的方法（例如本例中的 sayName() 方法）使用。在类的外部 typeof PersonClass2 为 "undefined" 是因为不存在任何 PersonClass2 的绑定。为了更好地理解它，查看下列未使用 class 的等效代码：
 
 ```
-// direct equivalent of PersonClass named class expression
+// 完全等效于 PersonClass
 let PersonClass = (function() {
 
     "use strict";
 
     const PersonClass2 = function(name) {
 
-        // make sure the function was called with new
+        // 确保方法由 new 调用
         if (typeof new.target === "undefined") {
             throw new Error("Constructor must be called with new.");
         }
@@ -247,7 +262,7 @@ let PersonClass = (function() {
     Object.defineProperty(PersonClass2.prototype, "sayName", {
         value: function() {
 
-            // make sure the method wasn't called with new
+            // 确保方法不由 new 调用
             if (typeof new.target !== "undefined") {
                 throw new Error("Method cannot be called with new.");
             }
@@ -263,17 +278,19 @@ let PersonClass = (function() {
 }());
 ```
 
-Creating a named class expression slightly changes what’s happening in the JavaScript engine. For class declarations, the outer binding (defined with let) has the same name as the inner binding (defined with const). A named class expression uses its name in the const definition, so PersonClass2 is defined for use only inside the class.
+具名类表达式的创建稍稍改变了 JavaScript 引擎内部的工作方式。对于类声明，外部的绑定（由 let 定义）和内部的绑定（由 const 定义）使用了相同的命名。而具名类表达式内部使用 const 定义该命名，所以定义的 PersonClass2 只能在类的内部使用。
 
-While named class expressions behave differently from named function expressions, there are still a lot of similarities between the two. Both can be used as values, and that opens up a lot of possibilities, which I’ll cover next.
+虽然具名类表达式的行为和具名函数表达式有些差异，不过它们之间的相似程度还是很高的。它们都可以被当作值使用，于是这就给它们提供了我接下来要讲到的很多的潜力。
+
 
 <br />
 
-### <a name="Classes-as-First-Class-Citizens"> Classes as First-Class Citizens </a>
+### <a name="Classes-as-First-Class-Citizens"> 作为一等公民的类（Classes as First-Class Citizens） </a>
 
-In programming, something is said to be a first-class citizen when it can be used as a value, meaning it can be passed into a function, returned from a function, and assigned to a variable. JavaScript functions are first-class citizens (sometimes they’re just called first class functions), and that’s part of what makes JavaScript unique.
 
-ECMAScript 6 continues this tradition by making classes first-class citizens as well. That allows classes to be used in a lot of different ways. For example, they can be passed into functions as arguments:
+在编程中，如果某些东西能作为值使用，那么它就被称为一等公民。这意味着它可以传入函数，或作为函数的返回值，亦或能赋值给变量。JavaScript 中的函数就是一等公民（有时它们被称作一等函数），这也是 JavaScript 独特的部分之一。
+
+ECMAScript 6 继续延续该传统并让类也成为了一等公民，允许类以各种不同的方式使用。例如，它们可以作为函数的参数：
 
 ```
 function createObject(classDef) {
@@ -290,9 +307,9 @@ let obj = createObject(class {
 obj.sayHi();        // "Hi!"
 ```
 
-In this example, the createObject() function is called with an anonymous class expression as an argument, creates an instance of that class with new, and returns the instance. The variable obj then stores the returned instance.
+本例中，createObject() 函数被传入了一个匿名类表达式作为参数，并在 new 调用参数之后返回了这个实例。变量 obj 存储了该它。
 
-Another interesting use of class expressions is creating singletons by immediately invoking the class constructor. To do so, you must use new with a class expression and include parentheses at the end. For example:
+类表达式另一个有趣的使用方式是通过立即调用（immediately invoking）类构造函数来创建单例（singleton）。想要这么做的话，你必须联合使用 new 及类表达式并在末尾包含一个圆括号。例如：
 
 ```
 let person = new class {
@@ -310,13 +327,13 @@ let person = new class {
 person.sayName();       // "Nicholas"
 ```
 
-Here, an anonymous class expression is created and then executed immediately. This pattern allows you to use the class syntax for creating singletons without leaving a class reference available for inspection. (Remember that PersonClass only creates a binding inside of the class, not outside.) The parentheses at the end of the class expression are the indicator that you’re calling a function while also allowing you to pass in an argument.
+在这里，一个匿名类表达式被创建并迅速执行。该模式允许你使用 class 语法来创建单例并消除可供窥察的类引用的存在（还记得 PersonClass 并非在类外而是在内部创建绑定的例子吗）。类表达式末尾的圆括号表示有函数被调用，同时你也可以在括号内传递参数。
 
-The examples in this chapter so far have focused on classes with methods. But you can also create accessor properties on classes using a syntax similar to object literals.
+本章目前出现的示例仅专注于类和包含的方法。其实你可以使用类似于对象字面量的语法来给类创建访问器属性。
 
 <br />
 
-### <a name="Accessor-Properties"> Accessor Properties </a>
+### <a name="Accessor-Properties"> 访问器属性（Accessor Properties） </a>
 
 While own properties should be created inside class constructors, classes allow you to define accessor properties on the prototype. To create a getter, use the keyword get followed by a space, followed by an identifier; to create a setter, do the same using the keyword set. For example:
 
