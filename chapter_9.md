@@ -7,17 +7,17 @@ While exploring ECMAScript 6 classes, it’s helpful to understand the underlyin
 
 <br />
 
-* [Class-Like Structures in ECMAScript 5](#Class-Like-Structures-in-ECMAScript-5)
-* [Class Declarations](#Class-Declarations)
-* [Class Expressions](#Class Expressions)
-* [Classes as First-Class Citizens](#Classes as First-Class Citizens)
-* [Accessor Properties](#Accessor Properties)
-* [Computed Member Names](#Computed Member Names)
-* [Generator Methods](#Generator Methods)
-* [Static Members](#Static Members)
-* [Inheritance with Derived Classes](#Inheritance with Derived Classes)
-* [Using new.target in Class Constructors](#Using new.target in Class Constructors)
-* [Summary](#Summary)
+* [Class-Like Structures in ECMAScript 5](#https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Class-Like-Structures-in-ECMAScript-5)
+* [Class Declarations](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Class-Declarations)
+* [Class Expressions](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Summary#Class-Expressions)
+* [Classes as First-Class Citizens](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Classes-as-First-Class-Citizens)
+* [Accessor Properties](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Accessor-Properties)
+* [Computed Member Names](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Computed-Member-Names)
+* [Generator Methods](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Generator-Methods)
+* [Static Members](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Static-Members)
+* [Inheritance with Derived Classes](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Inheritance-with-Derived-Classes)
+* [Using new.target in Class Constructors](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Using-newtarget-in-Class-Constructors)
+* [Summary](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html#Summary)
 
 <br />
 
@@ -47,7 +47,7 @@ This basic pattern underlies a lot of the class-mimicking JavaScript libraries, 
 
 <br />
 
-### <a name="Class Declarations"> Class Declarations </a>
+### <a name="Class-Declarations"> Class Declarations </a>
 
 The simplest class form in ECMAScript 6 is the class declaration, which looks similar to classes in other languages.
 
@@ -269,7 +269,7 @@ While named class expressions behave differently from named function expressions
 
 <br />
 
-### <a name="Classes as First-Class Citizens"> Classes as First-Class Citizens </a>
+### <a name="Classes-as-First-Class-Citizens"> Classes as First-Class Citizens </a>
 
 In programming, something is said to be a first-class citizen when it can be used as a value, meaning it can be passed into a function, returned from a function, and assigned to a variable. JavaScript functions are first-class citizens (sometimes they’re just called first class functions), and that’s part of what makes JavaScript unique.
 
@@ -316,7 +316,7 @@ The examples in this chapter so far have focused on classes with methods. But yo
 
 <br />
 
-### <a name="Accessor Properties"> Accessor Properties </a>
+### <a name="Accessor-Properties"> Accessor Properties </a>
 
 While own properties should be created inside class constructors, classes allow you to define accessor properties on the prototype. To create a getter, use the keyword get followed by a space, followed by an identifier; to create a setter, do the same using the keyword set. For example:
 
@@ -380,7 +380,7 @@ As with previous examples, this one shows just how much code you can save by usi
 
 <br />
 
-### <a name="Computed Member Names"> Computed Member Names </a>
+### <a name="Computed-Member-Names"> Computed Member Names </a>
 
 The similarities between object literals and classes aren’t quite over yet. Class methods and accessor properties can also have computed names. Instead of using an identifier, use square brackets around an expression, which is the same syntax used for object literal computed names. For example:
 
@@ -431,7 +431,7 @@ You’ve seen that there are a lot of similarities between classes and object li
 
 <br />
 
-### <a name="Generator Methods"> Generator Methods </a>
+### <a name="Generator-Methods"> Generator Methods </a>
 
 When Chapter 8 introduced generators, you learned how to define a generator on an object literal by prepending a star (*) to the method name. The same syntax works for classes as well, allowing any method to be a generator. Here’s an example:
 
@@ -487,7 +487,7 @@ Adding methods and accessor properties to a class prototype is useful when you w
 
 <br />
 
-### <a name="Static Members"> Static Members </a>
+### <a name="Static-Members"> Static Members </a>
 
 Adding additional methods directly onto constructors to simulate static members is another common pattern in ECMAScript 5 and earlier. For example:
 
@@ -539,7 +539,7 @@ The PersonClass definition has a single static method called create(). The metho
 
 <br />
 
-### <a name="Inheritance with Derived Classes"> Inheritance with Derived Classes </a>
+### <a name="Inheritance-with-Derived-Classes"> Inheritance with Derived Classes </a>
 
 Prior to ECMAScript 6, implementing inheritance with custom types was an extensive process. Proper inheritance required multiple steps. For instance, consider this example:
 
@@ -985,7 +985,7 @@ In general, you should use the Symbol.species property whenever you might want t
 
 <br />
 
-### <a name="Using new.target in Class Constructors"> Using new.target in Class Constructors </a>
+### <a name="Using-newtarget-in-Class-Constructors"> Using new.target in Class Constructors </a>
 
 In Chapter 3, you learned about new.target and how its value changes depending on how a function is called. You can also use new.target in class constructors to determine how the class is being invoked. In the simple case, new.target is equal to the constructor function for the class, as in this example:
 
