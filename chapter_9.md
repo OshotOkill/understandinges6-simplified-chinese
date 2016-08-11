@@ -7,7 +7,7 @@ While exploring ECMAScript 6 classes, it’s helpful to understand the underlyin
 
 <br />
 
-* [Class-Like Structures in ECMAScript 5](#Class-Like Structures in ECMAScript 5)
+* [Class-Like Structures in ECMAScript 5](#Class-Like-Structures-in-ECMAScript-5)
 * [Class Declarations](#Class Declarations)
 * [Class Expressions](#Class Expressions)
 * [Classes as First-Class Citizens](#Classes as First-Class Citizens)
@@ -21,7 +21,7 @@ While exploring ECMAScript 6 classes, it’s helpful to understand the underlyin
 
 <br />
 
-### <a name="Class-Like Structures in ECMAScript 5"> Class-Like Structures in ECMAScript 5 </a>
+### <a name="Class-Like-Structures-in-ECMAScript-5"> Class-Like Structures in ECMAScript 5 </a>
 
 In ECMAScript 5 and earlier, JavaScript had no classes. The closest equivalent to a class was creating a constructor and then assigning methods to the constructor’s prototype, an approach typically called creating a custom type. For example:
 
