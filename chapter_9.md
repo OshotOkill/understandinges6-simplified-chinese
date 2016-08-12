@@ -692,7 +692,7 @@ class Square extends Rectangle {
 
 <br />
 
-#### Inherited Static Members
+#### 静态成员继承（Inherited Static Members）
 
 
 如果基类中包含静态成员，那么派生类也可以直接使用它们。这里的继承机制和其它语言相同，不过对 JavaScript 而言它是个新的概念。如下所示：
@@ -732,9 +732,10 @@ console.log(rect instanceof Square);        // false
 
 <br />
 
-#### Derived Classes from Expressions
+#### 继承表达式的派生类（Derived Classes from Expressions）
 
-Perhaps the most powerful aspect of derived classes in ECMAScript 6 is the ability to derive a class from an expression. You can use extends with any expression as long as the expression resolves to a function with [[Construct]] and a prototype. For instance:
+
+或许 ECMAScript 6 派生类最强大的地方在于它们可以继承一个表达式。只要该表达式的计算结果包含 [[Construct]] 的函数和一个原型，那么就可以使用 extends 来继承它。例如：
 
 ```
 function Rectangle(length, width) {
@@ -757,9 +758,9 @@ console.log(x.getArea());               // 9
 console.log(x instanceof Rectangle);    // true
 ```
 
-Rectangle is defined as an ECMAScript 5-style constructor while Square is a class. Since Rectangle has [[Construct]] and a prototype, the Square class can still inherit directly from it.
+Rectangle 是 ECMAScript 5 风格的构造函数而 Square 是一个类。因为 Rectangle 包含 [[Construct]] 和一个原型，所以 Square 类依旧能直接继承它。
 
-Accepting any type of expression after extends offers powerful possibilities, such as dynamically determining what to inherit from. For example:
+extends 可接受任意类型表达式的特性给类继承提供了无限的可能性，你可以动态决定要继承的内容。例如：
 
 ```
 function Rectangle(length, width) {
@@ -786,7 +787,7 @@ console.log(x.getArea());               // 9
 console.log(x instanceof Rectangle);    // true
 ```
 
-The getBase() function is called directly as part of the class declaration. It returns Rectangle, making this example is functionally equivalent to the previous one. And since you can determine the base class dynamically, it’s possible to create different inheritance approaches. For instance, you can effectively create mixins:
+getBase() 函数被直接调用的同时还作为类声明的一部分。该函数返回 Rectangle，使得它等效于上一个例子。而且，由于基类可以是动态决定，那么创建多种不同的继承方式也是有可能的。例如，你可以有效地创建 mixin：
 
 ```
 let SerializableMixin = {
@@ -820,18 +821,18 @@ console.log(x.getArea());               // 9
 console.log(x.serialize());             // "{"length":3,"width":3}"
 ```
 
-In this example, mixins are used instead of classical inheritance. The mixin() function takes any number of arguments that represent mixin objects. It creates a function called base and assigns the properties of each mixin object to the prototype. The function is then returned so Square can use extends. Keep in mind that since extends is still used, you are required to call super() in the constructor.
+本例使用了 mixin 而不是传统的继承。mixin() 函数接收任意个数的混入对象参数。它创建了一个 base 函数并将想要混合的对象中的属性添加给了 base 的原型。该函数之后会被返回因此 Square 才可能使用 extends 来继承它。需要注意的是既然使用了 extends，那么构造函数必须要调用 super()。
 
-The instance of Square has both getArea() from AreaMixin and serialize from SerializableMixin. This is accomplished through prototypal inheritance. The mixin() function dynamically populates the prototype of a new function with all of the own properties of each mixin. (Keep in mind that if multiple mixins have the same property, only the last property added will remain.)
+Square 的实例中包含了从 AreaMixin 和 SerializableMixin 分别得到的 getArea() 和 serialize() 方法。这个是通过原型继承来实现的。mixin() 函数动态地将每一个 mixin 中的属性添加到一个新函数的原型上（注意的是如果多个 mixin 包含相同的属性，只有最后的会被采用）。
 
 <br />
 
-> **NOTE**: Any expression can be used after extends, but not all expressions result in a valid class. Specifically, the following expression types cause errors:
+> **注意**: 虽然 extends 后可以添加任何表达式，但是不是所有的表达式最后都能产生一个有效的类。尤其是以下的几种会造成错误：
 
 > * null
-* generator functions (covered in Chapter 8)
+* 生成器函数 (第八章已讲述)
 
-> In these cases, attempting to create a new instance of the class will throw an error because there is no [[Construct]] to call.
+> 使用这些表达式创建类实例会发生错误的原因是它们不包含 [[Construct]] 。
 
 <br />
 
