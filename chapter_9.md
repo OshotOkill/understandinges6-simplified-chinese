@@ -21,7 +21,7 @@
 
 <br />
 
-### <a name="Class-Like-Structures-in-ECMAScript-5"> ECMAScript 5 中的类结构（Class-Like Structures in ECMAScript 5） </a>
+### <a id="Class-Like-Structures-in-ECMAScript-5"> ECMAScript 5 中的类结构（Class-Like Structures in ECMAScript 5） </a>
 
 
 在 ECMAScript 5 或更早的版本中，JavaScript 没有类。和类这个概念及行为最接近的是创建一个构造函数并在构造函数的原型上添加方法，这种实现也被称为自定义的类型创建，例如：
@@ -48,7 +48,7 @@ console.log(person instanceof Object);      // true
 
 <br />
 
-### <a name="Class-Declarations"> 类声明（Class Declarations） </a>
+### <a id="Class-Declarations"> 类声明（Class Declarations） </a>
 
 
 在 ECMAScript 6 中类存在的最简单的形式就是类声明，它看起来和其他语言中的类无异。
@@ -103,8 +103,6 @@ PersonClass 类声明的行为和上个例子中的 PersonType 类似。作为�
 4. 所有的方法都不能使用 new 来调用，因为它们没有内部方法 [[Construct]]。
 5. 不使用 new 来调用类构造函数会抛出错误。
 6. 试图在方法内部重写类名的行为会抛出错误。
-
-With all of this in mind, the PersonClass declaration from the previous example is directly equivalent to the following code, which doesn’t use the class syntax:
 
 记住了以上几点后，PersonClass 声明等同如下未使用类语法的代码：
 
@@ -285,7 +283,7 @@ let PersonClass = (function() {
 
 <br />
 
-### <a name="Classes-as-First-Class-Citizens"> 作为一等公民的类（Classes as First-Class Citizens） </a>
+### <a id="Classes-as-First-Class-Citizens"> 作为一等公民的类（Classes as First-Class Citizens） </a>
 
 
 在编程中，如果某些东西能作为值使用，那么它就被称为一等公民。这意味着它可以传入函数，或作为函数的返回值，亦或能赋值给变量。JavaScript 中的函数就是一等公民（有时它们被称作一等函数），这也是 JavaScript 独特的部分之一。
@@ -333,9 +331,10 @@ person.sayName();       // "Nicholas"
 
 <br />
 
-### <a name="Accessor-Properties"> 访问器属性（Accessor Properties） </a>
+### <a id="Accessor-Properties"> 访问器属性（Accessor Properties） </a>
 
-While own properties should be created inside class constructors, classes allow you to define accessor properties on the prototype. To create a getter, use the keyword get followed by a space, followed by an identifier; to create a setter, do the same using the keyword set. For example:
+
+虽然自有属性应该在类构造函数中创建，不过类也允许你在原型上创建访问器属性。为了创建一个 getter，需要使用 get 关键字，再加上一个空格和标识符；同理创建 setter 只需将上述步骤的关键字换成 set。例如：
 
 ```
 class CustomHTMLElement {
@@ -360,17 +359,17 @@ console.log("set" in descriptor);   // true
 console.log(descriptor.enumerable); // false
 ```
 
-In this code, the CustomHTMLElement class is made as a wrapper around an existing DOM element. It has both a getter and setter for html that delegates to the innerHTML method on the element itself. This accessor property is created on the CustomHTMLElement.prototype and, just like any other method would be, is created as non-enumerable. The equivalent non-class representation is:
+在该段代码中，CustomHTMLElement 是包含 DOM 元素的容器类。html 拥有 getter 和 setter 并分别代理 innerHTML 方法来操控元素。访问器属性在 CustomHTMLElement.prototype 上创建，和其它方法一样都是不可枚举的。未使用类的等效表示如下：
 
 ```
-// direct equivalent to previous example
+// 完全等效于 PersonClass
 let CustomHTMLElement = (function() {
 
     "use strict";
 
     const CustomHTMLElement = function(element) {
 
-        // make sure the function was called with new
+        // 确保方法由 new 调用
         if (typeof new.target === "undefined") {
             throw new Error("Constructor must be called with new.");
         }
@@ -393,13 +392,14 @@ let CustomHTMLElement = (function() {
 }());
 ```
 
-As with previous examples, this one shows just how much code you can save by using a class instead of the non-class equivalent. The html accessor property definition alone is almost the size of the equivalent class declaration.
+和之前的示例相同，本例只是展示了从非类语法切换到类语法能节省多少代码。前者定义 html 访问器属性的代码量几乎等同于使用类语法所需要的全部代码量。
 
 <br />
 
-### <a name="Computed-Member-Names"> Computed Member Names </a>
+### <a id="Computed-Member-Names"> 动态计算的成员命名（Computed Member Names） </a>
 
-The similarities between object literals and classes aren’t quite over yet. Class methods and accessor properties can also have computed names. Instead of using an identifier, use square brackets around an expression, which is the same syntax used for object literal computed names. For example:
+
+对象字面量和类之间的相似点还不仅仅只是这些。类方法和访问器属性同样可以使用动态计算的命名。你可以使用一对包含表达式的方括号来替代标识符，表示它们的命名是动态计算的。例如：
 
 ```
 let methodName = "sayName";
@@ -419,9 +419,9 @@ let me = new PersonClass("Nicholas");
 me.sayName();           // "Nicholas"
 ```
 
-This version of PersonClass uses a variable to assign a name to a method inside its definition. The string "sayName" is assigned to the methodName variable, and then methodName is used to declare the method. The sayName() method is later accessed directly.
+该版本的 PersonClass 使用了一个变量赋值给内部的方法命名。"sayName" 会被赋值给 methodName 变量，于是 methodName 就用来声明方法。sayName() 方法在之后可以被直接使用。
 
-Accessor properties can use computed names in the same way, like this:
+访问器属性的命名也可以使用相同的方式来动态计算，像这样：
 
 ```
 let propertyName = "html";
@@ -442,15 +442,16 @@ class CustomHTMLElement {
 }
 ```
 
-Here, the getter and setter for html are set using the propertyName variable. Accessing the property by using .html only affects the definition.
+在这里，getter 和 setter 绑定在以 propertyName 变量值命名的属性上。使用 .html 访问该属性只作用于定义本身。 
 
-You’ve seen that there are a lot of similarities between classes and object literals, with methods, accessor properties, and computed names. There’s just one more similarity to cover: generators.
+你已经看到了类与对象字面量之间从方法，访问器属性和动态计算命名等多个方面的相似之处。除此之外还有一处值得一提：生成器。
 
 <br />
 
-### <a name="Generator-Methods"> Generator Methods </a>
+### <a id="Generator-Methods"> 生成器方法（Generator Methods） </a>
 
-When Chapter 8 introduced generators, you learned how to define a generator on an object literal by prepending a star (*) to the method name. The same syntax works for classes as well, allowing any method to be a generator. Here’s an example:
+
+在第八章介绍生成器之后，你懂得了在对象字面量内部的方法名之前使用星号（*）来创建生成器。同样类也允许在内部使用该语法将任何方法改造成生成器。如下所示：
 
 ```
 class MyClass {
@@ -467,9 +468,9 @@ let instance = new MyClass();
 let iterator = instance.createIterator();
 ```
 
-This code creates a class called MyClass with a createIterator() generator method. The method returns an iterator whose values are hardcoded into the generator. Generator methods are useful when you have an object that represents a collection of values and you’d like to iterate over those values easily. Arrays, sets, and maps all have multiple generator methods to account for the different ways developers need to interact with their items.
+该段代码创建了 MyClass 类并带有 createIterator() 生成器方法。该方法返回了一个经过硬编码（hardcoded）的迭代器。当你想要一个具有集合性质的对象并能轻松迭代包含值的时候，生成器方法相当有用。数组，set 和 map 都拥有多个生成器方法以便给开发者提供多种选择来操作包含的项。
 
-While generator methods are useful, defining a default iterator for your class is much more helpful if the class represents a collection of values. You can define the default iterator for a class by using Symbol.iterator to define a generator method, such as:
+尽管生成器方法很有用，不过在集合性质的类中定义一个默认迭代器就再好不过了。你可以给类的 Symbol.iterator 定义一个生成器方法来设置类的默认迭代器，例如：
 
 ```
 class Collection {
@@ -492,33 +493,34 @@ for (let x of collection) {
     console.log(x);
 }
 
-// Output:
+// 输出:
 // 1
 // 2
 // 3
 ```
 
-This example uses a computed name for a generator method that delegates to the values() iterator of the this.items array. Any class that manages a collection of values should include a default iterator because some collection-specific operations require collections they operate on to have an iterator. Now, any instance of Collection can be used directly in a for-of loop or with the spread operator.
+该例使用了动态命名的生成器方法来代理 this.items 数组的 values() 迭代器。任何管理集合的类都应该包含一个默认迭代器，因为一些集合专属的操作要求作用的集合必须包含迭代器。现在，该集合的任何实例都能被 for-of 循环或扩展运算符直接使用。
 
-Adding methods and accessor properties to a class prototype is useful when you want those to show up on object instances. If, on the other hand, you’d like methods or accessor properties on the class itself, then you’ll need to use static members.
+为了对象实例能够使用它们，在类的原型上添加方法和访问器属性非常有用。不过令另一方面，当你想让方法和访问器属性只能由类自己使用时，你需要的是静态成员。
 
 <br />
 
-### <a name="Static-Members"> Static Members </a>
+### <a id="Static-Members"> 静态成员（Static Members） </a>
 
-Adding additional methods directly onto constructors to simulate static members is another common pattern in ECMAScript 5 and earlier. For example:
+
+给构造函数直接添加方法来模拟静态成员这在 ECMAScript 5 和更早的版本中是个常见的模式。例如：
 
 ```
 function PersonType(name) {
     this.name = name;
 }
 
-// static method
+// 静态方法
 PersonType.create = function(name) {
     return new PersonType(name);
 };
 
-// instance method
+// 实例方法
 PersonType.prototype.sayName = function() {
     console.log(this.name);
 };
@@ -526,22 +528,22 @@ PersonType.prototype.sayName = function() {
 var person = PersonType.create("Nicholas");
 ```
 
-In other programming languages, the factory method called PersonType.create() would be considered a static method, as it doesn’t depend on an instance of PersonType for its data. ECMAScript 6 classes simplify the creation of static members by using the formal static annotation before the method or accessor property name. For instance, here’s the class equivalent of the last example:
+在其它编程语言中，PersonType.create() 这个工厂方法会被视为是静态的，因为他不依赖示例中的数据。ECMAScript 6 的类通过在方法和访问器属性之前使用正式的 static 注解简化了静态方法的创建。例如，下例中的类和上例相比是等效的：
 
 ```
 class PersonClass {
 
-    // equivalent of the PersonType constructor
+    // 等效于 PersonType 构造函数
     constructor(name) {
         this.name = name;
     }
 
-    // equivalent of PersonType.prototype.sayName
+    // 等效于 PersonType.prototype.sayName
     sayName() {
         console.log(this.name);
     }
 
-    // equivalent of PersonType.create
+    // 等效于 PersonType.create
     static create(name) {
         return new PersonClass(name);
     }
@@ -550,15 +552,18 @@ class PersonClass {
 let person = PersonClass.create("Nicholas");
 ```
 
-The PersonClass definition has a single static method called create(). The method syntax is the same used for sayName() except for the static keyword. You can use the static keyword on any method or accessor property definition within a class. The only restriction is that you can’t use static with the constructor method definition.
-
-> Static members are not accessible from instances. You must always access static members from the class directly.
+在 PersonClass 的定义中包含一个 create() 静态方法。它和直接创建 sayName() 方法的差异在 static 这个关键字。你可以将 static 关键字添加给类中定义的除 constructor 之外的任何方法或访问器属性。
 
 <br />
 
-### <a name="Inheritance-with-Derived-Classes"> Inheritance with Derived Classes </a>
+> 静态成员不能被实例访问。你必须通过类本身来使用它们。
 
-Prior to ECMAScript 6, implementing inheritance with custom types was an extensive process. Proper inheritance required multiple steps. For instance, consider this example:
+<br />
+
+### <a id="Inheritance-with-Derived-Classes"> 以派生类为继承方式（Inheritance with Derived Classes） </a>
+
+
+ECMAScript 6 之前，实现自定义类型的继承是个昂贵的过程。正确的继承方式包含多个步骤。例如，考虑下面的例子：
 
 ```
 function Rectangle(length, width) {
@@ -590,9 +595,9 @@ console.log(square instanceof Square);      // true
 console.log(square instanceof Rectangle);   // true
 ```
 
-Square inherits from Rectangle, and to do so, it must overwrite Square.prototype with a new object created from Rectangle.prototype as well as call the Rectangle.call() method. These steps often confused JavaScript newcomers and were a source of errors for experienced developers.
+Square 继承了 Rectangle。方法是通过创建了以 Rectangle.prototype 为原型创建的新对象对 Square.prototype 进行重写，并在构造函数上调用 Rectangle.call() 方法。
 
-Classes make inheritance easier to implement by using the familiar extends keyword to specify the function from which the class should inherit. The prototypes are automatically adjusted, and you can access the base class constructor by calling the super() method. Here’s the ECMAScript 6 equivalent of the previous example:
+类通过 extends 关键字并指定要继承的函数或类名简单地实现了继承。原型会自动调整，并可以通过 super() 方法来访问基类构造函数。这里是 ECMAScript 6 针对上例的等效写法：
 
 ```
 class Rectangle {
@@ -609,7 +614,7 @@ class Rectangle {
 class Square extends Rectangle {
     constructor(length) {
 
-        // same as Rectangle.call(this, length, length)
+        // 等效于 Rectangle.call(this, length, length)
         super(length, length);
     }
 }
@@ -621,16 +626,16 @@ console.log(square instanceof Square);      // true
 console.log(square instanceof Rectangle);   // true
 ```
 
-This time, the Square class inherits from Rectangle using the extends keyword. The Square constructor uses super() to call the Rectangle constructor with the specified arguments. Note that unlike the ECMAScript 5 version of the code, the identifier Rectangle is only used within the class declaration (after extends).
+本次 Square 类使用了 extends 关键字继承了 Rectangle 。Square 构造函数使用 super() 和指定的参数来调用 Rectangle 的构造函数。注意和 ECMAScript 5 中的写法不同，Rectangle 只在类声明中使用（extends 之后）。
 
-Classes that inherit from other classes are referred to as derived classes. Derived classes require you to use super() if you specify a constructor; if you don’t, an error will occur. If you choose not to use a constructor, then super() is automatically called for you with all arguments upon creating a new instance of the class. For instance, the following two classes are identical:
+类如果继承了其它类，那么它就是派生类。如果在派生类中定义 constructor 则必须使用 super()，否则会发生错误。如果你选择不使用 constructor，那么会自动调用 super() 和传入构造函数的参数以创建类的实例。例如，下面的两个类是等效的：
 
 ```
 class Square extends Rectangle {
     // no constructor
 }
 
-// Is equivalent to
+// 等效于
 
 class Square extends Rectangle {
     constructor(...args) {
@@ -639,36 +644,36 @@ class Square extends Rectangle {
 }
 ```
 
-The second class in this example shows the equivalent of the default constructor for all derived classes. All of the arguments are passed, in order, to the base class constructor. In this case, the functionality isn’t quite correct because the Square constructor needs only one argument, and so it’s best to manually define the constructor.
+该例的第二个类展示了所有派生类默认构造函数的等效写法。所有的参数按顺序传递给基类的构造函数。在本例的情况下，square 其实只需要一个参数，所以默认构造函数的行为并不十分恰当，最好手动定义自己的构造函数。
 
 <br />
 
-> **NOTE**: There are a few things to keep in mind when using super():
+> **注意**: 使用 super() 需要牢记以下几点：
 
-> 1. You can only use super() in a derived class. If you try to use it in a non-derived class (a class that doesn’t use extends) or a function, it will throw an error.
-2. You must call super() before accessing this in the constructor. Since super() is responsible for initializing this, attempting to access this before calling super() results in an error.
-3. The only way to avoid calling super() is to return an object from the class constructor.
+> 1. 你只能在派生类中使用 super()，否则（没有使用 extends 的类或函数）一个错误会被抛出。
+2. 你必须在构造函数的起始位置调用 super()，因为它会初始化 this。任何在 super() 之前访问 this 的行为都会造成错误。
+3. 在类构造函数中，唯一能避免调用 super() 的办法是返回一个对象。
 
 <br />
 
-#### Shadowing Class Methods
+#### 隐藏类方法（Shadowing Class Methods）
 
-The methods on derived classes always shadow methods of the same name on the base class. For instance, you can add getArea() to Square to redefine that functionality:
 
+派生类中的方法总是会屏蔽基类中的同名方法。例如，你可以在 Square 中重新定义 getArea()：
 ```
 class Square extends Rectangle {
     constructor(length) {
         super(length, length);
     }
 
-    // override and shadow Rectangle.prototype.getArea()
+    // 重写并隐藏 Rectangle.prototype.getArea()
     getArea() {
         return this.length * this.length;
     }
 }
 ```
 
-Since getArea() is defined as part of Square, the Rectangle.prototype.getArea() method will no longer be called by any instances of Square. Of course, you can always decide to call the base class version of the method by using the super.getArea() method, like this:
+既然 getArea() 已成为了 Square 自身的一份子，Rectangle.prototype.getArea() 方法就不再会被 Square 的实例调用。当然，你可以随时使用 super.getArea() 方法来调用基类中的同名方法，像这样：
 
 ```
 class Square extends Rectangle {
@@ -683,13 +688,14 @@ class Square extends Rectangle {
 }
 ```
 
-Using super in this way works the same as the the super references discussed in Chapter 4 (see “Easy Prototype Access With Super References”). The this value is automatically set correctly so you can make a simple method call.
+在这里 super 的行为和第四章中讨论过的 super 引用是相同的（查看 “使用 super 引用来方便获取 prototype ” 一节）。this 值会被自动且正确的绑定，所以你可以简单的调用方法。
 
 <br />
 
 #### Inherited Static Members
 
-If a base class has static members, then those static members are also available on the derived class. Inheritance works like that in other languages, but this is a new concept for JavaScript. Here’s an example:
+
+如果基类中包含静态成员，那么派生类也可以直接使用它们。这里的继承机制和其它语言相同，不过对 JavaScript 而言它是个新的概念。如下所示：
 
 ```
 class Rectangle {
@@ -710,7 +716,7 @@ class Rectangle {
 class Square extends Rectangle {
     constructor(length) {
 
-        // same as Rectangle.call(this, length, length)
+        // 等效于 Rectangle.call(this, length, length)
         super(length, length);
     }
 }
@@ -722,7 +728,7 @@ console.log(rect.getArea());                // 12
 console.log(rect instanceof Square);        // false
 ```
 
-In this code, a new static create() method is added to the Rectangle class. Through inheritance, that method is available as Square.create() and behaves in the same manner as the Rectangle.create() method.
+该段代码中，一个新的 create() 静态方法添加给了 Rectangle 类。通过继承，该方法由 Square.create() 调用并且行为等同于 Rectangle.create() 。
 
 <br />
 
