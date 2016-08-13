@@ -46,7 +46,7 @@ ECMAScript 2015 （ES6）是 ECMAScript 发展的重要里程碑，给前端开�
 [第十章： **改进的数组功能（Improved Array Capabilities）**](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_10.html)
 
 
-[第十一章： **Promises 与 异步编程（Promises and Asynchronous Programming)**](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_11.html)
+[第十一章： **Promise 与 异步编程（Promises and Asynchronous Programming)**](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_11.html)
 
 
 [第十二章： **代理与反射API（Proxies and the Reflection API）**](https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_12.html)
