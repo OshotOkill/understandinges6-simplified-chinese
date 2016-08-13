@@ -208,7 +208,7 @@ In anonymous class expressions, as in the previous example, PersonClass.name is 
 
 在该匿名类表达式中，PersonClass.name 是个空的字符串。如果使用了类声明，那么 PersonClass.name 的值为 "PersonClass"。
 
-* 注：译者在这里测试发现表达式和声明都会返回类名，原文有误？
+* 注：译者在这里测试发现 Edge，Chrome 及 Opera 的匿名表达式都会返回类名，只有 FireFox 返回空字符串
 
 <br />
 
@@ -836,12 +836,13 @@ Square 的实例中包含了从 AreaMixin 和 SerializableMixin 分别得到的 
 
 <br />
 
-#### Inheriting from Built-ins
+#### 内置对象的继承（Inheriting from Built-ins）
 
-For almost as long as JavaScript arrays have existed, developers have wanted to create their own special array types through inheritance. In ECMAScript 5 and earlier, this wasn’t possible. Attempting to use classical inheritance didn’t result in functioning code. For example:
+
+自 JavaScript 数组存在的那天起，开发者就想通过使用继承的方式来定义特殊的数组类型。在 ECMAScript 5 和更早的版本中，这是不可能做到的。使用传统的继承方式无法获得想要的功能。例如：
 
 ```
-// built-in array behavior
+// 内置数组的行为
 var colors = [];
 colors[0] = "red";
 console.log(colors.length);         // 1
@@ -849,7 +850,7 @@ console.log(colors.length);         // 1
 colors.length = 0;
 console.log(colors[0]);             // undefined
 
-// trying to inherit from array in ES5
+// 尝试使用 ES5 的继承方式
 
 function MyArray() {
     Array.apply(this, arguments);
@@ -872,15 +873,16 @@ colors.length = 0;
 console.log(colors[0]);             // "red"
 ```
 
-The console.log() output at the end of this code shows how using the classical form of JavaScript inheritance on an array results in unexpected behavior. The length and numeric properties on an instance of MyArray don’t behave the same as they do for the built-in array because this functionality isn’t covered either by Array.apply() or by assigning the prototype.
+console.log() 在代码尾部的输出揭露了使用传统形式的 JavaScript 继承会得到意想不到的结果。MyArray 实例中的 length 和 numeric 属性的行为并不和内置的数组一致，因为这些特性仅仅通过调用 Array.apply() 或重新给原型赋值是做不到的。
 
-One goal of ECMAScript 6 classes is to allow inheritance from all built-ins. In order to accomplish this, the inheritance model of classes is slightly different than the classical inheritance model found in ECMAScript 5 and earlier, in two big ways:
+ECMAScript 6 类的目标之一就是允许继承内置的对象。为了实现这个需求，类的继承模型和 ECMAScript 5 及更早版本的传统继承模型相比有些细微的不同，体现在以下方面：
 
-* In ECMAScript 5 classical inheritance, the value of this is first created by the derived type (for example, MyArray), and then the base type constructor (like the Array.apply() method) is called. That means this starts out as an instance of MyArray and then is decorated with additional properties from Array.
+* 在 ECMAScript 5 传统的继承中，this 首先由派生的类型（例如，MyArray）创建，之后才会调用基类的构造函数（类似于 Array.apply()）。这意味着 this 一开始就是 MyArray 的实例，Array 中的属性负责装饰（decorate）它。
 
-* In ECMAScript 6 class-based inheritance, the value of this is first created by the base (Array) and then modified by the derived class constructor (MyArray). The result is that this starts with all the built-in functionality of the base and correctly receives all functionality related to it.
+* 在 ECMAScript 6 的类继承中，this 首先由基类创建并在之后由派生的类构造函数（MyArray）进行修改。于是 this 一开始便拥有内置对象的全部功能并在之后能接收其它功能扩展。
 
-The following example shows a class-based special array in action:
+
+下面的示例展示了通过类继承的特殊数组：
 
 ```
 class MyArray extends Array {
@@ -895,13 +897,14 @@ colors.length = 0;
 console.log(colors[0]);             // undefined
 ```
 
-MyArray inherits directly from Array and therefore works like Array. Interacting with numeric properties updates the length property, and manipulating the length property updates the numeric properties. That means you can both properly inherit from Array to create your own derived array classes and inherit from other built-ins as well. With all this added functionality, ECMAScript 6 and derived classes have effectively removed the last special case of inheriting from built-ins, but that case is still worth exploring.
+Array 由 MyArray 直接继承因此后者的行为和数组一致，包括与数组索引的交互引起 length 属性的变化以及操作length 属性造成数字索引值的更改。这意味着你不仅可以正确的继承数组并定义自己的派生类，对其它内置对象的继承也是同理。该特性的添加使得 ECMAScript 6 和派生类消除了关于继承内置类型所有的特殊情况，不过这些情况依旧值得推敲。*
 
 <br />
 
-#### The Symbol.species Property
+#### Symbol.species 属性（The Symbol.species Property）
 
-An interesting aspect of inheriting from built-ins is that any method that returns an instance of the built-in will automatically return a derived class instance instead. So, if you have a derived class called MyArray that inherits from Array, methods such as slice() return an instance of MyArray. For example:
+
+关于继承内置对象的一个有趣现象是，任何返回内置对象实例的方法会自动返回派生类的实例。所以，如果你有一个继承数组的 MyArray 派生类，类似 slice() 的方法会返回 MyArray 的实例。例如：
 
 ```
 class MyArray extends Array {
@@ -915,22 +918,23 @@ console.log(items instanceof MyArray);      // true
 console.log(subitems instanceof MyArray);   // true
 ```
 
-In this code, the slice() method returns a MyArray instance. The slice() method is inherited from Array and returns an instance of Array normally. Behind the scenes, it’s the Symbol.species property that is making this change.
+该段代码中，slice() 方法返回一个 MyArray 实例。一般来讲，slice() 方法是继承自数组，应该返回数组的实例。之所以发生了这样的改变归咎于 Symbol.species 属性在幕后的操作。
 
-The Symbol.species well-known symbol is used to define a static accessor property that returns a function. That function is a constructor to use whenever an instance of the class must be created inside of an instance method (instead of using the constructor). The following builtin types have Symbol.species defined:
+知名的 symbol 类型 Symbol.species 被用来定义一个返回函数的静态访问器属性。该属性返回的是构造函数并可随时在实例方法中创建该类的实例（而不是使用构造函数）。以下的内置类型包含 Symbol.species 的定义：
 
 * Array
-* ArrayBuffer (discussed in Chapter 10)
+* ArrayBuffer (第十章中讨论)
 * Map
 * Promise
 * RegExp
 * Set
-* Typed Arrays (discussed in Chapter 10)
+* Typed Arrays (第十章中讨论)
 
-Each of these types has a default Symbol.species property that returns this, meaning the property will always return the constructor function. If you were to implement that functionality on a custom class, the code would look like this:
+
+以上的每个类型都包含返回 this 的 Symbol.species 属性，意味着该属性总是会返回正确的构造函数。如果你想在自定义的类中实现它，那么代码应该类似于下例：
 
 ```
-// several builtin types use species similar to this
+// 一些内置类型采取类似如下的方案
 class MyClass {
     static get [Symbol.species]() {
         return this;
@@ -946,7 +950,7 @@ class MyClass {
 }
 ```
 
-In this example, the Symbol.species well-known symbol is used to assign a static accessor property to MyClass. Note that there’s only a getter without a setter, because changing the species of a class isn’t possible. Any call to this.constructor[Symbol.species] returns MyClass. The clone() method uses that definition to return a new instance rather than directly using MyClass, which allows derived classes to override that value. For example:
+在本例中，Symbol.species 将一个静态访问器属性添加给 MyClass 。注意这里只有 getter 而未有 setter，因为更改类的 species 是不可能的。任何对 this.constructor[Symbol.species] 的调用都会返回 MyClass。clone() 方法没有直接使用 MyClass，而是调用了 Symbol.species 并返回一个新实例以便让派生类重写该属性。例如：
 
 ```
 class MyClass {
@@ -964,7 +968,7 @@ class MyClass {
 }
 
 class MyDerivedClass1 extends MyClass {
-    // empty
+    // 空代码块
 }
 
 class MyDerivedClass2 extends MyClass {
@@ -984,9 +988,9 @@ console.log(clone2 instanceof MyClass);             // true
 console.log(clone2 instanceof MyDerivedClass2);     // false
 ```
 
-Here, MyDerivedClass1 inherits from MyClass and doesn’t change the Symbol.species property. When clone() is called, it returns an instance of MyDerivedClass1 because this.constructor[Symbol.species] returns MyDerivedClass1. The MyDerivedClass2 class inherits from MyClass and overrides Symbol.species to return MyClass. When clone() is called on an instance of MyDerivedClass2, the return value is an instance of MyClass. Using Symbol.species, any derived class can determine what type of value should be returned when a method returns an instance.
+在这里，MyDerivedClass1 继承了 MyClass 且并没有修改 Symbol.species 属性。当 clone() 调用后，它返回了 MyDerivedClass1 的实例，这正是由 this.constructor[Symbol.species] 所设定的。MyDerivedClass2 类继承了 MyClass 并将 Symbol.species 的返回值重写为 MyClass。即使 clone() 是由 MyDerivedClass2 调用的，它返回的依然是 MyClass 的实例。任何使用 Symbol.species 的派生类都能自行决定方法返回的实例类型。  
 
-For instance, Array uses Symbol.species to specify the class to use for methods that return an array. In a class derived from Array, you can determine the type of object returned from the inherited methods, such as:
+例如，数组使用 Symbol.species 来指定返回值为数组的方法的返回类型。如果一个类是数组的派生，那么你可以决定继承的方法返回哪种类型，例如：*
 
 ```
 class MyArray extends Array {
@@ -1003,15 +1007,16 @@ console.log(subitems instanceof Array);     // true
 console.log(subitems instanceof MyArray);   // false
 ```
 
-This code overrides Symbol.species on MyArray, which inherits from Array. All of the inherited methods that return arrays will now use an instance of Array instead of MyArray.
+该段代码中 MyArray 继承了数组并重写了 Symbol.species 。现在所有继承的返回数组的方法它们的返回类型不再是 MyArray 而是 Array 。
 
-In general, you should use the Symbol.species property whenever you might want to use this.constructor in a class method. Doing so allows derived classes to override the return type easily. Additionally, if you are creating derived classes from a class that has Symbol.species defined, be sure to use that value instead of the constructor.
+一般来讲，如果你的类方法使用了 this.constructor，那么你应该给这个类设定 Symbol.species 属性。这样做能允许派生类方便地重写返回类型。此外，如果你想创建一个派生类来继承了一个已定义 Symbol.species 属性的基类，那么确保基类在返回该类实例的方法中使用该属性，而不是构造函数。
 
 <br />
 
-### <a name="Using-newtarget-in-Class-Constructors"> Using new.target in Class Constructors </a>
+### <a name="Using-newtarget-in-Class-Constructors"> 在类构造函数中使用 new.target（Using new.target in Class Constructors） </a>
 
-In Chapter 3, you learned about new.target and how its value changes depending on how a function is called. You can also use new.target in class constructors to determine how the class is being invoked. In the simple case, new.target is equal to the constructor function for the class, as in this example:
+
+在第三章你已经了解了 new.target 是如何根据被调用的函数来决定自身的值。你也可以使用在类的构造函数中使用它来判断类是被如何调用的。简单情况下，new.target 的值等于类的构造函数，如下所示：
 
 ```
 class Rectangle {
@@ -1022,11 +1027,11 @@ class Rectangle {
     }
 }
 
-// new.target is Rectangle
-var obj = new Rectangle(3, 4);      // outputs true
+// new.target 为 Rectangle
+var obj = new Rectangle(3, 4);      // 输出为 true
 ```
 
-This code shows that new.target is equivalent to Rectangle when new Rectangle(3, 4) is called. Class constructors can’t be called without new, so the new.target property is always defined inside of class constructors. But the value may not always be the same. Consider this code:
+该段代码说明了在 new Rectangle(3, 4) 调用后， new.target 等价于 Rectangle 。类构造函数只能被 new 调用，所以 new.target 属性值总是由类内部的构造函数来决定。不过该值不总是相同的。考虑如下的代码：
 
 ```
 class Rectangle {
@@ -1043,14 +1048,14 @@ class Square extends Rectangle {
     }
 }
 
-// new.target is Square
-var obj = new Square(3);      // outputs false
+// new.target 为 Square
+var obj = new Square(3);      // 输出为 false
 ```
 
-Square is calling the Rectangle constructor, so new.target is equal to Square when the Rectangle constructor is called. This is important because it gives each constructor the ability to alter its behavior based on how it’s being called. For instance, you can create an abstract base class (one that can’t be instantiated directly) by using new.target as follows:
+Square 调用了 Rectangle 的构造函数，所以该时刻 new.target 等于 Square。这一点很重要，因为每个构造函数都能根据被调用的方式来修改自己的行为。例如，你可以使用 new.target 来创建一个不能被直接调用的抽象基类（abstract base class）。
 
 ```
-// abstract base class
+// 抽象基类
 class Shape {
     constructor() {
         if (new.target === Shape) {
@@ -1067,26 +1072,31 @@ class Rectangle extends Shape {
     }
 }
 
-var x = new Shape();                // throws error
+var x = new Shape();                // 抛出错误
 
-var y = new Rectangle(3, 4);        // no error
+var y = new Rectangle(3, 4);        // 没有错误发生
 console.log(y instanceof Shape);    // true
 ```
 
-In this example, the Shape class constructor throws an error whenever new.target is Shape, meaning that new Shape() always throws an error. However, you can still use Shape as a base class, which is what Rectangle does. The super() call executes the Shape constructor and new.target is equal to Rectangle so the constructor continues without error.
-
-> Since classes can’t be called without new, the new.target property is never undefined inside of a class constructor.
+在该例中，Shape 类的构造函数会在 new.target 为 Shape 时抛出错误，意味着 new Shape() 是不能使用的。然而，你可以将 Shape 作为基类，正如 Rectangle 那样。super() 调用会执行 Shape 的构造函数而且 new.target 等于 Rectangle，所以该构造函数不会发生错误并完整执行。
 
 <br />
 
-### <a name="Summary"> Summary </a>
+> 因为类必须由 new 来调用，所以 new.target 属性不会为 undefined，而是某个类的构造函数。
 
-ECMAScript 6 classes make inheritance in JavaScript easier to use, so you don’t need to throw away any existing understanding of inheritance you might have from other languages. ECMAScript 6 classes start out as syntactic sugar for the classical inheritance model of ECMAScript 5, but add a lot of features to reduce mistakes.
+<br />
 
-ECMAScript 6 classes work with prototypal inheritance by defining non-static methods on the class prototype, while static methods end up on the constructor itself. All methods are non-enumerable, a feature that better matches the behavior of built-in objects for which methods are typically non-enumerable by default. Additionally, class constructors can’t be called without new, ensuring that you can’t accidentally call a class as a function.
+### <a name="Summary"> 总结（Summary） </a>
 
-Class-based inheritance allows you to derive a class from another class, function, or expression. This ability means you can call a function to determine the correct base to inherit from, allowing you to use mixins and other different composition patterns to create a new class. Inheritance works in such a way that inheriting from built-in objects like Array is now possible and works as expected.
 
-You can use new.target in class constructors to behave differently depending on how the class is called. The most common use is to create an abstract base class that throws an error when instantiated directly but still allows inheritance via other classes.
+ECMAScript 6 的类使得 JavaScript 中的继承更容易实现，你再也不必扔掉其它语言中继承方面的相关知识。ECMAScript 6 中的类是 ECMAScript 5 传统继承模型的语法糖，但是也添加和消除了很多特性与错误。
 
-Overall, classes are an important addition to JavaScript. They provide a more concise syntax and better functionality for defining custom object types in a safe, consistent manner.
+ECMAScript 6 的类通过在类原型上定义非静态方法来延续原型继承的工作机制，同时静态方法会由类本身持有。所有的方法都不可枚举，这也是为了符合内置对象所有方法的默认行为。另外，类构造函数必须由 new 来调用，以防你不小心将类当作函数。
+
+以类为基础的继承允许你将类派生自另一个类，函数或表达式。该特性使你能通过调用一个函数来决定继承的基类，同时还可以由 mixin 或其它协作模式来创建一个新类。此外，内置对象如数组的继承现在也能正常工作。
+
+你可以在类构造函数内部使用 new.target 来根据具体的调用方式做出不同的行为。最常见的用法是创建一个直接调用会报错但是可以由其它类继承的抽象基类。
+
+总之，类的添加对 JavaScript 至关重要。它提供了更简洁的语法和更好的实用性来定义一个安全且拥有一致表现形式的对象类型。
+
+<br />
