@@ -6,18 +6,18 @@
 在探索 ECMAScript 6 类的过程中，理解类的幕后机制是很有帮助的，所以本章会首先探讨开发者是怎样在 ECMAScript 5 中模拟类的实现的。而且在之后的小节内，你也会发现 ECMAScript 6 中的类和其他语言相比并不是完全等同的，目的是为了和 JavaScript 与生俱来的动态特性相配合。
 
 <br />
-
-* [Class-Like Structures in ECMAScript 5](#Class-Like-Structures-in-ECMAScript-5)
-* [Class Declarations](#Class-Declarations)
-* [Class Expressions](#Class-Expressions)
-* [Classes as First-Class Citizens](#Classes-as-First-Class-Citizens)
-* [Accessor Properties](#Accessor-Properties)
-* [Computed Member Names](#Computed-Member-Names)
-* [Generator Methods](#Generator-Methods)
-* [Static Members](#Static-Members)
-* [Inheritance with Derived Classes](#Inheritance-with-Derived-Classes)
-* [Using new.target in Class Constructors](#Using-newtarget-in-Class-Constructors)
-* [Summary](#Summary)
+### 本章小结
+* [ECMAScript 5 中的类结构](#Class-Like-Structures-in-ECMAScript-5)
+* [类声明](#Class-Declarations)
+* [类表达式](#Class-Expressions)
+* [作为一等公民的类](#Classes-as-First-Class-Citizens)
+* [访问器属性](#Accessor-Properties)
+* [动态计算的成员命名](#Computed-Member-Names)
+* [生成器方法](#Generator-Methods)
+* [静态成员](#Static-Members)
+* [以派生类为继承方式](#Inheritance-with-Derived-Classes)
+* [在类构造函数中使用 new.target](#Using-newtarget-in-Class-Constructors)
+* [总结](#Summary)
 
 <br />
 
