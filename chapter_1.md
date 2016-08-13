@@ -4,7 +4,17 @@
 
 <br />
 
-#### var 声明与变量提升 （Var Declarations and Hoisting）
+### 本章小结
+* [var 声明与变量提升](#Var-Declarations-and-Hoisting)
+* [块级声明](#Block-Level-Declarations)
+* [循环中的块级绑定](#Block-Binding-in-Loops)
+* [全局块级绑定](#Global-Block-Bindings)
+* [块级绑定的最佳实践](#Emerging-Best-Practices-for-Block-Bindings)
+* [总结](#Summary)
+
+<br />
+
+### <a id="Var-Declarations-and-Hoisting"> var 声明与变量提升 （Var Declarations and Hoisting） </a>
 
 使用 var 关键字声明的变量，不论在何处都会被视作在函数级作用域内顶部的位置发生（如果不包含在函数内则为全局作用域内）。为了说明变量提升到底是什么，查看如下函数定义：
 
@@ -54,7 +64,7 @@ function getValue(condition) {
 
 <br />
 
-#### 块级声明（Block-Level Declarations）
+### <a id="Block-Level-Declarations"> 块级声明（Block-Level Declarations） </a>
 
 块级声明指的是该声明的变量无法被代码块外部访问。块作用域，又被称为词法作用域（lexical scopes），可以在如下的条件下创建：
 
@@ -180,6 +190,8 @@ maxItems = 6;      // 抛出错误
 
 和其它编程语言类似，maxItems 不能被赋予新的值，然而和其它语言不同的是，const 变量的值如果是个对象，那么这个对象本身可以被修改。
 
+<br />
+
 ##### 将对象赋值给 const 变量（Declaring Objects with Const）
 
 const 声明只是阻止变量和值的再次绑定而不是值本身的修改。这意味着 const 不能限制对于值的类型为对象的变量的修改，示例如下：
@@ -232,7 +244,9 @@ if (condition) {
 
 TDZ 只是发生在块级绑定中独特的特设定之一，另一个特殊设定发生在循环中。
 
-#### 循环中的块级绑定（Block Binding in Loops）
+<br />
+
+### <a id="Block-Binding-in-Loops"> 循环中的块级绑定（Block Binding in Loops） </a>
 
 或许开发者对块级作用域有强烈需求的场景之一就是循环，因为它们不想让循环外部访问到内部的索引计数器。举个例子，以下的代码在 JavaScript 编程中并不罕见：
 
@@ -258,6 +272,8 @@ console.log(i);
 ```
 
 在本例中变量 i 只存在于 for 循环代码块中，一旦循环完毕变量 i 将不复存在。
+
+<br />
 
 #### 循环中的函数（Functions in Loops）
 
@@ -298,6 +314,8 @@ funcs.forEach(function(func) {
 ```
 
 这种写法在循环内部使用了 IIFE，并将变量 i 的值传入 IIFE 以便拷贝索引值并存储起来，这里传入的索引值为同样被当前的迭代所使用，所以循环完毕后每次调用的输出值正如所期待的那样是 0 - 9 。幸运的是，ECMAScript 6 中 let 和 const 的块级绑定对循环代码进行简化。
+
+<br />
 
 #### 循环中的 let 声明（Let Declarations in Loops）
 
@@ -344,7 +362,7 @@ funcs.forEach(function(func) {
 
 <br />
 
-> **注意**： 不得不提的是，let 声明在上述循环内部中的表现是在规范中特别定义的，和非变量提升这一特性没有直接的关系。实际上，早期 let 的实现并不会表现中这种效果，它是在后来被添加到规范中的。
+> 不得不提的是，let 声明在上述循环内部中的表现是在规范中特别定义的，和非变量提升这一特性没有直接的关系。实际上，早期 let 的实现并不会表现中这种效果，它是在后来被添加到规范中的。
 
 <br />
 
@@ -393,7 +411,7 @@ funcs.forEach(function(func) {
 
 <br />
 
-#### 全局块级绑定（Global Block Bindings）
+### <a id="Global-Block-Bindings"> 全局块级绑定（Global Block Bindings） </a>
 
 
 let 与 const 另一处不同体现在全局作用域上。当在全局作用域内使用 var 声明时会创建一个全局变量，同时也是全局对象（浏览器环境下是 window）的一个属性。这意味着全局对象的属性可能会意外地被重写覆盖，例如：
@@ -426,11 +444,11 @@ console.log("ncz" in window);           // false
 
 <br />
 
-> **注意**： 如果你想让代码可以被全局对象访问，你仍然需要使用 var，特别是当你想要在多个 window 和 frame 之间共享代码的时候
+> 如果你想让代码可以被全局对象访问，你仍然需要使用 var，特别是当你想要在多个 window 和 frame 之间共享代码的时候
 
 <br />
 
-#### 块级绑定的最佳实践（Emerging Best Practices for Block Bindings）
+### <a id="Emerging-Best-Practices-for-Block-Bindings"> 块级绑定的最佳实践（Emerging Best Practices for Block Bindings） </a>
 
 
 当 ECMAScript 6 还在酝酿中的时候，一个普遍的共识是使用 let 而不是 var 来作为默认的变量声明方式。对大多数 JavaScript 开发者来讲，let 才是 var 该有的表现形式，自然而然这种取代十分合理。在这个理念下，你应该使用 const 声明来保护一些变量不被修改。
@@ -439,7 +457,7 @@ console.log("ncz" in window);           // false
 
 <br />
 
-#### 总结（Summary）
+### <a id="Summary"> 总结（Summary） </a>
 
 let 和 const 块级绑定给 JavaScript 引入了词法作用域的概念。这些声明不会被提升且仅存在于声明它们的代码块中。它们的行为和其它语言更为相似且减少了意外错误的发生，因为变量会在原处被声明。作为副作用之一，你不能在声明之前就使用它们，即使是 typeof 这种安全操作也不被允许。暂存性死区（temproal dead zone, TDZ）中绑定的存在会导致在声明位置之前的访问以失败告终。
 
@@ -448,16 +466,3 @@ let 和 const 块级绑定给 JavaScript 引入了词法作用域的概念。这
 目前关于块级绑定的最佳实践是使用 const 作为默认的声明方式，当变量需要更改时切换为 let 声明。保证代码中最基本的不可变性能防止错误的发生。
 
 <br />
-
-
-
-
-
-
-
-
-
-
-
-
-

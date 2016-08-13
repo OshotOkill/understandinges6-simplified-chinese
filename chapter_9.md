@@ -6,6 +6,7 @@
 在探索 ECMAScript 6 类的过程中，理解类的幕后机制是很有帮助的，所以本章会首先探讨开发者是怎样在 ECMAScript 5 中模拟类的实现的。而且在之后的小节内，你也会发现 ECMAScript 6 中的类和其他语言相比并不是完全等同的，目的是为了和 JavaScript 与生俱来的动态特性相配合。
 
 <br />
+
 ### 本章小结
 * [ECMAScript 5 中的类结构](#Class-Like-Structures-in-ECMAScript-5)
 * [类声明](#Class-Declarations)

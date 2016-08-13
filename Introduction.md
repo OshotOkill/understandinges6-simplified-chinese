@@ -4,7 +4,13 @@ JavaScript 语言的核心特性是由 ECMA-262 标准定义的，而这个标�
 
 <br />
 
-#### ECMASciprt 6 的诞生之路
+* [ECMASciprt 6 的诞生之路](#The-Road-to-ECMAScript-6)
+* [关于本书](#About-This-Book)
+* [鸣谢](#Acknowledgments)
+
+<br />
+
+### <a id="The-Road-to-ECMAScript-6"> ECMASciprt 6 的诞生之路 </a>
 
 在2007年，JavaScript 已行至于交叉路口。Ajax 的流行宣告了动态 web 应用时代的到来，然而 JavaScript 自1999年 ECMA-262 发布了第三版（ES3）以后便从未发生变化，于是 TC-39 委员会便承担了发布下一版的任务，收集了大批草案并命名为 ECMAScript 4。ECMAScript 4 的变革范围十分广泛，语言的各个部分都有大大小小的变化。 添加的新特性中包括一些新语法，模块，类，传统的继承方式（classical inheritance），私有对象成员，可选类型注解（optional type annotations），以及其它等等。
 
@@ -20,7 +26,7 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 <br />
 
-#### 关于本书
+### <a id="About-This-Book"> 关于本书 </a>
 
 对 ECMAScript 6 特性的深入了解是所有 JavaScript 开发者提升自身水平的关键。在不久的将来，ECMAScript 6 中包含的新特性会是 JavaScript 应用开发的基础，这也是本书所要阐述的。我希望你们能够通过阅读本书来了解 ECMAScript 6 以便在需要使用的时候快速上手。
 
@@ -46,81 +52,81 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 
 <br />
 
-第一章： **块级绑定（How Block Bindings Work）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_1.html" target="_blank"> 第一章： **块级绑定（How Block Bindings Work）** </a>
 
 > 讨论了块级声明 let 和 const —— var 的替代者们。
 
 
 
-第二章： **字符串及正则表达式（Strings and Regular Expressions ）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_2.html" target="_blank"> 第二章： **字符串及正则表达式（Strings and Regular Expressions ）** </a>
 
 > 涵盖了新增加的字符串操作和查看方法，以及字符串模板（template strings）等内容。
 
 
 
-第三章： **ECMAScript 6 中的函数（Functions in ECMAScript 6）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_3.html" target="_blank"> 第三章： **ECMAScript 6 中的函数（Functions in ECMAScript 6）** </a>
 
 > 阐述了在 ECMAScript 6 中函数发生的变化，包括箭头函数，默认参数，剩余参数等。
 
 
 
-第四章： **扩展的对象功能（Expanded Object Functionality）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_4.html" target="_blank"> 第四章： **扩展的对象功能（Expanded Object Functionality）** </a>
 
 > 揭示了对象在创建，修改及使用过程中发生的变化，包括对象字面量以及新的反射方法（reflection methods）。
 
 
-第五章： **解构（Destructuring for Easier Data Access）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_5.html" target="_blank"> 第五章： **解构（Destructuring for Easier Data Access）** </a>
 
 > 介绍了对象和数组的解构方法，允许你用更简洁的语法来分解（decompose）对象和数组。
 
 
-第六章： **Symbols 与 Symbols属性（Symbols and Symbol Properties）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_6.html" target="_blank"> 第六章： **Symbols 与 Symbols属性（Symbols and Symbol Properties）** </a>
 
 > 解释了symbols的概念，这是一种定义属性的新方式。Symbols 是新添加的原始类型，可以用来模糊（并非隐藏）对象的属性和方法。
 
 
-第七章： **Sets 与 Maps（Sets and Maps）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_7.html" target="_blank"> 第七章： **Sets 与 Maps（Sets and Maps）** </a>
 
 > 展示了新的集合类型的细节，包括 Set，WeakSet，Map 和 WeakMap，这些类型在数组的基础之上添加了一组实用的扩展功能，包括添加语义（adding semantics），去重（de-duping）及针对JavaScript的内存管理（memory management）
 
 
-第八章： **迭代器与生成器（Iterators and Generators）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_8.html" target="_blank"> 第八章： **迭代器与生成器（Iterators and Generators）** </a>
 
 > 讨论了迭代器和生成器这两个新添加的特性，它们允许你使用另一种强有力的方式操作集合中的数据，而在 ECMAScript 6 之前的版本中这是绝对无法做到的。
 
 
-第九章： **类 (Introducing JavaScript Classes)**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_9.html" target="_blank"> 第九章： **类 (Introducing JavaScript Classes)** </a>
 
 > 解释了在JavaScript中首次正式定义的类的概念。类的缺失是使其它语言开发者学习 JavaScript 感到困惑的原因之一，天之后使得 JavaScript 更易理解而且语法更为简洁
 
 
-第十章： **改进的数组功能（Improved Array Capabilities）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_10.html" target="_blank"> 第十章： **改进的数组功能（Improved Array Capabilities）** </a>
 
 > 阐释了原生数组的一些变化及新的有趣的使用方式。
 
 
-第十一章：**Promise 与异步编程（Promises and Asynchronous Programming）*** 
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_11.html" target="_blank"> 第十一章：**Promise 与异步编程（Promises and Asynchronous Programming）** </a> 
 
 >  Promises 成为了语言的一部分，由底层实现并被广泛且流行的库所支持。ECMAScript 6 原生支持并标准化了 promises 。 
->  
 
-第十二章： **代理与反射API（Proxies and the Reflection API）**
+
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_12.html" target="_blank"> 第十二章： **代理与反射API（Proxies and the Reflection API）** </a>
 
 > 介绍了 JavaScript 中正式添加的反射API及新的代理对象（proxy object），使你可以拦截任何针对对象的操作。代理给予开发者操控对象空前的自由度和定义新交互方式的无限可能性。
 
 
-第十三章： **模块（Encapsulating Code with Modules）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_13.html" target="_blank"> 第十三章： **模块（Encapsulating Code with Modules）** </a>
 
 > 官方正式定义了 JavaScript 中模块的格式，目的是取代这些年涌现的各式各样的模块加载方案。
 
 <br />
 
-附录 A： **其它改进（Smaller ECMAScript 6 Changes）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/appendix_a.html" target="_blank"> 附录 A： **其它改进（Smaller ECMAScript 6 Changes）** </a>
 
 > 集中介绍了 ECMAScript 6 中其它不太常见或者内容较少不大适合写为章节的内容。
 
 
-附录 B： **领悟 ECMAScript 7（2016）（Understanding ECMAScript 7 (2016)）**
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/appendix_b.html" target="_blank"> 附录 B： **领悟 ECMAScript 7（2016）（Understanding ECMAScript 7 (2016)）** </a>
 
 > 介绍了 ECMAScript 7（2016）新添加的两项内容，对 JavaScript 的改进相比 ECMAScript 6 甚微
 
@@ -152,6 +158,7 @@ console.log("Hi");      // "Hi"
 ```error
 doSomething();          // error!
 ```
+
 <br />
 
 #### 协助于勘误
@@ -164,19 +171,10 @@ doSomething();          // error!
 
 <br />
 
-#### 鸣谢
+### <a id="Acknowledgments"> 鸣谢 </a>
 
 英文原文的贡献者请查看 [原文](https://leanpub.com/understandinges6/read) Introduction 小结末尾
 
 <br />
 <br />
 \* 代表翻译存在问题
-
-
-
-
-
-
-
-
-

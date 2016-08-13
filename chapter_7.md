@@ -11,7 +11,17 @@ ECMAScript 6 正式为 JavaScript 添加了 set 和 map，本章介绍了这两�
 
 <br />
 
-### ECMAScript 5 中的 set 与 map（Sets and Maps in ECMAScript 5）
+### 本章小结
+* [ECMAScript 5 中的 set 与 map](#Sets-and-Maps-in-ECMAScript-5)
+* [使用对象模拟的问题](#Problems-with-Workarounds)
+* [ECMAScript 6 中的 set](#Sets-in-ECMAScript-6)
+* [ECMAScript 6 中的 map](#Maps-in-ECMAScript-6)
+* [总结](#Summary)
+
+
+<br />
+
+### <a id="Sets-and-Maps-in-ECMAScript-5"> ECMAScript 5 中的 set 与 map（Sets and Maps in ECMAScript 5） </a>
 
 
 在 ECMAScript 5 中，开发者使用对象属性来模拟 set 和 map，像这样：
@@ -47,7 +57,7 @@ console.log(value);         // "bar"
 
 <br />
 
-### 使用对象模拟的问题（Problems with Workarounds）
+### <a id="Problems-with-Workarounds"> 使用对象模拟的问题（Problems with Workarounds） </a>
 
 
 虽然在简单的情况下使用对象模拟的 set 和 map 没有太大的问题，不过当条件变得复杂时对象属性的限制很快就会暴露出来。例如，既然对象属性的类型必须为字符串，你必须保证键存储的值是唯一的。考虑如下的代码：
@@ -99,7 +109,7 @@ if (map.count) {
 
 <br />
 
-### ECMAScript 6 中的 set（Sets in ECMAScript 6）
+### <a id="Sets-in-ECMAScript-6"> ECMAScript 6 中的 set（Sets in ECMAScript 6） </a>
 
 
 ECMAScript 6 中的 set 类型是一个包含无重复元素的有序列表。Set 允许对内部某元素是否存在进行快速检查，使得元素的追踪操作效率更高。
@@ -414,7 +424,7 @@ set 给了你处理一系列值的新方式，不过若想给这些值添加附�
 
 <br />
 
-### ECMAScript 6 中的 map（Maps in ECMAScript 6）
+### <a id="Maps-in-ECMAScript-6"> ECMAScript 6 中的 map（Maps in ECMAScript 6） </a>
 
 
 ECMAScript 6 中的 map 类型包含一组有序的键值对，其中键和值可以是任何类型。键的比较结果由 Object.is() 来决定，所以你可以同时使用 5 和 "5" 做为键来存储，因为它们是不同的类型。这和使用对象属性做为值的方法大相径庭，因为对象的属性会被强制转换为字符串类型。 
@@ -717,7 +727,7 @@ let Person = (function() {
 
 <br />
 
-### 总结（Summary）
+### <a id="Summary"> 总结（Summary） </a>
 
 
 ECMAScript 6 正式在 JavaScript 中引入了 set 和 map。在这之前，开发者经常使用对象来模拟它们，不过由于对象属性自身的限制总会导致一些问题。

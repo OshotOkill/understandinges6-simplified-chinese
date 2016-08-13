@@ -7,7 +7,19 @@ ECMAScript 6 给对象的各个方面，从简单的语法扩展到操作与交�
 
 <br />
 
-### 对象类别（Object Categories）
+### 本章小结
+* [对象类别](#Object-Categories)
+* [对象字面量语法扩展](#Object-Literal-Syntax-Extensions)
+* [新的方法](#New-Methods)
+* [重复的对象字面量属性](#Duplicate-Object-Literal-Properties)
+* [自身属性的枚举排序](#Own-Property-Enumeration-Order)
+* [更多的原型属性](#More-Powerful-Prototypes)
+* [何为 “方法”](#A-Formal-Method-Definition)
+* [总结](#Summary)
+
+<br />
+
+### <a id="Object-Categories"> 对象类别（Object Categories） </a>
 
 
 JavaScript 混合了多种术语来描述规范中定义的对象，而非针对浏览器或者 Node.js 这些执行环境。ECMAScript 6 规范明确定义了每种对象类别。理解该术语对于从整体上认识该门语言显得十分重要。对象类别包括：
@@ -21,7 +33,7 @@ JavaScript 混合了多种术语来描述规范中定义的对象，而非针对
 
 <br />
 
-### 对象字面量语法扩展（Object Literal Syntax Extensions）
+### <a id="Object-Literal-Syntax-Extensions"> 对象字面量语法扩展（Object Literal Syntax Extensions） </a>
 
 
 对象字面量是 JavaScript 编程中流行的模式之一。JSON 就是由其衍生而来，而且对象几乎存在于因特网上每份JavaScript 文件中。对象字面量之所以流行是因为相比其它方式它能更简洁的创建对象。对于开发者幸运的是，ECMAScript 6 让对象字面量更为强大的同时还有多种方式使用起来更为简洁。
@@ -152,7 +164,7 @@ console.log(person["last name"]);       // "Zakas"
 
 <br />
 
-### 新的方法（New Method）
+### <a id="New-Methods"> 新的方法（New Method） </a>
 
 
 ECMAScript 从第五版开始避免在 Object.prototype 上添加新的全局函数或方法，转而去考虑具体的对象类型如数组）应该有什么方法。当某些方法不适合这些具体类型时就将它们添加到全局 Object 上 *。ECMAScript 6 在全局 Object 上添加了几个新的方法来轻松地完成一些特定任务。 
@@ -289,7 +301,7 @@ console.log(descriptor.get);        // undefined
 
 <br />
 
-### 重复的对象字面量属性（Duplicate Object Literal Properties）
+### <a id="Duplicate-Object-Literal-Properties"> 重复的对象字面量属性（Duplicate Object Literal Properties） </a>
 
 
 ECMAScript 5 在严格模式中检查对象字面量的属性，如若有重复存在便抛出错误。例如，下面的代码会有问题：
@@ -320,7 +332,7 @@ console.log(person.name);       // "Greg"
 
 <br />
 
-### 自身属性的枚举排序（Own Property Enumeration Order）
+### <a id="Own-Property-Enumeration-Order"> 自身属性的枚举排序（Own Property Enumeration Order） </a>
 
 
 ECMAScript 5 并没有定义枚举对象属性的顺序，并将其交给各 JavaScript 引擎自行决定。然而，ECMAScript 6 严格定义了枚举对象自身（own）属性时返回的属性名顺序。这对 Object.getOwnPropertyNames() 和 Reflect.ownKeys（在第十二章介绍）返回的属性名集合有一定影响，包括从 Object.assign() 中获得的属性。
@@ -356,7 +368,7 @@ for-in 循环的枚举顺序仍不明确，因为各 JavaScript 引擎的实现�
 
 <br />
 
-### 更多的原型属性（More Powerful Prototypes）
+### <a id="More-Powerful-Prototypes"> 更多的原型属性（More Powerful Prototypes） </a>
 
 
 原型（prototypes）是 JavaScript 中继承的基础，ECMAScript 6 仍继续努力让原型变得更为强大。早期的 JavaScript 对原型的功能限制极为严重。然而，当语言逐渐成熟而且开发者也愈加熟悉原型的工作机制之后，开发者希望获得原型更多控制权的同时又能方便使用它们。于是 ECMAScipt 6 对原型做了一些改进。
@@ -524,7 +536,7 @@ console.log(relative.getGreeting());                // "Hello, hi!"
 
 <br />
 
-### 何为 “方法”（A Formal Method Definition）
+### <a id="A-Formal-Method-Definition"> 何为 “方法”（A Formal Method Definition） </a>
 
 
 在 ECMAScript 6 之前，“方法” 这一概念并未有过正式定义。方法泛指那些对象中值为函数而非数据的属性。ECMAScript 6 正式将方法定义为带有 [[HomeObject]] 内部属性的函数，该属性指出方法的拥有者。考虑如下的例子：
@@ -570,7 +582,7 @@ console.log(friend.getGreeting());  // "Hello, hi!"
 
 <br />
 
-### 总结（Summary）
+### <a id="Summary"> 总结（Summary） </a>
 
 
 对象是 JavaScript 编程的核心，ECMAScript 6 对它做了一些有益的改进令其变得更加易用和强大。
@@ -585,4 +597,4 @@ Object.assign() 方法简化了单个对象中多个属性的变动。当使用�
 
 最后，你可以使用 super 关键字来调用在对象原型上的方法。该方法在调用的时 this 值就已经绑定完毕。
 
-
+<br />

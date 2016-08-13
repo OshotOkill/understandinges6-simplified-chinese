@@ -7,7 +7,21 @@ ECMAScript 6 中的函数相较而言是个大的跃进，着手调查了 JavaSc
 
 <br />
 
-### 带默认参数的函数（Functions with Default Parameter Values）
+### 本章小结
+* [带默认参数的函数](#Functions-with-Default-Parameter-Values)
+* [未命名参数](#Working-with-Unnamed-Parameters)
+* [增强的 Function 构造函数](#Increased-Capabilities-of-the-Function-Constructor)
+* [扩展运算符](#The-Spread-Operator)
+* [ECMAScript 6 中的 name 属性](#ECMAScript-6-name-Property)
+* [明确函数的双重用途](#Clarifying-the-Dual-Purpose-of-Functions)
+* [块级函数](#Block-Level-Functions)
+* [箭头函数](#Arrow-Functions)
+* [尾调用优化](#Tail-Call-Optimization)
+* [总结](#Summary)
+
+<br />
+
+### <a id="Functions-with-Default-Parameter-Values"> 带默认参数的函数（Functions with Default Parameter Values） </a>
 
 
 JavaScript 的函数比较特殊的是可以接受任意个数的参数，完全无视函数声明中的参数个数。这允许你通过自行给未传值的参数赋默认值来定义带有不同参数的函数。本章将介绍 ECMAScript 6 及之前的 ECMAScript 版本如何实现默认参数，同时引出的还有 arguments 对象，参数表达式（expressions as parameters）及 TDZ 的另一形式。
@@ -336,13 +350,15 @@ let second = 1;
 
 <br />
 
-> **注意**: 函数参数相比函数内部有着自己的作用域和 TDZ，意味着参数的默认值不能使用函数内部声明的任何变量。
+> 函数参数相比函数内部有着自己的作用域和 TDZ，意味着参数的默认值不能使用函数内部声明的任何变量。
 
 <br />
 
-### 未命名参数（Working with Unnamed Parameters）
+### <a id="Working-with-Unnamed-Parameters"> 未命名参数（Working with Unnamed Parameters） </a>
 
 目前为止本章只讨论了函数定义中的命名参数，然而 JavaScript 函数并不限制可传入实参的数量，你可以传递比命名参数个数或多或少数量的参数。默认的参数值针对的是传入参数少于命名参数的情况，同样 ECMAScript 6 也为另一种情况铺了条更好的路。
+
+<br />
 
 #### ECMAScript 5 中的未命名参数（Unnamed Parameters in ECMAScript 5）
 
@@ -400,7 +416,7 @@ function pick(object, ...keys) {
 
 <br />
 
-> **注意**： 函数的 length 属性用来描述参数的个数，剩余参数对其并无影响。上例中 pick() 的 length 属性值仍为 1，因为它只包括 object 参数。
+> 函数的 length 属性用来描述参数的个数，剩余参数对其并无影响。上例中 pick() 的 length 属性值仍为 1，因为它只包括 object 参数。
 
 <br />
 
@@ -437,6 +453,8 @@ let object = {
 
 这项限制的存在原因是对象字面量中的 setter 只被允许接受单个参数，而规范中的剩余参数可以接受无限个数的参数，所以它是不被允许的。
 
+<br />
+
 ##### 剩余参数对 arguments 对象的影响（How Rest Parameters Affect the arguments Object）
 
 设计剩余参数的目的是用来替代 ECMAScript 中的 arguments。原本在 ECMAScript 4 中就决定移除 arguments 并添加了剩余参数来允许传入无限个数的参数。虽然 ECMAScript 4 从未走上台面，但是这个主意被保留并在 ECMAScript 6 中重新引入，尽管 arguments 对象仍有一席之地。
@@ -463,7 +481,9 @@ arguments 对象总是能正确的反映所有传入的参数而无视剩余参�
 
 以上的内容对于你初用剩余参数来说已经足够了。
 
-### 增强的 Function 构造函数（Increased Capabilities of the Function Constructor）
+<br />
+
+### <a id="Increased-Capabilities-of-the-Function-Constructor"> 增强的 Function 构造函数（Increased Capabilities of the Function Constructor） </a>
 
 Function 构造函数用来动态创建一个新的函数，但是在 JavaScript 编程中甚少使用。传给该构造函数的参数全部为字符串，并被视为新创建函数的参数和函数主体，如下所示：
 
@@ -499,7 +519,7 @@ console.log(pickFirst(1, 2));   // 1
 
 <br />
 
-### 扩展运算符（The Spread Operator）
+### <a id="The-Spread-Operator"> 扩展运算符（The Spread Operator） </a>
 
 和剩余参数概念相近的是扩展运算符。相比剩余参数允许你把多个独立的参数整合到一个数组中，扩展运算符则允许你把一个数组中的元素分别作为参数传递给函数。考虑下 Math.max() 这个方法，它接受任意数量的参数并返回它们之中的最大值。下面这个例子使用了该方法：
 
@@ -548,7 +568,7 @@ console.log(Math.max(...values, 0));        // 0
 
 <br />
 
-### ECMAScript 6 中的 name 属性（ECMAScript 6’s name Property）
+### <a id="ECMAScript-6-name-Property"> ECMAScript 6 中的 name 属性（ECMAScript 6’s name Property） </a>
 
 JavaScript 中多种定义函数的方式使得函数的辨识成为了一种挑战。此外，匿名函数表达式的流行使得调试更加困难，堆栈在跟踪时难以阅读和解析。由于这个原因，ECMAScript 6 为所有的函数添加了 name 属性。
 
@@ -618,7 +638,7 @@ console.log((new Function()).name);     // "anonymous"
 
 <br />
 
-### 明确函数的双重用途（Clarifying the Dual Purpose of Functions）
+### <a id="Clarifying-the-Dual-Purpose-of-Functions"> 明确函数的双重用途（Clarifying the Dual Purpose of Functions） </a>
 
 在 ECMAScript 5 和早期的版本中，函数的双重用途表现在是否使用 new 来调用它。当使用 new 时，函数中的 this 为一个新的对象并返回它，如下面的演示：
 
@@ -640,7 +660,7 @@ JavaScript 中的函数有两个不同的只有内部（internal-only）能使�
 
 <br />
 
-> **注意**： 不是每个函数内部都有 [[Construct]] 方法，所以并非所有的函数都能被 new 调用。在后面的小结中提到的箭头函数就没有该方法。
+> 不是每个函数内部都有 [[Construct]] 方法，所以并非所有的函数都能被 new 调用。在 “箭头函数” 小结中提到的箭头函数就没有该方法。
 
 <br />
 
@@ -732,7 +752,7 @@ ECMAScript 6 通过添加 new.target 消除了函数存在调用歧义的可能�
 
 <br />
 
-### 块级函数（Block-Level Functions）
+### <a id="Block-Level-Functions"> 块级函数（Block-Level Functions） </a>
 
 在 ECMAScript 3 或更早的版本中，在块中声明函数（块级函数）理论上会发生语法错误，但所有的浏览器却都支持这么做。遗憾的是，每个浏览器支持的方式都有些差异，所以最佳实践就是不要在块中声明函数（更好的选择是使用函数表达式）。
 
@@ -825,7 +845,7 @@ console.log(typeof doSomething);            // "function"
 
 <br />
 
-### 箭头函数（Arrow Functions）
+### <a id="Arrow-Functions"> 箭头函数（Arrow Functions） </a>
 
 
 ECMAScript 6 最有意思的部分之一就是箭头函数。正如其名，箭头函数由 “箭头”（=>）这种新的语法来定义。但是箭头函数的表现在以下几个重要的方面不同于传统的 JavaScript 函数：
@@ -1133,7 +1153,7 @@ sum() 函数被 call 和 apply() 调用并传递参数，类似于你使用其�
 
 <br />
 
-### 尾调用优化（Tail Call Optimization）
+### <a id="Tail-Call-Optimization"> 尾调用优化（Tail Call Optimization） </a>
 
 也许 ECMAScript 6 中关于函数的改进最有意思的是引擎针对尾部调用机制的优化。尾调用指的是一个函数在另一个函数的尾部被调用，像这样：
 
@@ -1265,7 +1285,7 @@ function factorial(n, p = 1) {
 
 <br />
 
-### 总结（Summary）
+### <a id="Summary"> 总结（Summary） </a>
 
 ECMAScript 6 中的函数并未发生巨大的变化，相反，一系列小的改进使得函数更容易使用。
 

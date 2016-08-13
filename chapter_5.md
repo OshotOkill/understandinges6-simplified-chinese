@@ -5,7 +5,17 @@
 
 <br />
 
-### 解构的实用性在哪里（Why is Destructuring Useful?）
+### 本章小结
+* [解构的实用性在哪里](#Why-is-Destructuring-Useful)
+* [对象解构](#Object-Destructuring)
+* [数组解构](#Array-Destructuring)
+* [混合解构](#Mixed-Destructuring)
+* [参数解构](#Destructured-Parameters)
+* [总结](#Summary)
+
+<br />
+
+### <a id="Why-is-Destructuring-Useful"> 解构的实用性在哪里（Why is Destructuring Useful?） </a>
 
 
 在 ECMAScript 5 或更早的版本中，从对象或数组中获取特定的数据并赋值给本地变量需要书写很多并且相似的代码。例如：
@@ -27,7 +37,7 @@ let repeat = options.repeat,
 
 <br />
 
-### 对象解构（Object Destructuring）
+### <a id="Object-Destructuring"> 对象解构（Object Destructuring） </a>
 
 
 对象结构语法在赋值语句的左侧使用对象字面量，例如：
@@ -265,7 +275,7 @@ let { loc: {} } = node;
 
 <br />
 
-### 数组解构（Array Destructuring)
+### <a id="Array-Destructuring"> 数组解构（Array Destructuring) </a>
 
 
 数据解构的语法和对象解构看起来类似，只是将对象字面量替换成了数组字面量，而且解构操作的是数组内部的位置（索引）而不是对象中的命名属性，例如：
@@ -432,7 +442,7 @@ console.log(clonedColors);      //"[red,green,blue]"
 
 <br />
 
-### 混合解构（Mixed Destructuring）
+### <a id="Mixed-Destructuring"> 混合解构（Mixed Destructuring） </a>
 
 
 可以创建更复杂的表达式来混合使用对象和数组解构。这样做你可以精准地获取对象与数组并存的数据结构中的信息。例如：
@@ -468,7 +478,7 @@ console.log(startIndex);        // 0
 
 <br />
 
-### 参数解构（Destructured Parameters）
+### <a id="Destructured-Parameters"> 参数解构（Destructured Parameters） </a>
 
 
 解构的另一个实用案例发生在传递函数参数的时刻。当 JavaScript 的函数需要接受大量的可选参数时，一个普遍的实践是创建一个带有额外属性的对象用来明确，像这样：
@@ -577,7 +587,7 @@ function setCookie(name, value,
 
 <br />
 
-### 总结（Summary）
+### <a id="Summary"> 总结（Summary） </a>
 
 解构使得在 JavaScript 中操作对象和数组变得容易。使用熟悉的对象字面量或数组字面量，你可以将数据结构拆分并只获取你感兴趣的信息。对象和数组解构分别允许你从对象和数组中提取信息。
 

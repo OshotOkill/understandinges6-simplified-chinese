@@ -7,7 +7,20 @@
 
 <br />
 
-### 循环问题（The Loop Problem）
+### 本章小结
+* [循环问题](#The-Loop-Problem)
+* [什么是迭代器](#What-are-Iterators)
+* [什么是生成器](#What-Are-Generators)
+* [可迭代类型与 for-of](#Iterables-and-for-of)
+* [内置的迭代器](#Built-in-Iterators)
+* [扩展运算符与非数组可迭代类型](#The-Spread-Operator-and-Non-Array-Iterables)
+* [迭代器高级用法](#Advanced-Iterator-Functionality)
+* [运行异步任务](#Asynchronous-Task-Running)
+* [总结](#Summary)
+
+<br />
+
+### <a id="The-Loop-Problem"> 循环问题（The Loop Problem） </a>
 
 
 如果你曾使用过 JavaScript 来编程，那么你可能会见过下面的代码：
@@ -26,7 +39,7 @@ for (var i = 0, len = colors.length; i < len; i++) {
 
 <br />
 
-### 什么是迭代器（What are Iterators?）
+### <a id="What-are-Iterators"> 什么是迭代器（What are Iterators?） </a>
 
 
 迭代器只是带有特殊接口的对象。所有迭代器对象都带有 next() 方法并返回一个包含两个属性的结果对象。这些属性分别是 value 和 done，前者代表下一个位置的值，后者在没有更多值可供迭代的时候为 true 。迭代器带有一个内部指针，来指向集合中某个值的位置。当 next() 方法调用后，指针下一位置的值会被返回。
@@ -74,7 +87,7 @@ createIterator() 函数返回一个带有 next() 方法的对象。每次调用�
 
 <br />
 
-### 什么是生成器（What Are Generators?）
+### <a id="What-Are-Generators"> 什么是生成器（What Are Generators?） </a>
 
 
 生成器是返回迭代器的函数。生成器函数由 function 关键字和之后的星号（*）标识，同时还能使用新的 yield
@@ -212,7 +225,7 @@ let iterator = o.createIterator([1, 2, 3]);
 
 <br />
 
-### 可迭代类型与 for-of（Iterables and for-of）
+### <a id="Iterables-and-for-of"> 可迭代类型与 for-of（Iterables and for-of） </a>
 
 
 与迭代器紧密相关的是，可迭代类型是指那些包含 Symbol.iterator 属性的对象。该知名的 symbol 类型定义了返回迭代器的函数。在 ECMAScript 6 中，所有的集合对象（数组，set 和 map）与字符串都是可迭代类型，因此它们都有默认的迭代器。可迭代类型是为了 ECMAScript 新添加的 for-of 循环而设计的。
@@ -337,7 +350,7 @@ for (let x of collection) {
 
 <br />
 
-### 内置的迭代器（Built-in Iterators）
+### <a id="Built-in-Iterators"> 内置的迭代器（Built-in Iterators） </a>
 
 
 迭代器是 ECMAScript 6 重要的一部分，你不需要为大部分内置类型创建自己的迭代器，因为 JavaScript 语言已经包含了它们。只有当这些内置的迭代器无法做出符合需求的行为时，你才需要考虑自行创建它们，尤其是在定义自己的对象和类的时候。否则，你完全可以用内置的迭代器去完成一些工作。或许使用迭代器最频繁是集合。
@@ -387,7 +400,7 @@ for (let entry of data.entries()) {
 
 console.log() 会做如下输出：
 
-````
+```
 [0, "red"]
 [1, "green"]
 [2, "blue"]
@@ -624,7 +637,7 @@ for (let div of divs) {
 
 <br />
 
-### 扩展运算符与非数组可迭代类型（The Spread Operator and Non-Array Iterables）
+### <a id="The-Spread-Operator-and-Non-Array-Iterables"> 扩展运算符与非数组可迭代类型（The Spread Operator and Non-Array Iterables） </a>
 
 
 首先回顾一下在第七章中讨论过的使用扩展运算符将 set 转换为数组的示例：
@@ -666,7 +679,7 @@ console.log(allNumbers);    // [0, 1, 2, 3, 100, 101, 102]
 
 <br />
 
-### 迭代器高级用法（Advanced Iterator Functionality）
+### <a id="Advanced-Iterator-Functionality"> 迭代器高级用法（Advanced Iterator Functionality） </a>
 
 
 迭代器的基本用法和使用生成器创建它们的便利已经能完成很多的工作了。然而，迭代器仅用来迭代集合中的项就有些大材小用，实际上当它们被用作任务管理时更能体现出迭代器的强大之处。在 ECMAScript 6 的发展过程中，一些独特的想法和模式互相碰撞并激发创作者实现更多的功能。一些附加的用法可能微不足道，但将它们聚集在一起后能实现很多有意思的交互。
@@ -926,7 +939,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 <br />
 
-### 运行异步任务（Asynchronous Task Running）
+### <a id="Asynchronous-Task-Running"> 运行异步任务（Asynchronous Task Running） </a>
 
 
 使用生成器进行异步编程有很多的兴奋点。在 JavaScript 中异步编程是把双刃剑：简单的任务很容易实现异步，当任务变得复杂的时候源代码的组织会是个大问题。因为生成器允许你在执行的过程中暂停，使用它们处理异步流程就增加了很多可能性。
@@ -1145,7 +1158,7 @@ run(function*() {
 
 <br />
 
-### 总结（Summary）
+### <a id="Summary"> 总结（Summary） </a>
 
 
 迭代器是 ECMAScript 6 非常重要的一部分，同时也是 JavaScript 某些关键元素的核心。从表面上看，迭代器提供了一种简约的办法来使用简单的 API 返回一系列元素。然而 ECMAScript 6 还有更复杂的方式来运用迭代器。
