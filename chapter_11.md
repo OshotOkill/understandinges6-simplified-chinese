@@ -7,6 +7,8 @@ Promises are another option for asynchronous programming, and they work like fut
 
 To have a good understanding of how promises work, however, it’s important to understand some of the basic concepts upon which they are built.
 
+<br />
+
 * [Asynchronous Programming Background](#Asynchronous-Programming-Background)
 * [Promise Basics](#Promise-Basics)
 * [Global Promise Rejection Handling](#Global-Promise-Rejection-Handling)
