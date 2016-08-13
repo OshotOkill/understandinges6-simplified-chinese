@@ -48,7 +48,7 @@ console.log(person instanceof Object);      // true
 
 <br />
 
-### <a id="Class-Declarations"> 类声明（Class Declarations） </a>
+### <a id="Class-Declarations"> 类声明（Class-Declarations） </a>
 
 
 在 ECMAScript 6 中类存在的最简单的形式就是类声明，它看起来和其他语言中的类无异。
@@ -1013,7 +1013,7 @@ console.log(subitems instanceof MyArray);   // false
 
 <br />
 
-### <a name="Using-newtarget-in-Class-Constructors"> 在类构造函数中使用 new.target（Using new.target in Class Constructors） </a>
+### <a id="Using-newtarget-in-Class-Constructors"> 在类构造函数中使用 new.target（Using new.target in Class Constructors） </a>
 
 
 在第三章你已经了解了 new.target 是如何根据被调用的函数来决定自身的值。你也可以使用在类的构造函数中使用它来判断类是被如何调用的。简单情况下，new.target 的值等于类的构造函数，如下所示：
@@ -1086,7 +1086,7 @@ console.log(y instanceof Shape);    // true
 
 <br />
 
-### <a name="Summary"> 总结（Summary） </a>
+### <a id="Summary"> 总结（Summary） </a>
 
 
 ECMAScript 6 的类使得 JavaScript 中的继承更容易实现，你再也不必扔掉其它语言中继承方面的相关知识。ECMAScript 6 中的类是 ECMAScript 5 传统继承模型的语法糖，但是也添加和消除了很多特性与错误。
