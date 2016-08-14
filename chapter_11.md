@@ -1,35 +1,36 @@
 # Promise 与异步编程（Promises and Asynchronous Programming）
 
 
-One of the most powerful aspects of JavaScript is how easily it handles asynchronous programming. As a language created for the Web, JavaScript needed to be able to respond to asynchronous user interactions such as clicks and key presses from the beginning. Node.js further popularized asynchronous programming in JavaScript by using callbacks as an alternative to events. As more and more programs started using asynchronous programming, events and callbacks were no longer powerful enough to support everything developers wanted to do. Promises are the solution to this problem.
+JavaScript 的一个强大特性就是它可以轻松地处理异步编程。作为面向互联网设计的语言，JavaScript 从一开始就需要响应一些诸如点击和按键这些用户交互的能力。Node.js 通过使用回调函数来替代事件进一步推广了 JavaScript 的异步编程。随着越来越多的项目开始使用异步编程，事件和回调函数已不能满足开发者的所有需求。因此 Promise 应运而生。
 
-Promises are another option for asynchronous programming, and they work like futures and deferreds do in other languages. A promise specifies some code to be executed later (as with events and callbacks) and also explicitly indicates whether the code succeeded or failed at its job. You can chain promises together based on success or failure in ways that make your code easier to understand and debug.
+Promise 是异步编程的另一种选择，和其它语言一样，它延迟并在以后执行了某些东西。一个 promise 指定一些稍后执行的代码（正如事件和回调函数一样）并显式地表明该段代码是否执行成功。你可以根据代码执行的成功与否将 promise 串联（chain）起来以便让代码看起来更清晰和容易调试。
 
-To have a good understanding of how promises work, however, it’s important to understand some of the basic concepts upon which they are built.
+为了能更好的理解 promise 的工作原理，首先且重要的是明白它建立在哪些基本概念之上。
 
 <br />
 
-* [Asynchronous Programming Background](#Asynchronous-Programming-Background)
-* [Promise Basics](#Promise-Basics)
-* [Global Promise Rejection Handling](#Global-Promise-Rejection-Handling)
-* [Chaining Promises](#Chaining-Promises)
-* [Responding to Multiple Promises](#Responding-to-Multiple-Promises)
-* [Inheriting from Promises](#Inheriting-from-Promises)
+* [异步编程的背景](#Asynchronous-Programming-Background)
+* [promise 的基础](#Promise-Basics)
+* [在全局中处理 promise 的错误](#Global-Promise-Rejection-Handling)
+* [promises 链](#Chaining-Promises)
+* [响应多个 promise](#Responding-to-Multiple-Promises)
+* [promise 的继承](#Inheriting-from-Promises)
 * [Summary](#Summary)
 
 <br />
 
-### <a id="Asynchronous-Programming-Background"> Asynchronous Programming Background </a>
+### <a id="Asynchronous-Programming-Background"> 异步编程的背景（Asynchronous Programming Background） </a>
 
-JavaScript engines are built on the concept of a single-threaded event loop. Single-threaded means that only one piece of code is ever executed at a time. Contrast this with languages like Java or C++, where threads can allow multiple different pieces of code to execute at the same time. Maintaining and protecting state when multiple pieces of code can access and change that state is a difficult problem and a frequent source of bugs in thread-based software.
+JavaScript 的引擎建立在单线程事件轮询（single-threaded event loop）概念之上。单线程意味着一段时间内只能执行一段代码，与 Java 和 C++ 这些允许多段代码同时执行的多线程语言形成了鲜明对比。在基于多线程的软件中，维护并防止能被多段代码同时访问和修改的状态常常是个难题，也是经常制造 bug 的根源之一。
 
-JavaScript engines can only execute one piece of code at a time, so they need to keep track of code that is meant to run. That code is kept in a job queue. Whenever a piece of code is ready to be executed, it is added to the job queue. When the JavaScript engine is finished executing code, the event loop executes the next job in the queue. The event loop is a process inside the JavaScript engine that monitors code execution and manages the job queue. Keep in mind that as a queue, job execution runs from the first job in the queue to the last.
+JavaScript 引擎在相同的时间内只能执行一段代码，所以引擎不需要追踪这些可能运行的代码，而是在它们准备好执行时将它们放置到任务队列（job queue）。当代码由 JavaScript 引擎执行完毕后，引擎通过 event loop 找到并执行队列中的下一个任务。event loop 是 JavaScript 引擎内部的线程用来监控代码的执行情况和管理任务队列。需要牢记的是既然它是个队列，那么任务就会由开始到最后的顺序依次执行。
 
 <br />
 
-#### The Event Model
+#### 事件模型（The Event Model）
 
-When a user clicks a button or presses a key on the keyboard, an event like onclick is triggered. That event might respond to the interaction by adding a new job to the back of the job queue. This is JavaScript’s most basic form of asynchronous programming. The event handler code doesn’t execute until the event fires, and when it does execute, it has the appropriate context. For example:
+
+当一个用户点击了一个按钮或按下一个键盘上的某个按键时，一个事件如 onclick 会被触发。为了响应该交互，或许一个新的任务会被添加到任务队列中。这就是 JavaScript 异步编程中最基本的形式。关于处理事件的代码知道事件发生后才会执行，此时相应的上下文（context）会出现，例如：
 
 ```
 let button = document.getElementById("my-btn");
@@ -38,15 +39,16 @@ button.onclick = function(event) {
 };
 ```
 
-In this code, console.log("Clicked") will not be executed until button is clicked. When button is clicked, the function assigned to onclick is added to the back of the job queue and will be executed when all other jobs ahead of it are complete.
+在该段代码中，console.log("Clicked"）在按钮被点击之前不会执行。而在点击之后，赋值给 onclick 的代码会被添加到任务队列并在先前的所有任务完成之后执行。
 
-Events work well for simple interactions, but chaining multiple separate asynchronous calls together is more complicated because you must keep track of the event target (button in the previous example) for each event. Additionally, you need to ensure all appropriate event handlers are added before the first time an event occurs. For instance, if button were clicked before onclick is assigned, nothing would happen. So while events are useful for responding to user interactions and similar infrequent functionality, they aren’t very flexible for more complex needs.
+事件在简单的交互下能很好的工作，但串联多个独立的异步调用会很复杂，因为你必须追踪每个事件中的作用对象（在上例中为 button）。此外，你必须保证所有相应的处理程序在事件第一次发生之间注册完毕。例如，如果按钮在 onclick 事件注册之前就被点击，那么什么事情都不会发生。于是虽然事件可用于响应用户的交互和一些相似但不常见的目的，但它们面对更复杂的需求时显得不是那么灵活。
 
 <br />
 
-#### The Callback Pattern
+#### 回调模式（The Callback Pattern）
 
-When Node.js was created, it advanced the asynchronous programming model by popularizing the callback pattern of programming. The callback pattern is similar to the event model because the asynchronous code doesn’t execute until a later point in time. It’s different because the function to call is passed in as an argument, as shown here:
+
+在 Node.js 诞生后，它通过在编程中广泛使用回调模式来进一步发展异步编程模型。回调模式和事件模型有些相似，因为异步的代码在之后的某一时刻才会执行。然而它们之间的差异在于前者要调用的函数是参数，如下所示：
 
 ```
 readFile("example.txt", function(err, contents) {
@@ -59,11 +61,11 @@ readFile("example.txt", function(err, contents) {
 console.log("Hi!");
 ```
 
-This example uses the traditional Node.js error-first callback style. The readFile() function is intended to read from a file on disk (specified as the first argument) and then execute the callback (the second argument) when complete. If there’s an error, the err argument of the callback is an error object; otherwise, the contents argument contains the file contents as a string.
+该例使用了 Node.js 中惯例的 error-first（错误在前）回调方式。readFile() 函数读取磁盘中的文件（由第一个参数指定）并在任务完成之后执行回调函数（第二个参数）。如果读取的过程中有错误发生，那么回调函数中的 err 参数是一个 error 对象；否则，contents 参数将以字符串的形式存储文件中的内容。
 
-Using the callback pattern, readFile() begins executing immediately and pauses when it starts reading from the disk. That means console.log("Hi!") is output immediately after readFile() is called, before console.log(contents) prints anything. When readFile() finishes, it adds a new job to the end of the job queue with the callback function and its arguments. That job is then executed upon completion of all other jobs ahead of it.
+当使用回调模式时，readFile() 在一开始立即执行，在读取文件的时刻函数中断了运行。这意味着 console.log("Hi!") 虽然在 readFile() 之后，但是它会在 console.log(contents) 之前输出内容。当 readFile() 执行完毕后，回调函数和参数会被添加到任务队列中的末尾，并在队列先前的任务全部执行之后运行。
 
-The callback pattern is more flexible than events because chaining multiple calls together is easier with callbacks. For example:
+回调模式比事件更为灵活，因为回调函数更容易将多个调用串联在一起。例如：
 
 ```
 readFile("example.txt", function(err, contents) {
@@ -81,9 +83,9 @@ readFile("example.txt", function(err, contents) {
 });
 ```
 
-In this code, a successful call to readFile() results in another asynchronous call, this time to the writeFile() function. Note that the same basic pattern of checking err is present in both functions. When readFile() is complete, it adds a job to the job queue that results in writeFile() being called (assuming no errors). Then, writeFile() adds a job to the job queue when it finishes.
+该段代码中，调用 readFile() 成功之后又出现了另一个异步调用 —— writeFile()，而且它们使用了相同的错误处理模式。当 readFile() 执行完毕后，回调函数被添加到任务队列并在执行后调用 writeFile() 方法（假设没有错误发生）。之后，writeFile() 执行完成并再次向任务队列添加任务（回调函数）。
 
-This pattern works fairly well, but you can quickly find yourself in callback hell. Callback hell occurs when you nest too many callbacks, like this:
+该模式使用起来感觉相当不错，不过当回调函数嵌套过多时，你很快就会发现自己陷入了回调地狱（callback hell）。像这样：
 
 ```
 method1(function(err, result) {
@@ -120,9 +122,9 @@ method1(function(err, result) {
 });
 ```
 
-Nesting multiple method calls as this example does creates a tangled web of code that is hard to understand and debug. Callbacks also present problems when you want to implement more complex functionality. What if you want two asynchronous operations to run in parallel and notify you when they’re both complete? What if you’d like to start two asynchronous operations at a time but only take the result of the first one to complete?
+嵌套过多的方法调用会形成错综复杂的代码，难以阅读和调试。回调方法在实现复杂的功能时同样易发生错误。如果你想让两个异步操作并行执行而且在全部完成之后发送通知呢？如果你想让两个异步操作同时执行但是只接受先完成任务的结果呢？
 
-In these cases, you’d need to track multiple callbacks and cleanup operations, and promises greatly improve such situations.
+为了实现这些需求，就要追踪多个回调函数并做一些清理工作。promise 极大地降低了实现它们的困难程度。
 
 <br />
 
