@@ -128,37 +128,40 @@ method1(function(err, result) {
 
 <br />
 
-### <a id="Promise-Basics"> Promise Basics </a>
+### <a id="Promise-Basics"> promise 的基础（Promise Basics） </a>
 
-A promise is a placeholder for the result of an asynchronous operation. Instead of subscribing to an event or passing a callback to a function, the function can return a promise, like this:
+
+promise 是异步操作结果的占位符。函数可以返回一个 promise，而不用订阅一个事件或向函数传递回调参数，像这样
 
 ```
-// readFile promises to complete at some point in the future
+// readFile 承诺在之后完成该操作
 let promise = readFile("example.txt");
 ```
 
-In this code, readFile() doesn’t actually start reading the file immediately; that will happen later. Instead, the function returns a promise object representing the asynchronous read operation so you can work with it in the future. Exactly when you’ll be able to work with that result depends entirely on how the promise’s lifecycle plays out.
+在这段代码中，readFile() 会稍后而非立即去读取文件。函数会返回一个 promise 对象来表示异步读取操作以便在之后你可以使用它。确切使用 promise 结果的时机完全取决于 promise 生命周期中的行为。
 
 <br />
 
-#### The Promise Lifecycle
+#### promise 的生命周期（The Promise Lifecycle）
 
-Each promise goes through a short lifecycle starting in the pending state, which indicates that the asynchronous operation hasn’t completed yet. A pending promise is considered unsettled. The promise in the last example is in the pending state as soon as the readFile() function returns it. Once the asynchronous operation completes, the promise is considered settled and enters one of two possible states:
 
-1. Fulfilled: The promise’s asynchronous operation has completed successfully.
-2. Rejected: The promise’s asynchronous operation didn’t complete successfully due to either an error or some other cause.
+每个 promise 的生命周期一开始都会处于短暂的挂起状态，表示异步操作仍未完成，及挂起的 promise 被认定是未定的（unsettled）。上例中的 promise 在 readFile() 返回结果之前就是处于挂起状态。一旦异步操作完成，promise 就被认为是已定（settled）的并处于以下的两种状态之一：
 
-An internal [[PromiseState]] property is set to "pending", "fulfilled", or "rejected" to reflect the promise’s state. This property isn’t exposed on promise objects, so you can’t determine which state the promise is in programmatically. But you can take a specific action when a promise changes state by using the then() method.
+1. fulfilled: promise 的异步操作已完成。
+2. rejected:  promise 的异步操作未完成，原因可能是发生了错误或其它理由。
 
-The then() method is present on all promises and takes two arguments. The first argument is a function to call when the promise is fulfilled. Any additional data related to the asynchronous operation is passed to this fulfillment function. The second argument is a function to call when the promise is rejected. Similar to the fulfillment function, the rejection function is passed any additional data related to the rejection.
 
-<br />
+内部属性 [[PromiseState]] 会根据 promise 的状态来决定自身的值，如 "pending"，"flfilled"，"rejected"。该属性并未向 promise 对象暴露，所以你无法获取并根据 promise 的状态来进行编程。不过你可以在 promise 所处状态改变之后使用 then() 方法来指定一些操作。
 
-> Any object that implements the then() method in this way is called a thenable. All promises are thenables, but not all thenables are promises.
+所有的 promise 都包含 then() 方法并接受两个参数。第一个参数是 promise 为 fulfilled 状态下调用的函数，任何于异步操作有关的额外数据都会传给该它。第二个参数是 promise 为 rejected 状态下调用的函数，它会被传入任何与操作未完成有关的数据。
 
 <br />
 
-Both arguments to then() are optional, so you can listen for any combination of fulfillment and rejection. For example, consider this set of then() calls:
+> 以该种方式实现 then() 方法的对象被称为 thenable 。所有 promise 都是 thenable，但不是所有的的 thenable 都是 promise 。
+
+<br />
+
+then() 中的两个参数都是可选的，所以你可以选择同时对 fulfillment 和 rejection 或其中之一进行监听 。例如，考虑下面调用 then() 的例子：
 
 ```
 let promise = readFile("example.txt");
@@ -182,9 +185,9 @@ promise.then(null, function(err) {
 });
 ```
 
-All three then() calls operate on the same promise. The first call listens for both fulfillment and rejection. The second only listens for fulfillment; errors won’t be reported. The third just listens for rejection and doesn’t report success.
+这三个 then() 调用了同一个 promise 。第一次的调用同时监听了 fulfillment 和 rejection。第二次调用只监听了 fulfillment；错误不会被报告。第三次调用仅监听了 rejection 而忽略了任务完成之后的报告。
 
-Promises also have a catch() method that behaves the same as then() when only a rejection handler is passed. For example, the following catch() and then() calls are functionally equivalent:
+promise 也包含一个 catch() 方法，它的行为等效于只传递 rejection 处理（handler）。例如，下面的 catch() 和 then() 调用在功能上是等效的。
 
 ```
 promise.catch(function(err) {
@@ -192,7 +195,7 @@ promise.catch(function(err) {
     console.error(err.message);
 });
 
-// is the same as:
+// 等效于:
 
 promise.then(null, function(err) {
     // rejection
@@ -200,33 +203,33 @@ promise.then(null, function(err) {
 });
 ```
 
-The intent behind then() and catch() is for you to use them in combination to properly handle the result of asynchronous operations. This system is better than events and callbacks because it makes whether the operation succeeded or failed completely clear. (Events tend not to fire when there’s an error, and in callbacks you must always remember to check the error argument.) Just know that if you don’t attach a rejection handler to a promise, all failures will happen silently. Always attach a rejection handler, even if the handler just logs the failure.
+then() 和 catch() 的目的是让你组合使用它们以用来正确的处理异步操作。该机制比事件和回调更优的原因是操作究竟是成功还是失败一目了然（事件在出现错误之后不会被触发，而回调函数则总是要查看 error 参数）。只需记住如果你不给 promise 添加 rejection 处理，那么所有的错误都会悄无声息的发生。就算 rejection 处理只负责打印错误，你也最好不要忽略它。
 
-A fulfillment or rejection handler will still be executed even if it is added to the job queue after the promise is already settled. This allows you to add new fulfillment and rejection handlers at any time and guarantee that they will be called. For example:
+一个 fulfillment 或 rejection 的处理可以在 promise 已定之后被添加到任务队列中。这允许你随时添加 fulfillment 和 rejection 处理并保证它们会被调用。例如：
 
 ```
 let promise = readFile("example.txt");
 
-// original fulfillment handler
+// 原始的 fulfillment 处理
 promise.then(function(contents) {
     console.log(contents);
 
-    // now add another
+    // 新添加的处理
     promise.then(function(contents) {
         console.log(contents);
     });
 });
 ```
 
-In this code, the fulfillment handler adds another fulfillment handler to the same promise. The promise is already fulfilled at this point, so the new fulfillment handler is added to the job queue and called when ready. Rejection handlers work the same way.
+这段代码中，fulfillment 又为相同的 promise 添加了另一个 fulfillment 处理，所以该处理会被添加到任务队列并在恰当的时机调用。rejection 也是同理。
 
 <br />
 
-> Each call to then() or catch() creates a new job to be executed when the promise is resolved. But these jobs end up in a separate job queue that is reserved strictly for promises. The precise details of this second job queue aren’t important for understanding how to use promises so long as you understand how job queues work in general.
+> 会创建一个新的任务并在 promise 可用后执行。不过这些任务会被放置到一个单独的完全针对 promise 的任务队列中。只要你大体上了解任务队列的运行机制，那么这个单独的任务队列的细节对你学习如何使用 promise 来讲没有重要的影响。
 
 <br />
 
-#### Creating Unsettled Promises
+#### 创建未定的 promise（Creating Unsettled Promises）
 
 New promises are created using the Promise constructor. This constructor accepts a single argument: a function called the executor, which contains the code to initialize the promise. The executor is passed two functions named resolve() and reject() as arguments. The resolve() function is called when the executor has finished successfully to signal that the promise is ready to be resolved, while the reject() function indicates that the executor has failed.
 
