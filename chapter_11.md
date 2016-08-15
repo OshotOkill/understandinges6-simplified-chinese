@@ -11,7 +11,7 @@ Promise 是异步编程的另一种选择，和其它语言一样，它延迟并
 
 * [异步编程的背景](#Asynchronous-Programming-Background)
 * [promise 的基础](#Promise-Basics)
-* [在全局中处理 promise 的错误](#Global-Promise-Rejection-Handling)
+* [promise 的全局 Rejection 处理](#Global-Promise-Rejection-Handling)
 * [promises 链](#Chaining-Promises)
 * [响应多个 promise](#Responding-to-Multiple-Promises)
 * [promise 的继承](#Inheriting-from-Promises)
@@ -145,7 +145,7 @@ let promise = readFile("example.txt");
 #### promise 的生命周期（The Promise Lifecycle）
 
 
-每个 promise 的生命周期一开始都会处于短暂的挂起状态，表示异步操作仍未完成，及挂起的 promise 被认定是未定的（unsettled）。上例中的 promise 在 readFile() 返回结果之前就是处于挂起状态。一旦异步操作完成，promise 就被认为是已定（settled）的并处于以下的两种状态之一：
+每个 promise 的生命周期一开始都会处于短暂的挂起状态，表示异步操作仍未完成，即挂起的 promise 被认定是未定的（unsettled）。上例中的 promise 在 readFile() 返回结果之前就是处于挂起状态。一旦异步操作完成，promise 就被认为是已定（settled）的并处于以下的两种状态之一：
 
 1. fulfilled: promise 的异步操作已完成。
 2. rejected:  promise 的异步操作未完成，原因可能是发生了错误或其它理由。
@@ -231,28 +231,29 @@ promise.then(function(contents) {
 
 #### 创建未定的 promise（Creating Unsettled Promises）
 
-New promises are created using the Promise constructor. This constructor accepts a single argument: a function called the executor, which contains the code to initialize the promise. The executor is passed two functions named resolve() and reject() as arguments. The resolve() function is called when the executor has finished successfully to signal that the promise is ready to be resolved, while the reject() function indicates that the executor has failed.
 
-Here’s an example that uses a promise in Node.js to implement the readFile() function from earlier in this chapter:
+promise 由 Promise 构造函数创建。该构造函数接收一个参数：包含初始化 promise 代码的执行（executor）函数。该执行函数接收 resolve() 和 reject() 两个参数。resolve() 函数会在执行函数成功运行后发出信号表示该 promise 已经可用，而 reject() 函数代表改执行函数运行失败。
+
+下面的例子以本章之前的示例为参考并使用 promise 实现了 Node.js 中的 readFile() 函数：
 
 ```
-// Node.js example
+// Node.js 示例
 
 let fs = require("fs");
 
 function readFile(filename) {
     return new Promise(function(resolve, reject) {
 
-        // trigger the asynchronous operation
+        // 触发异步任务
         fs.readFile(filename, { encoding: "utf8" }, function(err, contents) {
 
-            // check for errors
+            // 检查错误
             if (err) {
                 reject(err);
                 return;
             }
 
-            // the read succeeded
+            // 读取操作成功
             resolve(contents);
 
         });
@@ -261,7 +262,7 @@ function readFile(filename) {
 
 let promise = readFile("example.txt");
 
-// listen for both fulfillment and rejection
+// 同时监听 fulfillment 和 rejection
 promise.then(function(contents) {
     // fulfillment
     console.log(contents);
@@ -271,12 +272,12 @@ promise.then(function(contents) {
 });
 ```
 
-In this example, the native Node.js fs.readFile() asynchronous call is wrapped in a promise. The executor either passes the error object to the reject() function or passes the file contents to the resolve() function.
+该例中，Node.js 原生异步 fs.readFile() 函数的调用被 promise 包裹。执行函数分别向 reject() 和 resolve() 传递了 error 对象和 contents 。
 
-Keep in mind that the executor runs immediately when readFile() is called. When either resolve() or reject() is called inside the executor, a job is added to the job queue to resolve the promise. This is called job scheduling, and if you’ve ever used the setTimeout() or setInterval() functions, then you’re already familiar with it. In job scheduling, you add a new job to the job queue to say, “Don’t execute this right now, but execute it later.” For instance, the setTimeout() function lets you specify a delay before a job is added to the queue:
+需要注意的是执行函数在 readFile() 被调用后会立即执行。当 resolve() 和 reject() 在执行函数内部被调用后，为了处理这个 promise，一个任务会被放置到任务队列中。该种行为被称为任务调度（job scheduling），如果你曾经使用过 setTimeout() 或 setInterval() 函数，那么你已经对其有所了解。在任务调度中，你向任务队列添加了一个任务并声明：“现在不要执行它，以后再说。”例如，setTimeout() 函数允许你延迟将任务放入队列中的时间：
 
 ```
-// add this function to the job queue after 500ms have passed
+// 500ms 之后将这个函数添加到任务队列
 setTimeout(function() {
     console.log("Timeout");
 }, 500)
@@ -284,16 +285,16 @@ setTimeout(function() {
 console.log("Hi!");
 ```
 
-This code schedules a job to be added to the job queue after 500ms. The two console.log() calls produce the following output:
+该段代码将任务添加到队列的时间延迟了 500ms 。两段 console.log() 调用会如下输出：
 
 ```
 Hi!
 Timeout
 ```
 
-Thanks to the 500ms delay, the output that the function passed to setTimeout() was shown after the output from the console.log("Hi!") call.
+归功于这 500ms 延迟，setTimeout() 内部的输出在调用 console.log("Hi!") 之后。
 
-Promises work similarly. The promise executor executes immediately, before anything that appears after it in the source code. For instance:
+Promise 的行为与上述相似。promise 中的执行函数会在执行流到达下方的源代码之前立即运行。例如：
 
 ```
 let promise = new Promise(function(resolve, reject) {
@@ -308,7 +309,7 @@ Promise
 Hi!
 ```
 
-Calling resolve() triggers an asynchronous operation. Functions passed to then() and catch() are executed asynchronously, as these are also added to the job queue. Here’s an example:
+调用 resolve() 会触发一个异步操作。传递给 then() 或 catch() 的函数会被添加到任务队列并异步执行。如下所示：
 
 ```
 let promise = new Promise(function(resolve, reject) {
@@ -323,7 +324,7 @@ promise.then(function() {
 console.log("Hi!");
 ```
 
-The output for this example is:
+该例中的输出为：
 
 ```
 Promise
@@ -331,19 +332,21 @@ Hi!
 Resolved
 ```
 
-Note that even though the call to then() appears before the console.log("Hi!") line, it doesn’t actually execute until later (unlike the executor). That’s because fulfillment and rejection handlers are always added to the end of the job queue after the executor has completed.
+注意虽然调用 then() 的位置在 console.log("Hi!") 之前，实际上它并不会立即执行（和执行函数不同）。这是因为 fulfillment 和 rejection 处理总会在执行函数运行完毕后被添加到任务队列的末尾。
 
 <br />
 
-#### Creating Settled Promises
+#### 创建已定 promise（Creating Settled Promises）
 
-The Promise constructor is the best way to create unsettled promises due to the dynamic nature of what the promise executor does. But if you want a promise to represent just a single known value, then it doesn’t make sense to schedule a job that simply passes a value to the resolve() function. Instead, there are two methods that create settled promises given a specific value.
+
+Promise 构造函数由于其内部执行函数与生俱来的动态特性使得它是创建未定 promise 的最佳方式。如果你想创建一个 promise 来代表已知的单个值呢？若只是简单的将该值传递给 resolve() 函数来调度任务，这样做并没有意义。相反，有额外的两个方法专为这种传递特定值的已定 promise 而生。
 
 <br />
 
-##### Using Promise.resolve()
+##### 使用 Promise.resolve() （Using Promise.resolve()）
 
-The Promise.resolve() method accepts a single argument and returns a promise in the fulfilled state. That means no job scheduling occurs, and you need to add one or more fulfillment handlers to the promise to retrieve the value. For example:
+
+Promise.resolve() 方法接收单个参数并返回一个 fulfilled 状态的 promise。这意味着没有发生任务调度，而且你需要创建一个 fulfillment 处理来提取这个参数值。例如：
 
 ```
 let promise = Promise.resolve(42);
@@ -353,13 +356,14 @@ promise.then(function(value) {
 });
 ```
 
-This code creates a fulfilled promise so the fulfillment handler receives 42 as value. If a rejection handler were added to this promise, the rejection handler would never be called because the promise will never be in the rejected state.
+这段代码创建了一个状态为 fulfilled 的 promise，所以 fulfillment 处理接收的值为 42 。如果 rejection 处理被添加给这个 promise，那么它永远都不会被调用，因为 promise 永远不存在 rejected 状态。
 
 <br />
 
-##### Using Promise.reject()
+##### 使用 Promise.reject() （Using Promise.reject()）
 
-You can also create rejected promises by using the Promise.reject() method. This works like Promise.resolve() except the created promise is in the rejected state, as follows:
+
+你也可以使用 Promise.reject() 方法来创建状态为 rejected 的 promise 。这和上述的 Promise.resolve() 的唯一区别就是创建的 promise 状态为 rejected，如下所示：
 
 ```
 let promise = Promise.reject(42);
@@ -369,17 +373,18 @@ promise.catch(function(value) {
 });
 ```
 
-Any additional rejection handlers added to this promise would be called, but not fulfillment handlers.
+任何给这个 promise 添加的 rejection 处理都会被调用，而 fulfillment 处理不会做任何工作。
 
-If you pass a promise to either the Promise.resolve() or Promise.reject() methods, the promise is returned without modification.
+如果你向 Promise.resolve() 或 Promise.reject() 方法传递了一个 promise，那么该 promise 不会做任何修改而直接返回。
 
 <br />
 
-##### Non-Promise Thenables
+##### 非 promise 的 thenable 对象（Non-Promise Thenables）
 
-Both Promise.resolve() and Promise.reject() also accept non-promise thenables as arguments. When passed a non-promise thenable, these methods create a new promise that is called after the then() function.
 
-A non-promise thenable is created when an object has a then() method that accepts a resolve and a reject argument, like this:
+Promise.resolve() 和 Promise.reject() 也可以接收非 promise 的 thenable 对象作为参数。在传递它之后，这些方法在调用 then() 之后创建一个新的 promise 。 
+
+一个不属于 promise 的 thenable 指的是包含 then() 方法的对象。该方法接收 resolve 和 reject 作为参数，像这样：
 
 ```
 let thenable = {
@@ -389,7 +394,7 @@ let thenable = {
 };
 ```
 
-The thenable object in this example has no characteristics associated with a promise other than the then() method. You can call Promise.resolve() to convert thenable into a fulfilled promise:
+该例中的 thenable 对象除了 then() 方法之外没有任何可以和 promise 相关联的特征。你可以调用 Promise.resolve() 来将这个对象转化成状态为 fulfilled 的 promise：
 
 ```
 let thenable = {
@@ -404,9 +409,9 @@ p1.then(function(value) {
 });
 ```
 
-In this example, Promise.resolve() calls thenable.then() so that a promise state can be determined. The promise state for thenable is fulfilled because resolve(42) is called inside the then() method. A new promise called p1 is created in the fulfilled state with the value passed from thenable (that is, 42), and the fulfillment handler for p1 receives 42 as the value.
+该例中，Promise.resolve() 调用了 thenable 对象中的 then() 方法，所以 promise 的状态可以被确定。该 thenable 对象中的状态为 fulfilled，因为 then() 方法内部调用了 resolve(42)。之后一个名称为 p1 并处于 fulfilled 状态的新 promise 被创建，同时 thenable 向其传值（42）。最后 p1 的fulfillment 处理会接受这个 42 作为参数。
 
-The same process can be used with Promise.resolve() to create a rejected promise from a thenable:
+上例 Promise.resolve() 和 thenable 的使用方式也可以创建一个 rejected 状态的 promise：
 
 ```
 let thenable = {
@@ -421,15 +426,16 @@ p1.catch(function(value) {
 });
 ```
 
-This example is similar to the last except that thenable is rejected. When thenable.then() executes, a new promise is created in the rejected state with a value of 42. That value is then passed to the rejection handler for p1.
+该例和上个示例极为相似，唯一的区别是 thenable 对象处于 rejected 状态。当该对象执行 then() 方法之后，一个新的处于 rejected 状态的 promise 被创建并带有 42 这个值。之后该值会出入 p1 中的 rejection 处理。
 
-Promise.resolve() and Promise.reject() work like this to allow you to easily work with non-promise thenables. A lot of libraries used thenables prior to promises being introduced in ECMAScript 6, so the ability to convert thenables into formal promises is important for backwards-compatibility with previously existing libraries. When you’re unsure if an object is a promise, passing the object through Promise.resolve() or Promise.reject() (depending on your anticipated result) is the best way to find out because promises just pass through unchanged.
+Proimse.resolve() 和 Promise.reject() 以上述的方式工作以便使你方便的操作非 promise 的 thenable 对象。很多库都在 promise 被引入 ECMAScript 6 之前就使用了 thenable，所以将 thenable 转化为正式 promise 的向后兼容特性对于这些已存在的库来讲至关重要。如果你不确定一个对象是否是 promise，最好的办法就是将该对象传入 Promise.resolve() 或 Promise.reject()（取决于你期望的方式），因为 promise 在这些函数中不会发生任何改变。
 
 <br />
 
-#### Executor Errors
+#### 执行错误（Executor Errors）
 
-If an error is thrown inside an executor, then the promise’s rejection handler is called. For example:
+
+当执行函数中抛出了错误，promise 的 rejection 处理会被调用。例如：
 
 ```
 let promise = new Promise(function(resolve, reject) {
@@ -441,7 +447,7 @@ promise.catch(function(error) {
 });
 ```
 
-In this code, the executor intentionally throws an error. There is an implicit try-catch inside every executor such that the error is caught and then passed to the rejection handler. The previous example is equivalent to:
+该段代码中，执行函数内部抛出了错误。实际上每个执行函数内部都包含一个隐式的 try-catch，因此内部的错误会被捕捉并传入 rejection 处理。该例等效如下：
 
 ```
 let promise = new Promise(function(resolve, reject) {
@@ -457,31 +463,31 @@ promise.catch(function(error) {
 });
 ```
 
-The executor handles catching any thrown errors to simplify this common use case, but an error thrown in the executor is only reported when a rejection handler is present. Otherwise, the error is suppressed. This became a problem for developers early on in the use of promises, and JavaScript environments address it by providing hooks for catching rejected promises.
+执行函数直接负责捕捉抛出的错误以简化该场景的实现，不过执行函数内部抛出的错误只会在 rejection 处理中显现。否则，该错误就会销声匿迹。这在开发者早期使用 promise 时是个麻烦，不过 JavaScript 环境通过提供 hook（挂钩）捕捉 rejected 状态的 promise 解决了该问题。
 
 <br />
 
-### <a id="Global-Promise-Rejection-Handling"> Global Promise Rejection Handling </a>
+### <a id="Global-Promise-Rejection-Handling"> promise 的全局 Rejection 处理 </a>
 
-One of the most controversial aspects of promises is the silent failure that occurs when a promise is rejected without a rejection handler. Some consider this the biggest flaw in the specification as it’s the only part of the JavaScript language that doesn’t make errors apparent.
+promise 最有争议的部分在于如果未提供 rejection 处理，那么 promise 中的错误会悄无声息的发生。有些人认为这是该规范中最大的败笔，因为它是 JavaScript 语言中唯一不会让错误自动浮出水面的场景。
 
-Determining whether a promise rejection was handled isn’t straightforward due to the nature of promises. For instance, consider this example:
+判断 promise 的 rejection 是否被处理不是很直观，这是 promise 的自身设定所导致的。例如，考虑下面的示例：
 
 ```
 let rejected = Promise.reject(42);
 
-// at this point, rejected is unhandled
+// 在当前，rejected 未被处理
 
-// some time later...
+// 一段时间过后...
 rejected.catch(function(value) {
-    // now rejected has been handled
+    // 现在 rejected 已被处理
     console.log(value);
 });
 ```
 
-You can call then() or catch() at any point and have them work correctly regardless of whether the promise is settled or not, making it hard to know precisely when a promise is going to be handled. In this case, the promise is rejected immediately but isn’t handled until later.
+你可以随时调用 then() 或 catch() 并在无视 promise 是否已定的情况下正常工作，这导致获知处理 promise 的确切时机变得相当困难。在本例的情况下，promise 立即转变为 rejected 状态但并未马上处理。
 
-While it’s possible that the next version of ECMAScript will address this problem, both browsers and Node.js have implemented changes to address this developer pain point. They aren’t part of the ECMAScript 6 specification but are valuable tools when using promises.
+虽然下个版本的 ECMAScript 很有可能会解决这个问题 ，但是浏览器和 Node.js 都施行了一些变化以解决开发者的痛点。这些变化并不是 ECMAScript 6 规范的一部分但都是处理 promise 的宝贵工具。 
 
 <br />
 
