@@ -491,16 +491,18 @@ rejected.catch(function(value) {
 
 <br />
 
-#### Node.js Rejection Handling
+#### Node.js 中的 rejection 处理（Node.js Rejection Handling）
 
-In Node.js, there are two events on the process object related to promise rejection handling:
 
-* unhandledRejection: Emitted when a promise is rejected and no rejection handler is called within one turn of the event loop
-* rejectionHandled: Emitted when a promise is rejected and a rejection handler is called after one turn of the event loop
+在 Node.js 中，process 对象上有两个事件和 promise 的 rejection 处理有关：
 
-These events are designed to work together to help identify promises that are rejected and not handled.
+* unhandledRejection:  在一次事件轮询中，当一个 promise 处于 rejected 状态却没有 rejection 处理它，该事件会被触发。
+* rejectionHandled: 在一次事件轮询之后，如果存在 rejected 状态的 promise 并已被 rejection 处理过，该事件会被触发。
 
-The unhandledRejection event handler is passed the rejection reason (frequently an error object) and the promise that was rejected as arguments. The following code shows unhandledRejection in action:
+
+设计这些事件的目的是为了帮助辨识未处理的 rejected 状态的 promise 。
+
+unhandledRejection 事件处理函数会被传入 rejection 的原因（通常是一个 error 对象）和 rejected 对象。以下代码做了演示：
 
 ```
 let rejected;
@@ -513,9 +515,9 @@ process.on("unhandledRejection", function(reason, promise) {
 rejected = Promise.reject(new Error("Explosion!"));
 ```
 
-This example creates a rejected promise with an error object and listens for the unhandledRejection event. The event handler receives the error object as the first argument and the promise as the second.
+该例创建了一个 rejected 状态的 promise 并传入一个 error 对象以作为参数，同时还注册了一个 unhandledRejection 事件以作监听。事件处理函数接受了一个 error 对象和关联的 promise 作为第一，第二个参数。
 
-The rejectionHandled event handler has only one argument, which is the promise that was rejected. For example:
+rejectionHandled 事件处理函数只接受单个参数，即关联的曾处于 rejected 状态的 promise。如下所示：
 
 ```
 let rejected;
@@ -526,7 +528,7 @@ process.on("rejectionHandled", function(promise) {
 
 rejected = Promise.reject(new Error("Explosion!"));
 
-// wait to add the rejection handler
+// 等待 rejection 处理的添加
 setTimeout(function() {
     rejected.catch(function(value) {
         console.log(value.message);     // "Explosion!"
@@ -534,14 +536,14 @@ setTimeout(function() {
 }, 1000);
 ```
 
-Here, the rejectionHandled event is emitted when the rejection handler is finally called. If the rejection handler were attached directly to rejected after rejected is created, then the event wouldn’t be emitted. The rejection handler would instead be called during the same turn of the event loop where rejected was created, which isn’t useful.
+在这里，rejectionHandled 事件会在 rejection 处理被调用时触发。如果 rejection 处理直接添加到新创建的处于 rejected 状态的 promise 之后，那么该事件不会被触发。因为 rejected 状态的 promise 的创建和相关 rejection 处理的调用会发生在事件轮询的相同周期内。
 
-To properly track potentially unhandled rejections, use the rejectionHandled and unhandledRejection events to keep a list of potentially unhandled rejections. Then wait some period of time to inspect the list. For example:
+为了正确追踪潜在的未处理的 rejection，使用 rejectionHandled 和 unhandledRejection 事件能获取并保留它们的一个清单，并在一段时间之后对其检查。例如：
 
 ```
 let possiblyUnhandledRejections = new Map();
 
-// when a rejection is unhandled, add it to the map
+// 当 rejection 未处理时，将其添加到 map 中
 process.on("unhandledRejection", function(reason, promise) {
     possiblyUnhandledRejections.set(promise, reason);
 });
@@ -555,7 +557,7 @@ setInterval(function() {
     possiblyUnhandledRejections.forEach(function(reason, promise) {
         console.log(reason.message ? reason.message : reason);
 
-        // do something to handle these rejections
+        // 处理这些 rejection
         handleRejection(promise, reason);
     });
 
@@ -564,26 +566,27 @@ setInterval(function() {
 }, 60000);
 ```
 
-This is a simple unhandled rejection tracker. It uses a map to store promises and their rejection reasons. Each promise is a key, and the promise’s reason is the associated value. Each time unhandledRejection is emitted, the promise and its rejection reason are added to the map. Each time rejectionHandled is emitted, the handled promise is removed from the map. As a result, possiblyUnhandledRejections grows and shrinks as events are called. The setInterval() call periodically checks the list of possible unhandled rejections and outputs the information to the console (in reality, you’ll probably want to do something else to log or otherwise handle the rejection). A map is used in this example instead of a weak map because you need to inspect the map periodically to see which promises are present, and that’s not possible with a weak map.
+这只是个简单的未处理 rejection 的追踪器。它使用 map 来存储 promise 和相关的 rejection 理由。每个 promise 都作为键，理由作为其值。每次 rejectionHandled 触发后，处理过的 promise 从 map 中移除。因此，possiblyUnhandledRejections 随着事件的调用而增长或减少。调用 setInterval() 会周期性地检查清单中未处理地 rejection 并向控制台输出它们的相关信息（在实际场景中，你可能会做一些其它的操作来打印或处理这些 rejection）。该例中使用 map 而不是 weak map 的原因是你需要周期性地检查该 map 中 promise 的存在情况，而这是 weak map 不可能做到的。
 
-While this example is specific to Node.js, browsers have implemented a similar mechanism for notifying developers about unhandled rejections.
+这些仅是 Node.js 的特性，浏览器实现了相似的机制将未处理的 rejection 通知给开发者。
 
 <br />
 
-#### Browser Rejection Handling
+#### 浏览器中的 rejection 处理（Browser Rejection Handling）
 
-Browsers also emit two events to help identify unhandled rejections. These events are emitted by the window object and are effectively the same as their Node.js equivalents:
 
-* unhandledrejection: Emitted when a promise is rejected and no rejection handler is called within one turn of the event loop.
-* rejectionhandled: Emitted when a promise is rejected and a rejection handler is called after one turn of the event loop.
+浏览器同样设置了两个事件以便查找未处理的 rejection 。这些事件由 window 对象触发并等效于 Node.js 的相关实现。
 
-While the Node.js implementation passes individual parameters to the event handler, the event handler for these browser events receives an event object with the following properties:
+* unhandledrejection: 在一次事件轮询中，当一个 promise 处于 rejected 状态却没有 rejection 处理它，该事件会被触发。
+* rejectionhandled: 在一次事件轮询之后，如果存在 rejected 状态的 promise 并已被 rejection 处理过，该事件会被触发。
 
-* type: The name of the event ("unhandledrejection" or "rejectionhandled").
-* promise: The promise object that was rejected.
-* reason: The rejection value from the promise.
+Node.js 的实现中，事件处理函数的参数是分别传入的，而浏览器中的事件处理函数参数接收一个包含以下属性的 event 对象：
 
-The other difference in the browser implementation is that the rejection value (reason) is available for both events. For example:
+* type: 事件的名称（"unhandledrejection" 或 "rejectionhandled"）。
+* promise: 处于 rejected 状态的 promise 对象。
+* reason: promise 中的 rejection 值。
+
+浏览器实现的另一处差异是 rejection 的值（reason）两个事件都可以使用。例如：
 
 ```
 let rejected;
@@ -603,14 +606,14 @@ window.onrejectionhandled = function(event) {
 rejected = Promise.reject(new Error("Explosion!"));
 ```
 
-This code assigns both event handlers using the DOM Level 0 notation of onunhandledrejection and onrejectionhandled. (You can also use addEventListener("unhandledrejection") and addEventListener("rejectionhandled") if you prefer.) Each event handler receives an event object containing information about the rejected promise. The type, promise, and reason properties are all available in both event handlers.
+该段代码以 DOM 0级的写法同时向 onunhandledrejection 和 onrejectionhandled 赋值了事件处理函数（如果你喜欢的话也可以使用 addEventListener("unhandledrejection") 和 addEventListener("rejectionhandled")）。每个事件处理函数接收一个含有 rejected promise 相关信息的 event 对象，其中包括 type，promise 和 reason 属性。
 
-The code to keep track of unhandled rejections in the browser is very similar to the code for Node.js, too:
+在浏览器中书写追踪未处理 rejection 的代码和 Node.js 很相似：
 
 ```
 let possiblyUnhandledRejections = new Map();
 
-// when a rejection is unhandled, add it to the map
+// 当 rejection 未处理时，将其添加到 map 中
 window.onunhandledrejection = function(event) {
     possiblyUnhandledRejections.set(event.promise, event.reason);
 };
@@ -624,7 +627,7 @@ setInterval(function() {
     possiblyUnhandledRejections.forEach(function(reason, promise) {
         console.log(reason.message ? reason.message : reason);
 
-        // do something to handle these rejections
+        // 处理这些 rejection
         handleRejection(promise, reason);
     });
 
@@ -633,13 +636,13 @@ setInterval(function() {
 }, 60000);
 ```
 
-This implementation is almost exactly the same as the Node.js implementation. It uses the same approach of storing promises and their rejection values in a map and then inspecting them later. The only real difference is where the information is retrieved from in the event handlers.
+该实现几乎和 Node.js 无异。它们都使用 map 来存储 promise 和对应的 rejection 值并在留作以后检查。唯一的区别在于两者在事件处理函数中提取信息的位置。
 
-Handling promise rejections can be tricky, but you’ve just begun to see how powerful promises can really be. It’s time to take the next step and chain several promises together.
+处理 promise 的 rejection 可能有些棘手，不过你已经初步了解了 promise 的强大之处。现在是时候迈向下一步来串联使用一些 promise 了。
 
 <br />
 
-### <a id="Chaining-Promises"> Chaining Promises </a>
+### <a id="Chaining-Promises"> promise 链（Chaining Promises） </a>
 
 To this point, promises may seem like little more than an incremental improvement over using some combination of a callback and the setTimeout() function, but there is much more to promises than meets the eye. More specifically, there are a number of ways to chain promises together to accomplish more complex asynchronous behavior.
 
