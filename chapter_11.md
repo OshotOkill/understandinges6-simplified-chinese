@@ -145,13 +145,13 @@ let promise = readFile("example.txt");
 #### promise 的生命周期（The Promise Lifecycle）
 
 
-每个 promise 的生命周期一开始都会处于短暂的挂起状态，表示异步操作仍未完成，即挂起的 promise 被认定是未定的（unsettled）。上例中的 promise 在 readFile() 返回结果之前就是处于挂起状态。一旦异步操作完成，promise 就被认为是已定（settled）的并处于以下的两种状态之一：
+每个 promise 的生命周期一开始都会处于短暂的挂起（pending）状态，表示异步操作仍未完成，即挂起的 promise 被认定是未定的（unsettled）。上例中的 promise 在 readFile() 返回结果之前就是处于挂起状态。一旦异步操作完成，promise 就被认为是已定（settled）的并处于以下的两种状态之一：
 
 1. fulfilled: promise 的异步操作已完成。
 2. rejected:  promise 的异步操作未完成，原因可能是发生了错误或其它理由。
 
 
-内部属性 [[PromiseState]] 会根据 promise 的状态来决定自身的值，如 "pending"，"flfilled"，"rejected"。该属性并未向 promise 对象暴露，所以你无法获取并根据 promise 的状态来进行编程。不过你可以在 promise 所处状态改变之后使用 then() 方法来指定一些操作。
+内部属性 [[PromiseState]] 会根据 promise 的状态来决定自身的值，如 "pending"，"fulfilled" *，"rejected"。该属性并未向 promise 对象暴露，所以你无法获取并根据 promise 的状态来进行编程。不过你可以在 promise 所处状态改变之后使用 then() 方法来指定一些操作。
 
 所有的 promise 都包含 then() 方法并接受两个参数。第一个参数是 promise 为 fulfilled 状态下调用的函数，任何于异步操作有关的额外数据都会传给该它。第二个参数是 promise 为 rejected 状态下调用的函数，它会被传入任何与操作未完成有关的数据。
 
@@ -225,7 +225,7 @@ promise.then(function(contents) {
 
 <br />
 
-> 会创建一个新的任务并在 promise 可用后执行。不过这些任务会被放置到一个单独的完全针对 promise 的任务队列中。只要你大体上了解任务队列的运行机制，那么这个单独的任务队列的细节对你学习如何使用 promise 来讲没有重要的影响。
+> 每次调用 then() 和 catch() 都会创建一个新的任务并在 promise 可用后执行。不过这些任务会被放置到一个单独的完全针对 promise 的任务队列中。只要你大体上了解任务队列的运行机制，那么这个单独的任务队列的细节对你学习如何使用 promise 来讲没有重要的影响。
 
 <br />
 
@@ -356,7 +356,7 @@ promise.then(function(value) {
 });
 ```
 
-这段代码创建了一个状态为 fulfilled 的 promise，所以 fulfillment 处理接收的值为 42 。如果 rejection 处理被添加给这个 promise，那么它永远都不会被调用，因为 promise 永远不存在 rejected 状态。
+这段代码创建了一个状态为 fulfilled 的 promise，所以 fulfillment 处理接收的值为 42 。如果 rejection 处理被添加给这个 promise，那么它永远都不会被调用，因为 promise 不存在 rejected 状态。
 
 <br />
 
@@ -644,9 +644,10 @@ setInterval(function() {
 
 ### <a id="Chaining-Promises"> promise 链（Chaining Promises） </a>
 
-To this point, promises may seem like little more than an incremental improvement over using some combination of a callback and the setTimeout() function, but there is much more to promises than meets the eye. More specifically, there are a number of ways to chain promises together to accomplish more complex asynchronous behavior.
 
-Each call to then() or catch() actually creates and returns another promise. This second promise is resolved only once the first has been fulfilled or rejected. Consider this example:
+目前来看，promise 仅仅是回调和 setTimeout() 函数的混合和改进，实际上 proimse 还有很多能力未呈现出来。更确切地讲，有很多种方法通过串联 promise 来完成更复杂地异步操作。
+
+实际上每一次调用 then() 和 catch() 都会返回另一个 promise 。它只会在之前的 promise 转化为 fulfilled 或 rejected 状态的那一刻后才会被处理 。考虑下面的示例：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -660,14 +661,14 @@ p1.then(function(value) {
 });
 ```
 
-The code outputs:
+该段代码输出:
 
 ```
 42
 Finished
 ```
 
-The call to p1.then() returns a second promise on which then() is called. The second then() fulfillment handler is only called after the first promise has been resolved. If you unchain this example, it looks like this:
+调用 p1.then() 返回另一个 promise，而且该例又对新的 promise 调用了 then()。第二次调用 then() 后 fulfillment 处理函数只有在第一个 promise 完成之后被调用。如果你不使用链式调用，那么看起来像是这样：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -683,13 +684,14 @@ p2.then(function() {
 });
 ```
 
-In this unchained version of the code, the result of p1.then() is stored in p2, and then p2.then() is called to add the final fulfillment handler. As you might have guessed, the call to p2.then() also returns a promise. This example just doesn’t use that promise.
+在未使用链式代码的版本中，p1.then() 的结果存储到了 p2 中，p2.then() 被调用后最后的 fulfillment 处理才会被添加。正如你所想的那样，p2.then() 也会返回一个 promise，只是该例没有进一步使用它。
 
 <br />
 
-#### Catching Errors
+#### 捕获错误（Catching Errors）
 
-Promise chaining allows you to catch errors that may occur in a fulfillment or rejection handler from a previous promise. For example:
+
+promise 链允许你捕获上一个 promise 的 fulfillment 或 rejection 处理中的错误。例如：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -703,7 +705,7 @@ p1.then(function(value) {
 });
 ```
 
-In this code, the fulfillment handler for p1 throws an error. The chained call to the catch() method, which is on a second promise, is able to receive that error through its rejection handler. The same is true if a rejection handler throws an error:
+在这段代码中，p1 的 fulfillment 处理抛出了错误。该链中的第二个 promise 调用了 catch() 方法，所以它通过 rejection 处理接收了这个错误。同样上一个 promise 如果在 rejection 处理中抛出了错误，这里同样也能接收：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -718,17 +720,18 @@ p1.catch(function(error) {
 });
 ```
 
-Here, the executor throws an error then triggers the p1 promise’s rejection handler. That handler then throws another error that is caught by the second promise’s rejection handler. The chained promise calls are aware of errors in other promises in the chain.
+这里，执行函数抛出了错误并触发了 p1 promise 的 rejection 处理。这个处理函数抛出了另一个错误又被下一个 promise 的 rejection 处理捕获。串联的 promise 调用能知晓链中其它 promise 的错误。
 
 <br />
 
-> Always have a rejection handler at the end of a promise chain to ensure that you can properly handle any errors that may occur.
+> 为了确保你能正确处理可能发生的错误，你总是需要在 promise 链的末尾添加一个 rejection 处理。
 
 <br />
 
-#### Returning Values in Promise Chains
+#### promise 链中的返回值（Returning Values in Promise Chains）
 
-Another important aspect of promise chains is the ability to pass data from one promise to the next. You’ve already seen that a value passed to the resolve() handler inside an executor is passed to the fulfillment handler for that promise. You can continue passing data along a chain by specifying a return value from the fulfillment handler. For example:
+
+promise 链的另一个重要特征是链中的 promise 能够向下一个 promise 传递数据。你已经知道执行函数中的 resolve() 的参数会被传递给 promise 的 fulfillment 处理函数。你同样可以在 fulfillment 处理中通过返回某个指定值来在链中传递数据。例如：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -743,9 +746,9 @@ p1.then(function(value) {
 });
 ```
 
-The fulfillment handler for p1 returns value + 1 when executed. Since value is 42 (from the executor), the fulfillment handler returns 43. That value is then passed to the fulfillment handler of the second promise, which outputs it to the console.
+p1 的 fulfillment 处理会返回 value + 1 的计算值。因为 value 的值是 42（由执行函数所得），所以 fulfillment 函数会返回 43 。该值会被传递给下一个 promise 的 fulfillment 处理并输出到控制台。
 
-You could do the same thing with the rejection handler. When a rejection handler is called, it may return a value. If it does, that value is used to fulfill the next promise in the chain, like this:
+你可以用 rejection 处理做相同的事情。当 rejection 处理被调用后，也可以返回一个值。如果这么做，那么该值同样会传递给下一个 promise 的 fulfillment 处理，像这样：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -753,22 +756,23 @@ let p1 = new Promise(function(resolve, reject) {
 });
 
 p1.catch(function(value) {
-    // first fulfillment handler
+    // 首个 fulfillment 处理
     console.log(value);         // "42"
     return value + 1;
 }).then(function(value) {
-    // second fulfillment handler
+    // 第二个 fulfillment 处理
     console.log(value);         // "43"
 });
 ```
 
-Here, the executor calls reject() with 42. That value is passed into the rejection handler for the promise, where value + 1 is returned. Even though this return value is coming from a rejection handler, it is still used in the fulfillment handler of the next promise in the chain. The failure of one promise can allow recovery of the entire chain if necessary.
+这在里，执行函数调用了 reject() 并传入 42 。它被传给 promise 的 rejection 处理，并返回 value + 1 的值。尽管这个返回值来自于 rejection 处理，他仍然会被链中的下一个 promise 的 fulfillment 处理使用。如果链中的某个 promise 失败，必要的话，可以通过上述方法来恢复整个 promise 链。
 
 <br />
 
-#### Returning Promises in Promise Chains
+#### promise 链中的 promise 返回（Returning Promises in Promise Chains）
 
-Returning primitive values from fulfillment and rejection handlers allows passing of data between promises, but what if you return an object? If the object is a promise, then there’s an extra step that’s taken to determine how to proceed. Consider the following example:
+
+fulfillment 和 rejection 处理返回的原始值允许在 promise 中传递数据。如果你想返回一个对象呢？假设这个对象是 promise，那么为了决定下一步该做些什么，这里需要额外的步骤。考虑下面的示例：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -780,18 +784,18 @@ let p2 = new Promise(function(resolve, reject) {
 });
 
 p1.then(function(value) {
-    // first fulfillment handler
+    // 首个 fulfillment 处理
     console.log(value);     // 42
     return p2;
 }).then(function(value) {
-    // second fulfillment handler
+    // 第二个 fulfillment 处理
     console.log(value);     // 43
 });
 ```
 
-In this code, p1 schedules a job that resolves to 42. The fulfillment handler for p1 returns p2, a promise already in the resolved state. The second fulfillment handler is called because p2 has been fulfilled. If p2 were rejected, a rejection handler (if present) would be called instead of the second fulfillment handler.
+该段代码中，p1 安排了一个 resolve(42) 的任务。p1 的 fulfillment 处理返回了 p2 这个包含 resolve() 的 promise 。因为 p2 已经处于 fulfilled 状态，所以第二个 fulfillment 处理会被调用。相反，如果 p2 的状态是 rejected，那么 rejection 处理（如果存在）会被调用。
 
-The important thing to recognize about this pattern is that the second fulfillment handler is not added to p2, but rather to a third promise. The second fulfillment handler is therefore attached to that third promise, making the previous example equivalent to this:
+认识该模式重要的一点是第二个 fulfillment 处理并没有添加在 p2，而是第三个 promise 上。因此该 fulfillment 处理附着于第三个 promise，使得上例等效于：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -803,18 +807,18 @@ let p2 = new Promise(function(resolve, reject) {
 });
 
 let p3 = p1.then(function(value) {
-    // first fulfillment handler
+    // 首个 fulfillment 处理
     console.log(value);     // 42
     return p2;
 });
 
 p3.then(function(value) {
-    // second fulfillment handler
+    // 第二个 fulfillment 处理
     console.log(value);     // 43
 });
 ```
 
-Here, it’s clear that the second fulfillment handler is attached to p3 rather than p2. This is a subtle but important distinction, as the second fulfillment handler will not be called if p2 is rejected. For instance:
+这里可以很明显的看到，第二个 fulfillment 处理添加给了 p3 而不是 p2 。这个区别虽不易察觉但至关重要，因为 p2 若处于 rejected 状态则第二个 fulfillment 处理不会被调用。例如：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -826,16 +830,16 @@ let p2 = new Promise(function(resolve, reject) {
 });
 
 p1.then(function(value) {
-    // first fulfillment handler
+    // 首个 fulfillment 处理
     console.log(value);     // 42
     return p2;
 }).then(function(value) {
-    // second fulfillment handler
-    console.log(value);     // never called
+    // 第二个 fulfillment 处理
+    console.log(value);     // 不会被调用
 });
 ```
 
-In this example, the second fulfillment handler is never called because p2 is rejected. You could, however, attach a rejection handler instead:
+该例中，因为 p2 的状态是 rejected，所以第二个 fulfillment 处理永远不会被调用。不过，你可以添加一个 rejection 处理：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -856,9 +860,9 @@ p1.then(function(value) {
 });
 ```
 
-Here, the rejection handler is called as a result of p2 being rejected. The rejected value 43 from p2 is passed into that rejection handler.
+在这里，p2 处于 rejected 状态并调用 rejection 处理。p2 中的 reject() 参数（43）会被传递给 rejection 处理。
 
-Returning thenables from fulfillment or rejection handlers doesn’t change when the promise executors are executed. The first defined promise will run its executor first, then the second promise executor will run, and so on. Returning thenables simply allows you to define additional responses to the promise results. You defer the execution of fulfillment handlers by creating a new promise within a fulfillment handler. For example:
+在 fulfillment 或 rejeciton 处理中返回 thenable 对象并不会改变它们内部执行函数的行为。首个定义的 promise 会最先运行它的执行函数，接下来是第二个定义的 promise，以此类推。返回 thenable 对象仅允许你为这些 promise 定义额外的相应操作。你可以在 fulfillment 处理中创建一个新的 promise 来延迟 fulfillment 处理的执行。例如：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -879,19 +883,21 @@ p1.then(function(value) {
 });
 ```
 
-In this example, a new promise is created within the fulfillment handler for p1. That means the second fulfillment handler won’t execute until after p2 is fulfilled. This pattern is useful when you want to wait until a previous promise has been settled before triggering another promise.
+该例中，一个新的 promise 在 p1 的 fulfillment 处理函数中创建。这意味着第二个 fulfillment 处理直到 p2 处于 fulfilled 状态之前都不会执行。如果你想在前一个 promise 已定之前不想触发其它 promise，那么该模式十分有用。
 
 <br />
 
-### <a id="Responding-to-Multiple-Promises"> Responding to Multiple Promises </a>
+### <a id="Responding-to-Multiple-Promises"> 响应多个 promise（Responding to Multiple Promises） </a>
 
-Up to this point, each example in this chapter has dealt with responding to one promise at a time. Sometimes, however, you’ll want to monitor the progress of multiple promises in order to determine the next action. ECMAScript 6 provides two methods that monitor multiple promises: Promise.all() and Promise.race().
+
+到目前为止，本章中的每个示例在同一时间内都只响应了一个 promise。不过有时，你想要观察多个 promise 的进度来决定下一步的操作。ECMAScript 6 提供了两个方法负责此事：Promise.all() 和 Promise.race() 
 
 <br />
 
-#### The Promise.all() Method
+#### Promise.all() 方法（The Promise.all() Method）
 
-The Promise.all() method accepts a single argument, which is an iterable (such as an array) of promises to monitor, and returns a promise that is resolved only when every promise in the iterable is resolved. The returned promise is fulfilled when every promise in the iterable is fulfilled, as in this example:
+
+Promise.all() 方法接收单个包含 promise 的可迭代对象参数（如数组），并在该对象包含的所有 promise 全部处理完毕之后返回一个已处理的 promise 。这个返回的 promise 会在所有 promise 处于 fulfilled 状态之后转变为该状态，如下所示：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -916,9 +922,9 @@ p4.then(function(value) {
 });
 ```
 
-Each promise here resolves with a number. The call to Promise.all() creates promise p4, which is ultimately fulfilled when promises p1, p2, and p3 are fulfilled. The result passed to the fulfillment handler for p4 is an array containing each resolved value: 42, 43, and 44. The values are stored in the order the promises resolved, so you can match promise results to the promises that resolved to them.
+这里的每个 promise 都带有一个数字。调用 Promise.all() 会创建 p4 promise，并在 p1，p2，p3 fulfilled 之后转变状态为 fulfilled 。传给 p4 的 fulfillment 处理的参数是一个包含所有已处理 promise 的值：42，43，44 的数组。这些值会在各个 promise 处理完成后依次存储到相应的变量中，所以你可以根据 promise 的处理结果来找出对应的 promise。
 
-If any promise passed to Promise.all() is rejected, the returned promise is immediately rejected without waiting for the other promises to complete:
+如果 Promise.all() 中的某个 promise 转变为 rejected 状态，那么会立即返回一个 rejected 状态的 promise 而不用等待其它 promise 完成执行。
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -941,15 +947,16 @@ p4.catch(function(value) {
 });
 ```
 
-In this example, p2 is rejected with a value of 43. The rejection handler for p4 is called immediately without waiting for p1 or p3 to finish executing (They do still finish executing; p4 just doesn’t wait.)
+在本例中，p2 处于 rejected 状态并返回 43 。p4 的 rejection 处理会被立即调用而无需等待 p1 或 p3 执行完毕（它们仍旧会完成执行，只是 p4 不等它们）。
 
-The rejection handler always receives a single value rather than an array, and the value is the rejection value from the promise that was rejected. In this case, the rejection handler is passed 43 to reflect the rejection from p2.
+rejection 处理总是会接收单个值，而不是数组，并且该值是 rejected 状态的 promise 所返回的。在本例的情况下，rejection 处理接收的参数为 p2 传递的 43 。
 
 <br />
 
-#### The Promise.race() Method
+#### Promise.race() 方法（The Promise.race() Method）
 
-The Promise.race() method provides a slightly different take on monitoring multiple promises. This method also accepts an iterable of promises to monitor and returns a promise, but the returned promise is settled as soon as the first promise is settled. Instead of waiting for all promises to be fulfilled like the Promise.all() method, the Promise.race() method returns an appropriate promise as soon as any promise in the array is fulfilled. For example:
+
+Promise.race() 方法以另一种稍稍不同的方式来观察多个 promise 。该方法同样接收一个包含 promise 的可迭代类型并返回一个 promise，不过返回的时机是在单个 promise 执行完毕的那一刻，而不是像 Promise.all() 那样需要等待所有的 promise 都处于 fulfilled 状态。只要有 promise 转变为 fulfilled 状态，那么Promise.race() 就会返回它。例如：
 
 ```
 let p1 = Promise.resolve(42);
@@ -969,7 +976,7 @@ p4.then(function(value) {
 });
 ```
 
-In this code, p1 is created as a fulfilled promise while the others schedule jobs. The fulfillment handler for p4 is then called with the value of 42 and ignores the other promises. The promises passed to Promise.race() are truly in a race to see which is settled first. If the first promise to settle is fulfilled, then the returned promise is fulfilled; if the first promise to settle is rejected, then the returned promise is rejected. Here’s an example with a rejection:
+在该段代码中，p1 是以 fulfilled promise 的身份所创建，而其它的 promise 需要做任务调度。p4 的 fulfillment 处理会被立即调用并传入值 42，其它的 promise 都被忽略。传给 Promise.race() 的 promise 真如竞赛一般看哪一个先处于已定状态，并返回胜出的 fulfilled promise：
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -989,18 +996,19 @@ p4.catch(function(value) {
 });
 ```
 
-Here, p4 is rejected because p2 is already in the rejected state when Promise.race() is called. Even though p1 and p3 are fulfilled, those results are ignored because they occur after p2 is rejected.
+这里，p2 在 Promise.race() 调用时已经处于 rejected 状态，所以 p4 的状态也是 rejected。虽然 p1 和 p3 处于 fulfilled 状态，但由于 p2 的原因它们被忽略了。
 
 <br />
 
-### <a id="Inheriting-from-Promises"> Inheriting from Promises </a>
+### <a id="Inheriting-from-Promises"> promise 继承（Promise Inheriting from Promises） </a>
 
-Just like other built-in types, you can use a promise as the base for a derived class. This allows you to define your own variation of promises to extend what built-in promises can do. Suppose, for instance, you’d like to create a promise that can use methods named success() and failure() in addition to the usual then() and catch() methods. You could create that promise type as follows:
+
+和其它内置类型相似，你可以讲 promise 作为派生类的基类。这允许你以内置的 promise 为基础做一些改进。假如，你想创建一个包含 success() 和 failure() 方法的 promise 但又不想丢掉内置版本中的 then() 和 catch()，你可以如下创建该 promise 类型：
 
 ```
 class MyPromise extends Promise {
 
-    // use default constructor
+    // 使用默认的构造函数
 
     success(resolve, reject) {
         return this.then(resolve, reject);
@@ -1023,13 +1031,13 @@ promise.success(function(value) {
 });
 ```
 
-In this example, MyPromise is derived from Promise and has two additional methods. The success() method mimics resolve() and failure() mimics the reject() method.
+该例中，MyPromise 由 promise 派生并包含了两个额外方法。success() 和 failure() 方法分别模仿了 resolve() 与 reject() 。
 
-Each added method uses this to call the method it mimics. The derived promise functions the same as a built-in promise, except now you can call success() and failure() if you want.
+success() 和 reject() 使用 this 来调用它们模仿的方法。派生的 promise 和内置的 promise 基本一致，除了前者可以调用 success() 和 failure() 。
 
-Since static methods are inherited, the MyPromise.resolve() method, the MyPromise.reject() method, the MyPromise.race() method, and the MyPromise.all() method are also present on derived promises. The last two methods behave the same as the built-in methods, but the first two are slightly different.
+既然静态方法也会被继承，那么 MyPromise.resolve()，MyPromise.reject()，MyPromise.race() 和 MyPromise.all() 方法同样在派生类内部存在。后两者和原版表现一直，而前两者有些不同。
 
-Both MyPromise.resolve() and MyPromise.reject() will return an instance of MyPromise regardless of the value passed because those methods use the Symbol.species property (covered under in Chapter 9) to determine the type of promise to return. If a built-in promise is passed to either method, the promise will be resolved or rejected, and the method will return a new MyPromise so you can assign fulfillment and rejection handlers. For example:
+MyPromise.resolve() 和 MyPromise.reject() 会返回 MyPromise 的示例而无视传给它们的参数，因为这些方法使用了 Symbol.species 属性（第九章已讨论）来决定 promise 返回的类型。如果一个属于内置类型的 promise 被传递给这些方法，该 promise 会被进行处理，并返回了一个新的 MyPromise 以供你赋值 fulfillment 和 rejection 处理。例如： 
 
 ```
 let p1 = new Promise(function(resolve, reject) {
@@ -1044,31 +1052,32 @@ p2.success(function(value) {
 console.log(p2 instanceof MyPromise);   // true
 ```
 
-Here, p1 is a built-in promise that is passed to the MyPromise.resolve() method. The result, p2, is an instance of MyPromise where the resolved value from p1 is passed into the fulfillment handler.
+这里，p1 是内置的 promise 类型并被传递给 MyPromise.resolve() 方法。执行的结果是 p2 也是 MyPromise 类型并在 fulfillment 处理中接收 p1 的参数。
 
-If an instance of MyPromise is passed to the MyPromise.resolve() or MyPromise.reject() methods, it will just be returned directly without being resolved. In all other ways these two methods behave the same as Promise.resolve() and Promise.reject().
+如果 MyPromise 的实例直接传递给 MyPromise.resolve() 或 MyPromise.reject() 方法，它们会直接返回而不需要被处理。在其它方面这两个方法与 Promise.resolve() 及 Promise.reject() 无异。
 
 <br />
 
-#### Asynchronous Task Running
+#### 运行异步任务（Asynchronous Task Running）
 
-In Chapter 8, I introduced generators and showed you how you can use them for asynchronous task running, like this:
+
+在第八章，我介绍了生成器并演示了如何使用它来运行异步任务，像这样“
 
 ```
 let fs = require("fs");
 
 function run(taskDef) {
 
-    // create the iterator, make available elsewhere
+    // 创建迭代器，使其在作用域其它部分可用。
     let task = taskDef();
 
-    // start the task
+    // 任务开始
     let result = task.next();
 
-    // recursive function to keep calling next()
+    // 递归函数并持续调用 next()
     function step() {
 
-        // if there's more to do
+        // 如果还有工作要做
         if (!result.done) {
             if (typeof result.value === "function") {
                 result.value(function(err, data) {
@@ -1088,12 +1097,12 @@ function run(taskDef) {
         }
     }
 
-    // start the process
+    // 开始递归
     step();
 
 }
 
-// Define a function to use with the task runner
+// 定义任务运行器需要的函数
 
 function readFile(filename) {
     return function(callback) {
@@ -1101,7 +1110,7 @@ function readFile(filename) {
     };
 }
 
-// Run a task
+// 运行一个任务
 
 run(function*() {
     let contents = yield readFile("config.json");
@@ -1110,28 +1119,28 @@ run(function*() {
 });
 ```
 
-There are some pain points to this implementation. First, wrapping every function in a function that returns a function is a bit confusing (even this sentence was confusing). Second, there is no way to distinguish between a function return value intended as a callback for the task runner and a return value that isn’t a callback.
+该实现有一些弊端。首先，在一个函数中包裹所有相关的函数并返回一个函数很令人困惑（甚至这个句子本身读起来都让人困惑）。其次，没有任何办法来区分函数返回的值究竟是否接收回调函数作为参数。
 
-With promises, you can greatly simplify and generalize this process by ensuring that each asynchronous operation returns a promise. That common interface means you can greatly simplify asynchronous code. Here’s one way you could simplify that task runner:
+在 promise 的帮助下，你可以通过判断这些异步操作是否为 promise 来大幅度简化和泛化任务运行器。通用的接口意味着你可以减少大段的异步代码。下面是一种简化任务运行器的方式：
 
 ```
 let fs = require("fs");
 
 function run(taskDef) {
 
-    // create the iterator
+    // 创建迭代器
     let task = taskDef();
 
-    // start the task
+    // 开始任务
     let result = task.next();
 
-    // recursive function to iterate through
+    // 使用函数递归进行迭代
     (function step() {
 
-        // if there's more to do
+        // 如果还有工作要做
         if (!result.done) {
 
-            // resolve to a promise to make it easy
+            // 使用 resolve() 来简化 promise 的处理
             let promise = Promise.resolve(result.value);
             promise.then(function(value) {
                 result = task.next(value);
@@ -1144,7 +1153,7 @@ function run(taskDef) {
     }());
 }
 
-// Define a function to use with the task runner
+// 定义任务运行器需要的函数
 
 function readFile(filename) {
     return new Promise(function(resolve, reject) {
@@ -1158,7 +1167,7 @@ function readFile(filename) {
     });
 }
 
-// Run a task
+// 运行一个任务
 
 run(function*() {
     let contents = yield readFile("config.json");
@@ -1167,21 +1176,21 @@ run(function*() {
 });
 ```
 
-In this version of the code, a generic run() function executes a generator to create an iterator. It calls task.next() to start the task and recursively calls step() until the iterator is complete.
+在这个版本的代码中，一个通用的 run() 函数通过执行生成器来创建迭代器。它调用 task.next() 让任务开始进行并递归调用 step() 直到迭代器运行完毕。
 
-Inside the step() function, if there’s more work to do, then result.done is false. At that point, result.value should be a promise, but Promise.resolve() is called just in case the function in question didn’t return a promise. (Remember, Promise.resolve() just passes through any promise passed in and wraps any non-promise in a promise.) Then, a fulfillment handler is added that retrieves the promise value and passes the value back to the iterator. After that, result is assigned to the next yield result before the step() function calls itself.
+在 step() 内部，如果工作还有剩余，result.done 为 false。此时，result.value 应该是个 promise，不过 调用 Promise.resolve() 的目的是预防未返回 promise 的函数。（记住，Promise.resolve() 只是让 promise 从内部通过而不做任何操作，而一个非 promise 类型会被包裹为 promise）。之后，一个 fulfillment 处理被添加并提取 promise 值来返回给迭代器。接着，在 step() 函数调用自身之前，result 会重新由下一个 yield 的返回结果赋值。
 
-A rejection handler stores any rejection results in an error object. The task.throw() method passes that error object back into the iterator, and if an error is caught in the task, result is assigned to the next yield result. Finally, step() is called inside catch() to continue.
+rejection 处理会存储任务失败而创建的 error 对象。task.throw() 方法将 error 对象返回给迭代器 *，同时在任务中如果捕获了某个错误，result 会被下一个 yield 的返回结果赋值。最后，在 catch 内部调用 step() 来继续执行任务。
 
-This run() function can run any generator that uses yield to achieve asynchronous code without exposing promises (or callbacks) to the developer. In fact, since the return value of the function call is always coverted into a promise, the function can even return something other than a promise. That means both synchronous and asynchronous methods work correctly when called using yield, and you never have to check that the return value is a promise.
+run() 函数可以运行任何使用 yield 操作异步代码的生成器，同时也没有向开发者暴露 promise（或回调函数）。事实上，由于函数调用后的返回值总是被转换为 promise，该函数甚至可以返回其它类型。这意味着同步和异步的方法都可以由 yield 来调用，而且你永远不需要检查返回值是否为 promise 。
 
-The only concern is ensuring that asynchronous functions like readFile() return a promise that correctly identifies its state. For Node.js built-in methods, that means you’ll have to convert those methods to return promises instead of using callbacks.
+唯一需要注意的是确保异步函数如 readFile() 返回一个能正确标识状态的 promise。对于 Node.js 内置的方法来讲，意味着你必须将它们转化为返回 promise 而不是使用回调函数的方法。
 
 <br />
 
-> #### Future Asynchronous Task Running
-> 
-At the time of my writing, there is ongoing work around bringing a simpler syntax to asynchronous task running in JavaScript. Work is progressing on an await syntax that would closely mirror the promise-based example in the preceding section. The basic idea is to use a function marked with async instead of a generator and use await instead of yield when calling a function, such as:
+> #### 未来的异步任务运行器（Future Asynchronous Task Running）
+
+> 在我写这本书的时候，JavaScript 正准备引入一个新的简化语法来执行异步任务。该种实现是使用 await 语法并能完美作用于上述以 promise 为基础的示例。它的基本理念是使用 async 标记的函数和 await 而不是生成器与 yield 来调用函数，例如：
 
 ```
 (async function() {
@@ -1191,23 +1200,23 @@ At the time of my writing, there is ongoing work around bringing a simpler synta
 });
 ```
 
->The async keyword before function indicates that the function is meant to run in an asynchronous manner. The await keyword signals that the function call to readFile("config.json") should return a promise, and if it doesn’t, the response should be wrapped in a promise. Just as with the implementation of run() in the preceding section, await will throw an error if the promise is rejected and otherwise return the value from the promise. The end result is that you get to write asynchronous code as if it were synchronous without the overhead of managing an iterator-based state machine.
+> 函数之前的 async 关键字标识它会执行一些异步操作。await 关键字指示 readFile("config.json") 应该返回一个 promise，如若不是，该返回值应该由 promise 包裹。和上述示例一样，如果 promise 是 rejected 状态，那么 await 会抛出错误，不然它将返回 promise 的值。这种写法的结果是你可以使用同步的语法来书写异步代码并不需要复杂的以迭代器为核心的状态机。
 
->The await syntax is expected to be finalized in ECMAScript 2017 (ECMAScript 8).
+> await 语法有望在 ECMAScript 2017（ECMAScript 8）中正式采用。（译者：已经被纳入ES8）
 
 <br />
 
-### <a id="Summary"> Summary </a>
+### <a id="Summary"> 总结（Summary） </a>
 
-Promises are designed to improve asynchronous programming in JavaScript by giving you more control and composability over asynchronous operations than events and callbacks can. Promises schedule jobs to be added to the JavaScript engine’s job queue for execution later, while a second job queue tracks promise fulfillment and rejection handlers to ensure proper execution.
+JavaScript 引入并提供给 promise 更甚于事件和回调的控制性与组合性来提升异步编程的体验。JavaScript 引擎将 promise 添加给任务队列并通过任务调度来它们延期执行，同时另一个任务队列追踪 promise 的 fulfillment 和 rejection 以确保这些处理运行无误。
 
-Promises have three states: pending, fulfilled, and rejected. A promise starts in a pending state and becomes fulfilled on a successful execution or rejected on a failure. In either case, handlers can be added to indicate when a promise is settled. The then() method allows you to assign a fulfillment and rejection handler and the catch() method allows you to assign only a rejection handler.
+Promise 存在三种状态：挂起，fulfilled 和 rejected 。一个 promise 首先处于挂起状态，如果执行成功则状态转变为 fulfilled，否则为 rejected 。后两种情况下，处理函数会被添加以表示 promise 已处理。then() 方法允许添加 fulfillment 和 rejection 处理，而 catch() 方法接收 rejection 处理。
 
-You can chain promises together in a variety of ways and pass information between them. Each call to then() creates and returns a new promise that is resolved when the previous one is resolved. Such chains can be used to trigger responses to a series of asynchronous events. You can also use Promise.race() and Promise.all() to monitor the progress of multiple promises and respond accordingly.
+你可以用使用各种方式来串联 promise 并在链上传递信息。每次调用 then() 都会在先前的 promise 处理过后创建并返回一个新的状态为 resolved 的 promise 。promise 链可以触发一系列异步事件的响应。你也可以使用 Promise.race() 和 Promise.all() 来监察多个 promise 的进度并参照它们做出响应。
 
-Asynchronous task running is easier when you combine generators and promises, as promises give a common interface that asynchronous operations can return. You can then use generators and the yield operator to wait for asynchronous responses and respond appropriately.
+当混合生成器和 promise 时，运行异步任务更加方便，因为 promise 提供了异步操作可以返回的公共接口形式。于是你可以使用生成器和 yield 操作符来等待异步操作的完成并正确的响应它们。
 
-Most new web APIs are being built on top of promises, and you can expect many more to follow suit in the future.
+很多新的 web API 建立在 promise 之上，你可以期待未来还会有络绎不绝的以 promise 为基础的 API 出现。
 
 <br />
 
