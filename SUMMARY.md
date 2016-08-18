@@ -12,7 +12,7 @@
 * [第八章 - 迭代器与生成器](chapter_8.md)
 * [第九章 - 类](chapter_9.md)
 * [第十章 - 改进的数组功能（未施工）](chapter_10.md)
-* [第十一章 - Promises 与 异步编程（施工中）](chapter_11.md)
+* [第十一章 - Promises 与 异步编程](chapter_11.md)
 * [第十二章 - 代理与反射API（未施工）](chapter_12.md)
 * [第十三章 - 模块（未施工）](chapter_13.md)
 * [附录A - 其它改进（未施工）](appendix_a.md)
