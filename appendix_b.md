@@ -5,8 +5,6 @@ ECMAScript 6 的正式发布耗时四年，在那之后，TC-39 发觉这么长�
 
 发布周期的缩短意味着新的 ECMAScript 版本中的特性会少于 ECMAScript 6 。为了适应这种变化，新版本将不再以显著的版本号，而是发布的年份来命名。因此 ECMAScript 6 也被称为 ECMAScript 2015，同时 ECMAScript 7 的正式名称为 ECMAScript 2016 。TC-39 也预计未来的 ECMAScript 版本全部使用年份命名。
 
-ECMAScript 2016 was finalized in March 2016 and contained only three additions to the language: a new mathematical operator, a new array method, and a new syntax error. Both are covered in this appendix.
-
 ECMAScript 2016 在 2016 年 3 月正式发布并向该语言添加了三项内容：一个新的数学运算符，数组方法和语法错误。本附录中就涵盖所有内容。
 
 <br />
