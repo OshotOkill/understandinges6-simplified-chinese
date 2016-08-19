@@ -4,7 +4,8 @@
 Along with the major changes this book has already covered, ECMAScript 6 made several other changes that are smaller but still helpful in improving JavaScript. Those changes include making integers easier to use, adding new methods for calculations, a tweak to Unicode identifiers, and formalizing the__proto__ property. I describe all of those in this appendix.
 
 <br />
-### 
+
+### 本章小结
 * [整型的使用](#Working-with-Integers)
 * [新的数组方法](#New-Math-Methods)
 * [Unicode 标识符](#Unicode-Identifiers)
