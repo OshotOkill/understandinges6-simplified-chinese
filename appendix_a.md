@@ -5,20 +5,20 @@ Along with the major changes this book has already covered, ECMAScript 6 made se
 
 <br />
 ### 
-* [Working with Integers](#Working-with-Integers)
-* [New Math Methods](#New-Math-Methods)
-* [Unicode Identifiers](#Unicode-Identifiers)
-* [Formalizing the __proto__ Property](#Formalizing-the-proto-Property)
+* [整型的使用](#Working-with-Integers)
+* [新的数组方法](#New-Math-Methods)
+* [Unicode 标识符](#Unicode-Identifiers)
+* [__proto__ 属性的规范化](#Formalizing-the-proto-Property)
 
 <br />
 
-### Working with Integers
+### <a id="Working-with-Integers"> 整型的使用（Working with Integers） </a>
 
 JavaScript uses the IEEE 754 encoding system to represent both integers and floats, which has caused a lot of confusion over the years. The language takes great pains to ensure that developers don’t need to worry about the details of number encoding, but problems still leak through from time to time. ECMAScript 6 seeks to address this by making integers easier to identify and work with.
 
 <br />
 
-#### Identifying Integers
+#### 判断整型（Identifying Integers）
 
 First, ECMAScript 6 added the Number.isInteger() method, which can determine whether a value represents an integer in JavaScript. While JavaScript uses IEEE 754 to represent both types of numbers, floats and integers are stored differently. The Number.isInteger() method takes advantage of that, and when the method is called on a value, the JavaScript engine looks at the underlying representation of the value to determine whether that value is an integer. That means numbers that look like floats might actually be stored as integers and cause Number.isInteger() to return true. For example:
 
@@ -32,7 +32,7 @@ In this code, Number.isInteger() returns true for both 25 and 25.0 even though t
 
 <br />
 
-#### Safe Integers
+#### 安全的整型类型（Safe Integers）
 
 IEEE 754 can only accurately represent integers between -253 and 253, and outside this “safe” range, binary representations end up reused for multiple numeric values. That means JavaScript can only safely represent integers within the IEEE 754 range before problems become apparent. For instance, consider this code:
 
@@ -62,7 +62,7 @@ Most of the time, you only want to deal with safe integers when doing integer ar
 
 <br />
 
-### New Math Methods
+### <a id="New-Math-Methods"> 新的数组方法（New Math Methods） </a>
 
 The new emphasis on gaming and graphics that led ECMAScript 6 to include typed arrays in JavaScript also led to the realization that a JavaScript engine could do many mathematical calculations more efficiently. But optimization strategies like asm.js, which works on a subset of JavaScript to improve performance, need more information to perform calculations in the fastest way possible. For instance, knowing whether the numbers should be treated as 32-bit integers or as 64-bit floats is important for hardware-based operations, which are much faster than software-based operations.
 
@@ -90,7 +90,7 @@ It’s beyond the scope of this book to explain each new method and what it does
 
 <br />
 
-### Unicode Identifiers
+### <a id="Unicode-Identifiers"> Unicode 标识符（Unicode Identifiers） </a>
 
 ECMAScript 6 offers better Unicode support than previous versions of JavaScript, and it also changes what characters may be used as identifiers. In ECMAScript 5, it was already possible to use Unicode escape sequences for identifiers. For example:
 
@@ -127,7 +127,8 @@ The ID_Start and ID_Continue derived core properties are defined in Unicode Iden
 
 <br />
 
-### Formalizing the __proto__ Property
+### <a id="Formalizing-the-proto-Property"> \_\_proto\_\_ 属性的规范化（Formalizing the \_\_proto\_\_ Property） </a>
+
 
 Even before ECMAScript 5 was finished, several JavaScript engines already implemented a custom property called __proto__ that could be used to both get and set the [[Prototype]] property. Effectively, __proto__ was an early precursor to both the Object.getPrototypeOf() and Object.setPrototypeOf() methods. Expecting all JavaScript engines to remove this property is unrealistic (there were popular JavaScript libraries making use of __proto__), so ECMAScript 6 also formalized the __proto__ behavior. But the formalization appears in Appendix B of ECMA-262 along with this warning:
 
