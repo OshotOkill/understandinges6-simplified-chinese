@@ -16,5 +16,5 @@
 * [第十二章 - 代理与反射API（未施工）](chapter_12.md)
 * [第十三章 - 模块（施工中）](chapter_13.md)
 * [附录A - 其它改进（未施工）](appendix_a.md)
-* [附录B - 领悟 ECMAScript 7（2016）（未施工）](appendix_b.md)
+* [附录B - 领悟 ECMAScript 7（2016）](appendix_b.md)
 
