@@ -1,27 +1,29 @@
 # 附录A - 其它改进
 
 
-Along with the major changes this book has already covered, ECMAScript 6 made several other changes that are smaller but still helpful in improving JavaScript. Those changes include making integers easier to use, adding new methods for calculations, a tweak to Unicode identifiers, and formalizing the__proto__ property. I describe all of those in this appendix.
+除了本书讲述的主要变化之外，ECMAScript 6 还对 JavaScript 做了一些虽小但很有意义的改进，包括简化整型的使用，新的数学运算方法，Unicode 标识符的轻微调整以及规范化 \_\_ proto \_\_ 属性。本附录包含以上所有的内容。
 
 <br />
 
 ### 本章小结
 * [整型的使用](#Working-with-Integers)
-* [新的数组方法](#New-Math-Methods)
+* [新的算术方法](#New-Math-Methods)
 * [Unicode 标识符](#Unicode-Identifiers)
-* [__proto__ 属性的规范化](#Formalizing-the-proto-Property)
+* [\_\_proto\_\_ 属性的规范化](#Formalizing-the-proto-Property)
 
 <br />
 
 ### <a id="Working-with-Integers"> 整型的使用（Working with Integers） </a>
 
-JavaScript uses the IEEE 754 encoding system to represent both integers and floats, which has caused a lot of confusion over the years. The language takes great pains to ensure that developers don’t need to worry about the details of number encoding, but problems still leak through from time to time. ECMAScript 6 seeks to address this by making integers easier to identify and work with.
+
+JavaScript 使用 IEEE 754 编码系统来表示整型（integer）和浮点类型（float），不过多年来它们引发了很多问题的出现。虽然该门语言在幕后忍痛做了很多工作来让开发者不需要关心数型（number）编码的细节，然而问题仍旧会层出不穷的出现。为了解决它们，ECMAScript 6 做了一些工作来让整型更容易辨识和使用。 
 
 <br />
 
 #### 判断整型（Identifying Integers）
 
-First, ECMAScript 6 added the Number.isInteger() method, which can determine whether a value represents an integer in JavaScript. While JavaScript uses IEEE 754 to represent both types of numbers, floats and integers are stored differently. The Number.isInteger() method takes advantage of that, and when the method is called on a value, the JavaScript engine looks at the underlying representation of the value to determine whether that value is an integer. That means numbers that look like floats might actually be stored as integers and cause Number.isInteger() to return true. For example:
+
+首先，ECMAScript 6 添加了 Number.isInterger() 方法用来判断某个值在 JavaScript 中是否为整型。虽然 JavaScript 使用 IEEE 754 来表示所有的数型，但是浮点类型和整型的存储方式是有差异的。Number.isInteger() 方法在调用时 JavaScript 引擎会根据值的存储形式来判断参数是否为整型。这意味着外观上看起来像浮点类型的数字也会被当作整型来存储，将它传给 Number.isInteger() 会返回 true 。例如：
 
 ```
 console.log(Number.isInteger(25));      // true
@@ -29,22 +31,24 @@ console.log(Number.isInteger(25.0));    // true
 console.log(Number.isInteger(25.1));    // false
 ```
 
-In this code, Number.isInteger() returns true for both 25 and 25.0 even though the latter looks like a float. Simply adding a decimal point to a number doesn’t automatically make it a float in JavaScript. Since 25.0 is really just 25, it is stored as an integer. The number 25.1, however, is stored as a float because there is a fraction value.
+该段代码中，向 Number.isInteger() 传入 25 和 25.0 都会返回 true，即使后者看起来是浮点类型。在 JavaScript 中仅仅的给数字添加小数点并不会让它自动转化为浮点类型。既然 25.0 实际上等于 25，那么它会被当作整型存储。然而 25.1 由于小数位不为 0，所以将被视为浮点类型。
 
 <br />
 
 #### 安全的整型类型（Safe Integers）
 
-IEEE 754 can only accurately represent integers between -253 and 253, and outside this “safe” range, binary representations end up reused for multiple numeric values. That means JavaScript can only safely represent integers within the IEEE 754 range before problems become apparent. For instance, consider this code:
+
+IEEE 754 只能精确表示 -2<sup>53</sup> 到 2<sup>53</sup> 之间的整型数字，在该 “安全” 范围之外，数字的二进制表达就不再唯一（译者：参考 IEEE 754 的整型规范）。这意味着 JavaScript 只能在 IEEE 754 所能精确表示的范围内保证准确度。例如，考虑下面的例子：
+
 
 ```
 console.log(Math.pow(2, 53));      // 9007199254740992
 console.log(Math.pow(2, 53) + 1);  // 9007199254740992
 ```
 
-This example doesn’t contain a typo, yet two different numbers are represented by the same JavaScript integer. The effect becomes more prevalent the further the value falls outside the safe range.
+该例的输出并不是笔误，然而这两个不同的数值确实由相同的 JavaScript 整型表示。当数值愈发脱离安全范围，这个效果就越明显。
 
-ECMAScript 6 introduced the Number.isSafeInteger() method to better identify integers that the language can accurately represent. It also added the Number.MAX_SAFE_INTEGER and Number.MIN_SAFE_INTEGER properties to represent the upper and lower bounds of the integer range, respectively. The Number.isSafeInteger() method ensures that a value is an integer and falls within the safe range of integer values, as in this example:
+ECMAScript 6 引入了 Number.isSafeInteger() 方法来检查整型是否在该语言所能精确表达的范围内，同时还添加了 Number.MAX_SAFE_INTEGER 和 Number.MIN_SAFE_INTEGER 属性来分别表示安全范围的上下边界。Number.isSafeInteger() 方法判断一个值是否为整型并位于安全的整数范围内，如下所示：
 
 ```
 var inside = Number.MAX_SAFE_INTEGER,
@@ -57,13 +61,13 @@ console.log(Number.isInteger(outside));         // true
 console.log(Number.isSafeInteger(outside));     // false
 ```
 
-The number inside is the largest safe integer, so it returns true for both the Number.isInteger() and Number.isSafeInteger() methods. The number outside is the first questionable integer value, and it isn’t considered safe even though it’s still an integer.
+inside 代表最大的安全整数，所以 Number.isInteger() 和 Number.isSafeInteger() 都会返回 true 。outside 是首个存在问题的整型值，所以他虽然是整型但并不安全。
 
-Most of the time, you only want to deal with safe integers when doing integer arithmetic or comparisons in JavaScript, so using Number.isSafeInteger() as part of input validation is a good idea.
+在绝大部分情况下，你只会想使用安全范围内的整型来做 JavaScript 的运算和比较，所以使用 Number.isSafeInteger() 做输入验证会是个好主意。
 
 <br />
 
-### <a id="New-Math-Methods"> 新的数组方法（New Math Methods） </a>
+### <a id="New-Math-Methods"> 新的算术方法（New Math Methods） </a>
 
 The new emphasis on gaming and graphics that led ECMAScript 6 to include typed arrays in JavaScript also led to the realization that a JavaScript engine could do many mathematical calculations more efficiently. But optimization strategies like asm.js, which works on a subset of JavaScript to improve performance, need more information to perform calculations in the fastest way possible. For instance, knowing whether the numbers should be treated as 32-bit integers or as 64-bit floats is important for hardware-based operations, which are much faster than software-based operations.
 
