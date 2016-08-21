@@ -69,27 +69,28 @@ inside 代表最大的安全整数，所以 Number.isInteger() 和 Number.isSafe
 
 ### <a id="New-Math-Methods"> 新的算术方法（New Math Methods） </a>
 
-The new emphasis on gaming and graphics that led ECMAScript 6 to include typed arrays in JavaScript also led to the realization that a JavaScript engine could do many mathematical calculations more efficiently. But optimization strategies like asm.js, which works on a subset of JavaScript to improve performance, need more information to perform calculations in the fastest way possible. For instance, knowing whether the numbers should be treated as 32-bit integers or as 64-bit floats is important for hardware-based operations, which are much faster than software-based operations.
 
-As a result, ECMAScript 6 added several methods to the Math object to improve the speed of common mathematical calculations. Improving the speed of common calculations also improves the overall speed of applications that perform many calculations, such as graphics programs. The new methods are listed below:
+游戏与图形计算重要性的俱增使得 ECMAScript 6 在给 JavaScript 引入了类型数组（typed array）的同时也意识到 JavaScript 引擎应该更有效率的处理很多数学运算。但是类似于 asm.js （工作 JavaScript 的子集上以提升性能）的优化策略需要更多的信息才能最快处理计算。例如，知道一个数字究竟是 32位整型还是 64 位 浮点类型对基于硬件（hardware-based）的操作来讲非常重要，而且要比基于软件（software-based）的操作要快很多。
 
-* Math.acosh(x) Returns the inverse hyperbolic cosine of x.
-* Math.asinh(x) Returns the inverse hyperbolic sine of x.
-* Math.atanh(x) Returns the inverse hyperbolic tangent of x
-* Math.cbrt(x) Returns the cubed root of x.
-* Math.clz32(x) Returns the number of leading zero bits in the 32-bit integer representation of x.
-* Math.cosh(x) Returns the hyperbolic cosine of x.
-* Math.expm1(x) Returns the result of subtracting 1 from the exponential function of x
-* Math.fround(x) Returns the nearest single-precision float of x.
+于是，ECMAScript 6 给 Math 对象添加了几个方法来提升常用的数学运算的性能，同时包含大量数学运算的应用性能也会提升，比如图形编程（graphics program）。下面列出了这些新的方法：
+
+* Math.acosh(x) 返回 x 的反双曲余弦值（Returns the inverse hyperbolic cosine of x）。
+* Math.asinh(x) 返回 x 的反双曲正弦值（Returns the inverse hyperbolic sine of x）。
+* Math.atanh(x) 返回 x 的反双曲正切值（Returns the inverse hyperbolic tangent of x）。
+* Math.cbrt(x)  返回 x 的立方根（Returns the cubed root of x）。
+* Math.clz32(x) 返回 x 以 32 位整型数字的二进制表达形式开头为 0 的个数（Returns the number of leading zero bits in the 32-bit integer representation of x）。
+* Math.cosh(x)  返回 x 的双曲余弦值（Returns the hyperbolic cosine of x）。
+* Math.expm1(x) 返回 e<sup>x</sup> - 1 的值（Returns the result of subtracting 1 from the exponential function of x）。
+* Math.fround(x) 返回离 x 最近的单精度浮点数（Returns the nearest single-precision float of x）。
 * Math.hypot(...values) Returns the square root of the sum of the squares of each argument.
 * Math.imul(x, y) Returns the result of performing true 32-bit multiplication of the two arguments.
-* Math.log1p(x) Returns the natural logarithm of 1 + x.
-* Math.log10(x) Returns the base 10 logarithm of x.
-* Math.log2(x) Returns the base 2 logarithm of x.
-* Math.sign(x) Returns -1 if the x is negative, 0 if x is +0 or -0, or 1 if x is positive.
-* Math.sinh(x) Returns the hyperbolic sine of x.
-* Math.tanh(x) Returns the hyperbolic tangent of x.
-* Math.trunc(x) Removes fraction digits from a float and returns an integer.
+* Math.log1p(x) 返回以 自然对数为底的 x + 1 的对数（Returns the natural logarithm of 1 + x）。
+* Math.log10(x) 返回以 10 为底 x 的对数Returns the base 10 logarithm of x.
+* Math.log2(x)  返回以 2 为底 x 的对数（Returns the base 2 logarithm of x）。
+* Math.sign(x)  如果 x 为负数返回 -1；+0 和 -0 返回 0；正数则返回 1（Returns -1 if the x is negative, 0 if x is +0 or -0, or 1 if x is positive）。
+* Math.sinh(x)  返回 x 的双曲正弦值（Returns the hyperbolic sine of x）。
+* Math.tanh(x)  返回 x 的双曲正切值（Returns the hyperbolic tangent of x）。
+* Math.trunc(x) 移除浮点类型小数点后面的数字并返回一个整型数字（Removes fraction digits from a float and returns an integer）。
 
 It’s beyond the scope of this book to explain each new method and what it does in detail. But if your application needs to do a reasonably common calculation, be sure to check the new Math methods before implementing it yourself.
 
