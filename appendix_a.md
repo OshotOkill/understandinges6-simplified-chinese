@@ -16,7 +16,7 @@
 ### <a id="Working-with-Integers"> 整型的使用（Working with Integers） </a>
 
 
-JavaScript 使用 IEEE 754 编码系统来表示整型（integer）和浮点类型（float），不过多年来它们引发了很多问题的出现。虽然该门语言在幕后忍痛做了很多工作来让开发者不需要关心数型（number）编码的细节，然而问题仍旧会层出不穷的出现。为了解决它们，ECMAScript 6 做了一些工作来让整型更容易辨识和使用。 
+JavaScript 使用 IEEE 754 编码系统来表示整型（integer）和浮点类型（float），不过多年来它们引发了很多问题。虽然该门语言在幕后忍痛做了很多工作来让开发者不需要关心数型（number）编码的细节，然而问题仍旧会层出不穷的出现。为了解决它们，ECMAScript 6 做了一些工作来让整型更容易辨识和使用。 
 
 <br />
 
