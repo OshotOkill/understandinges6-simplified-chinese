@@ -81,9 +81,9 @@ inside 代表最大的安全整数，所以 Number.isInteger() 和 Number.isSafe
 * Math.clz32(x) 返回 x 以 32 位整型数字的二进制表达形式开头为 0 的个数（Returns the number of leading zero bits in the 32-bit integer representation of x）。
 * Math.cosh(x)  返回 x 的双曲余弦值（Returns the hyperbolic cosine of x）。
 * Math.expm1(x) 返回 e<sup>x</sup> - 1 的值（Returns the result of subtracting 1 from the exponential function of x）。
-* Math.fround(x) 返回离 x 最近的单精度浮点数（Returns the nearest single-precision float of x）。
-* Math.hypot(...values) Returns the square root of the sum of the squares of each argument.
-* Math.imul(x, y) Returns the result of performing true 32-bit multiplication of the two arguments.
+* Math.fround(x) 返回最接近 x 的单精度浮点数（Returns the nearest single-precision float of x）。
+* Math.hypot(...values) 返回参数平方和的平方根（Returns the square root of the sum of the squares of each argument）。
+* Math.imul(x, y) 返回两个参数之间真正的 32 位乘法运算结果（Returns the result of performing true 32-bit multiplication of the two arguments）。
 * Math.log1p(x) 返回以 自然对数为底的 x + 1 的对数（Returns the natural logarithm of 1 + x）。
 * Math.log10(x) 返回以 10 为底 x 的对数Returns the base 10 logarithm of x.
 * Math.log2(x)  返回以 2 为底 x 的对数（Returns the base 2 logarithm of x）。
@@ -92,64 +92,66 @@ inside 代表最大的安全整数，所以 Number.isInteger() 和 Number.isSafe
 * Math.tanh(x)  返回 x 的双曲正切值（Returns the hyperbolic tangent of x）。
 * Math.trunc(x) 移除浮点类型小数点后面的数字并返回一个整型数字（Removes fraction digits from a float and returns an integer）。
 
-It’s beyond the scope of this book to explain each new method and what it does in detail. But if your application needs to do a reasonably common calculation, be sure to check the new Math methods before implementing it yourself.
+详细这些新的方法和实线细节超出了本书的描述范围。不过如果你的应用需要这些计算的话，那么确保在自己实现它之前先查看一下有没有现成的方法。
 
 <br />
 
 ### <a id="Unicode-Identifiers"> Unicode 标识符（Unicode Identifiers） </a>
 
-ECMAScript 6 offers better Unicode support than previous versions of JavaScript, and it also changes what characters may be used as identifiers. In ECMAScript 5, it was already possible to use Unicode escape sequences for identifiers. For example:
+
+ECMAScript 6 提供了比之前版本的更好的 Unicode 支持度，同时也增添了标识符的种类。在 EMCAScript 5 中，你已经可以使用 Unicode 的转义字符串作为标识符。例如：
 
 ```
-// Valid in ECMAScript 5 and 6
+// 在 ECMAScript 5 and 6 中有效
 var \u0061 = "abc";
 
 console.log(\u0061);     // "abc"
 
-// equivalent to:
+// 等效于:
 console.log(a);          // "abc"
 ```
 
-After the var statement in this example, you can use either \u0061 or a to access the variable. In ECMAScript 6, you can also use Unicode code point escape sequences as identifiers, like this:
+该例中在 var 声明之后你可以同时使用 \u0061 或 a 来访问这个变量。在 EMCAScript 6 中，你还能使用转义的 Unicode code point 作为标识符，像这样：
 
 ```
-// Valid in ECMAScript 5 and 6
+// 在 ECMAScript 5 and 6 中有效
 var \u{61} = "abc";
 
 console.log(\u{61});      // "abc"
 
-// equivalent to:
+// 等效于:
  console.log(a);          // "abc"
  ```
  
-This example just replaces \u0061 with its code point equivalent. Otherwise, it does exactly the same thing as the previous example.
 
-Additionally, ECMAScript 6 formally specifies valid identifiers in terms of [Unicode Standard Annex #31: Unicode Identifier and Pattern Syntax](http://unicode.org/reports/tr31/), which gives the following rules:
+本例只是使用了等效的 code point 替换了 \u0061 。除此之外它的行为和上例相同。
 
-1. The first character must be $, _, or any Unicode symbol with a derived core property of ID_Start.
-2. Each subsequent character must be $, _, \u200c (a zero-width non-joiner), \u200d (a zero-width joiner), or any Unicode symbol with a derived core property of ID_Continue.
+另外，ECMAScript 6 还正式根据 [Unicode Standard Annex #31: Unicode Identifier and Pattern Syntax](http://unicode.org/reports/tr31/) 规范了合法标识符，遵循以下规则：
 
-The ID_Start and ID_Continue derived core properties are defined in Unicode Identifier and Pattern Syntax as a way to identify symbols that are appropriate for use in identifiers such as variables and domain names. The specification is not specific to JavaScript.
+1. 第一个字符必须是 $， _\_，或任何包含 由 ID_start 派生的核心属性（derived core properties）的 Unicode symbol 。*
+2. 随后的字符必须为 $，_\_，\u200c（零宽的 non-joiner 字符），\u200d（零宽的 joiner 字符），或任何包含 由 ID_start 派生的核心属性的 Unicode symbol 。*
+
+ID_Start 和 ID_Continue 的派生核心属性由 Unicode Identifier and Pattern Syntax 定义以便规定一种正确的方式来使用和命名（如变量和域名）标识符。该规范并不属于 JavaScript 。
 
 <br />
 
 ### <a id="Formalizing-the-proto-Property"> \_\_proto\_\_ 属性的规范化（Formalizing the \_\_proto\_\_ Property） </a>
 
 
-Even before ECMAScript 5 was finished, several JavaScript engines already implemented a custom property called __proto__ that could be used to both get and set the [[Prototype]] property. Effectively, __proto__ was an early precursor to both the Object.getPrototypeOf() and Object.setPrototypeOf() methods. Expecting all JavaScript engines to remove this property is unrealistic (there were popular JavaScript libraries making use of __proto__), so ECMAScript 6 also formalized the __proto__ behavior. But the formalization appears in Appendix B of ECMA-262 along with this warning:
+在 ECMAScript 5 规范完成之前，一些 JavaScript 引擎实现了一个被称为 \_\_proto\_\_ 的属性来对 [[Prototype]] 施行 get 和 set 操作。实际上，\_\_proto\_\_ 是 Object.getPrototypeOf() 和 Object.setPrototypeo() 方法的先驱。指望所有的 JavaScript 引擎移除这个属性是不现实的（有些流行的库还在使用 \_\_proto\_\_），于是 ECMAScript 6 将 \_\_proto\_\_ 标准化。不过附录 B 中的 ECMA-262 版本对该规范有如下警告：
 
 <br />
 
-> These features are not considered part of the core ECMAScript language. Programmers should not use or assume the existence of these features and behaviours when writing new ECMAScript code. ECMAScript implementations are discouraged from implementing these features unless the implementation is part of a web browser or is required to run the same legacy ECMAScript code that web browsers encounter.
+> 这些特性并不是 ECMAScript 语言的核心部分。开发者在书写新的 ECMAScript 代码时不该使用或者干脆认为它们并不存在。除非这些特性是浏览器中的一部分或服务于与兼容性相关的 ECMAScript 代码，否则 ECMAScript 不鼓励实现它们。
 
 <br />
 
-The ECMAScript specification recommends using Object.getPrototypeOf() and Object.setPrototypeOf() instead because __proto__ has the following characteristics:
+ECMAScript 规范更推荐使用 Object.getPrototypeOf() 和 Object.setPrototypeOf() 是因为 \_\_proto\_\_ 有如下特征：
 
-1. You can only specify __proto__ once in an object literal. If you specify two __proto__ properties, then an error is thrown. This is the only object literal property with that restriction.
-2. The computed form ["__proto__"] acts like a regular property and doesn’t set or return the current object’s prototype. All rules related to object literal properties apply in this form, as opposed to the non-computed form, which has exceptions.
+1. \_\_proto\_\_在对象字面量中只能出现一次，否则将会抛出错误。这是唯一受限制的对象字面量属性。
+2. 动态属性形式的 ["\_\_proto\_\_"] 表现类似于一般的属性而且并不会返回或赋值给当前对象。它具有非动态属性的所有特征，这意味着它也是动态属性唯一的例外。
 
-While you should avoid using the __proto__ property, the way the specification defined it is interesting. In ECMAScript 6 engines, Object.prototype.__proto__ is defined as an accessor property whose get method calls Object.getPrototypeOf() and whose set method calls the Object.setPrototypeOf() method. This leaves no real difference between using __proto__ and Object.getPrototypeOf()/Object.setPrototypeOf(), except that __proto__ allows you to set the prototype of an object literal directly. Here’s how that works:
+虽然你应该避免使用 \_\_proto\_\_ 属性，但是它的规范定义很有意思。在实现了 ECMAScript 6 的引擎中，Object.prototype.\_\_proto\_\_ 是一个访问器属性，它的 get 和 set 方法分别调用 Object.getPrototypeOf() 和 Object.setPrototypeOf() 。这意味着使用 \_\_proto\_\_ 和 Object.getPrototypeOf() 和 Object.setPrototypeOf() 没有本质上的区别，除了 \_\_proto\_\_ 可以直接在对象字面量中使用。以下是它的使用方式：
 
 ```
 let person = {
@@ -164,7 +166,7 @@ let dog = {
     }
 };
 
-// prototype is person
+// 原型为 person
 let friend = {
     __proto__: person
 };
@@ -172,13 +174,13 @@ console.log(friend.getGreeting());                      // "Hello"
 console.log(Object.getPrototypeOf(friend) === person);  // true
 console.log(friend.__proto__ === person);               // true
 
-// set prototype to dog
+// 将原型设置为 dog
 friend.__proto__ = dog;
 console.log(friend.getGreeting());                      // "Woof"
 console.log(friend.__proto__ === dog);                  // true
 console.log(Object.getPrototypeOf(friend) === dog);     // true
 ```
 
-Instead of calling Object.create() to make the friend object, this example creates a standard object literal that assigns a value to the __proto__ property. When creating an object with the Object.create() method, on the other hand, you’d have to specify full property descriptors for any additional object properties.
+与调用 Object.create() 来创建 friend 对象相反，该例在标准的对象字面量中添加了 \_\_proto\_\_ 属性。不过，当使用前者这种方式时，你需要为所有额外添加的对象属性定义完整的描述符
 
 <br />
