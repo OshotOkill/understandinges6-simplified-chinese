@@ -1,15 +1,15 @@
 # 模块（Encapsulating Code With Modules）
 
 
-JavaScript’s “shared everything” approach to loading code is one of the most error-prone and confusing aspects of the language. Other languages use concepts such as packages to define code scope, but before ECMAScript 6, everything defined in every JavaScript file of an application shared one global scope. As web applications became more complex and started using even more JavaScript code, that approach caused problems like naming collisions and security concerns. One goal of ECMAScript 6 was to solve the scope problem and bring some order to JavaScript applications. That’s where modules come in.
+JavaScript 采用 “共享一切” 的加载代码方式是该语言最令人迷惑且容易出错的方面之一。其它语言使用包（package）的概念来定义代码的作用范围，然而在 ECMAScript 6 之前，每个 JavaScript 文件中定义的内容都由全局作用域共享。当 web 应用变得复杂并需要书写更多的 JavaScript 代码时，上述加载方式会出现命名冲突或安全方面的问题。ECMAScript 6 的目标之一就是解决作用域的问题并将 JavaScript 应用中的代码整理得更有条理，于是模块应运而生。
 
 <br />
 
 ### 
-* [What are Modules?](#What-are-Modules)
-* [Basic Exporting](#Basic-Exporting)
-* [Basic Importing](#Basic-Importing)
-* [Renaming Exports and Imports](#Renaming-Exports-and-Imports)
+* [什么是模块?](#What-are-Modules)
+* [输出的基本概念](#Basic-Exporting)
+* [引入的基本概念](#Basic-Importing)
+* [export 和 import 的重命名](#Renaming-Exports-and-Imports)
 * [Default Values in Modules](#Default-Values-in-Modules)
 * [Re-exporting a Binding](#Re-exporting-a-Binding)
 * [Importing Without Bindings](#Importing-Without-Bindings)
@@ -18,37 +18,39 @@ JavaScript’s “shared everything” approach to loading code is one of the mo
 
 <br />
 
-### What are Modules?
+### <a id="What-are-Modules"> 什么是模块？（What are Modules?） </a>
 
-Modules are JavaScript files that are loaded in a different mode (as opposed to scripts, which are loaded in the original way JavaScript worked). This different mode is necessary because modules have very different semantics than scripts:
 
-1. Module code automatically runs in strict mode, and there’s no way to opt-out of strict mode.
-2. Variables created in the top level of a module aren’t automatically added to the shared global scope. They exist only within the top-level scope of the module.
-3. The value of this in the top level of a module is undefined.
-4. Modules don’t allow HTML-style comments within code (a leftover feature from JavaScript’s early browser days).
-5. Modules must export anything that should be available to code outside of the module.
-6. Modules may import bindings from other modules.
+模块是指以不同方式加载的 JavaScript 文件（与 script 这种传统的加载模式相反）。这种方式很有必要，因为它和 script 使用不同的语义：
 
-These differences may seem small at first glance, but they represent a significant change in how JavaScript code is loaded and evaluated, which I will discuss over the course of this chapter. The real power of modules is the ability to export and import only bindings you need, rather than everything in a file. A good understanding of exporting and importing is fundamental to understanding how modules differ from scripts.
+1. 模块中的代码自动运行在严格模式下，并无任何办法修改为非严格模式。
+2. 模块中的顶级（top level）变量不会被添加到全局作用域中。它们只存在于各自的模块中的顶级作用域。
+3. 模块顶级作用域中的 this 为 undefined 。
+4. 模块不允许存在 HTML 式的注释（JavaScript 历史悠久的遗留特性）。
+5. 模块必须输出可被模块外部代码使用的相关内容。
+6. 模块可能会引入其它模块中的绑定。
+
+这些差异刚开始看上去觉得并不是很大，不过它们体现了 JavaScript 关于加载和计算代码的显著变更，本章随后我会解释它们。模块真正的好处在于可以输出和引入需要的绑定，而不是文件中的所有内容。理解输出和引入是领悟模块与 script 之间差异的基础。
 
 <br />
 
-### Basic Exporting
+### <a id="Basic-Exporting"> 引入的基本概念（Basic Exporting） </a>
 
-You can use the export keyword to expose parts of published code to other modules. In the simplest case, you can place export in front of any variable, function, or class declaration to export it from the module, like this:
+
+你可以使用 export 关键字来对外暴露模块中的部分代码。一般情况下，你可以在任何变量，函数或类声明之前添加这个关键字来输出它们，像这样：
 
 ```
-// export data
+// 输出变量
 export var color = "red";
 export let name = "Nicholas";
 export const magicNumber = 7;
 
-// export function
+// 输出函数
 export function sum(num1, num2) {
     return num1 + num1;
 }
 
-// export class
+// 输出类
 export class Rectangle {
     constructor(length, width) {
         this.length = length;
@@ -56,91 +58,98 @@ export class Rectangle {
     }
 }
 
-// this function is private to the module
+// 该函数是模块私有的
 function subtract(num1, num2) {
     return num1 - num2;
 }
 
-// define a function...
+// 定义一个函数...
 function multiply(num1, num2) {
     return num1 * num2;
 }
 
-// ...and then export it later
+// ...并在之后输出它
 export { multiply };
 ```
 
-There are a few things to notice in this example. First, apart from the export keyword, every declaration is exactly the same as it would be otherwise. Each exported function or class also has a name; that’s because exported function and class declarations require a name. You can’t export anonymous functions or classes using this syntax unless you use the default keyword (discussed in detail in the “Default Values in Modules” section).
+该例中需要注意一些要点。首先，除 export 关键字之外，所有的声明和传统的形式完全一致。每个输出的函数或类都有一个名称；因为名称是必须的。除非你使用了 default 关键字（在 “模块中的默认值” 一节讨论），否则你不能使用该语法来输出匿名函数或类。
 
-Next, consider the multiply() function, which isn’t exported when it’s defined. That works because you need not always export a declaration: you can also export references. Finally, notice that this example doesn’t export the subtract() function. That function won’t be accessible from outside this module because any variables, functions, or classes that are not explicitly exported remain private to the module.
-
+其次，multiply() 函数并未在定义的时候被输出。这是因为你不必每次都要输出一个声明：你可以输出一个引用。最后，该例中并未输出 subtract() 函数。该函数在外部是不可见的，因为任何未显式输出的变量，函数或类都是模块私有的。
 <br />
 
-### Basic Importing
+### <a id="Basic-Importing"> 引入的基本概念（Basic Importing） </a>
 
-Once you have a module with exports, you can access the functionality in another module by using the import keyword. The two parts of an import statement are the identifiers you’re importing and the module from which those identifiers should be imported. This is the statement’s basic form:
+
+一旦你有了包含输出内容的模块，你可以在另一个模块内使用 import 关键字来获取它的相关功能。import 语句包含两部分内容，分别为引入的标识符和输出这些标识符的模块。以下是该语句的基本形式：
 
 ```
 import { identifier1, identifier2 } from "./example.js";
 ```
 
-The curly braces after import indicate the bindings to import from a given module. The keyword from indicates the module from which to import the given binding. The module is specified by a string representing the path to the module (called the module specifier). Browsers use the same path format you might pass to the `<script>` element, which means you must include a file extension. Node.js, on the other hand, follows its traditional convention of differentiating between local files and packages based on a filesystem prefix. For example, example would be a package and ./example.js would be a local file.
-
-> The list of bindings to import looks similar to a destructured object, but it isn’t one.
-
-When importing a binding from a module, the binding acts as if it were defined using const. That means you can’t define another variable with the same name (including importing another binding of the same name), use the identifier before the import statement, or change its value.
+import 之后的花括号表示从模块中引入的绑定。from 关键字表示从哪个模块引入这些绑定。模块由一个包含模块路径的字符串表示（称为模块指示符，module sepcifier）。浏览器中的 `<script>` 元素也使用了这个路径形式，意味着它必须包含文件扩展名。另一方面，Node.js 使用自身定义的方式来区分本地文件和包。例如，`example` 会被认为是包而 `./example.js` 被认为是本地文件。
 
 <br />
 
-#### Importing a Single Binding
+> import 的绑定序列看起来和解构对象相似，不过它们并无关系。
 
-Suppose that the first example in the “Basic Exporting” section is in a module with the filename example.js. You can import and use bindings from that module in a number of ways. For instance, you can just import one identifier:
+<br />
+
+当从模块引入了一个绑定时，该绑定的行为类似于 const 。这意味着你不能再次定义一个同名的变量（包括再次引入同名绑定），或在 import 语句之前使用这个标识符，更改它的值也是不被允许的。
+
+<br />
+
+#### 引入单个绑定（Importing a Single Binding）
+
+假设 “输出的基本概念” 一节中的首个示例中的代码包含在一个命名为 example.js 的模块中。你可以使用多种方式来引入并使用这个模块中的绑定。例如，只引入一个标识符：
 
 ```
-// import just one
+// 只引入单个标识符
 import { sum } from "./example.js";
 
 console.log(sum(1, 2));     // 3
 
-sum = 1;        // error
+sum = 1;        // 错误
 ```
 
-Even though example.js exports more than just that one function this example imports only the sum() function. If you try to assign a new value to sum, the result is an error, as you can’t reassign imported bindings.
-
-> **NOTE**: Make sure to include /, ./, or ../ at the beginning of the file you’re importing for best compatibility across browsers and Node.js.
+虽然 example.js 并非仅仅输出了这一个函数，但是该例只引入了它。如果你尝试给 sum 赋一个新值，由于它是不被允许的，所以会发生错误。
 
 <br />
 
-#### Importing Multiple Bindings
+> **注意**：确保文件的路径开头包含 /，./ 或 ../ 以保证浏览器和 Node.js 之间的最佳兼容
 
-If you want to import multiple bindings from the example module, you can explicitly list them out as follows:
+<br />
+
+#### 引入多个绑定（Importing Multiple Bindings）
+
+
+如果你想从 example 模块引入多个绑定，你可以像下面这样显式的列出它们：
 
 ```
-// import multiple
+// 引入多个绑定
 import { sum, multiply, magicNumber } from "./example.js";
 console.log(sum(1, magicNumber));   // 8
 console.log(multiply(1, 2));        // 2
 ```
 
-Here, three bindings are imported from the example module: sum, multiply, and magicNumber. They are then used as if they were locally defined.
+该例引入了 example 模块中的三个绑定：sum，multiply 和 magicNumber。之后它们以类似于本地定义的方式使用。
 
 <br />
 
-#### Importing All of a Module
+#### 引入所有绑定（Importing All of a Module）
 
-There’s also a special case that allows you to import the entire module as a single object. All of the exports are then available on that object as properties. For example:
+
+有一种特殊的情况允许你将整个模块视为单个对象引入。所有的输出可以以对象属性的方式访问。例如：
 
 ```
-// import everything
+// 输出所有
 import * as example from "./example.js";
-console.log(example.sum(1,
-        example.magicNumber));          // 8
+console.log(example.sum(1, example.magicNumber));          // 8
 console.log(example.multiply(1, 2));    // 2
 ```
 
-In this code, all exported bindings in example.js are loaded into an object called example. The named exports (the sum() function, the multiple() function, and magicNumber) are then accessible as properties on example. This import format is called a namespace import because the example object doesn’t exist inside of the example.js file and is instead created to be used as a namespace object for all of the exported members of example.js.
+在这段代码中，example.js 中的所有绑定被加载到 example 对象中。已命名的输出（sum() 函数，multiple() 函数和 magicNumber）可以以 example 属性的方式访问。这种形式被称为命名空间引入，因为 example 对象在 example.js 文件中并不存在。该对象作为命名空间包含 example.js 中的所有输出。
 
-Keep in mind, however, that no matter how many times you use a module in import statements, the module will only be executed once. After the code to import the module executes, the instantiated module is kept in memory and reused whenever another import statement references it. Consider the following:
+需要留意的是，不管你针对相同的模块使用了多少次 import 语句，该模块只会被执行一次。当 import 语句执行后，实例化的模块会驻留在内存中并随时可由另一个 import 语句引用。考虑如下的例子：
 
 ```
 import { sum } from "./example.js";
@@ -148,37 +157,38 @@ import { multiply } from "./example.js";
 import { magicNumber } from "./example.js";
 ```
 
-Even though there are three import statements in this module, example.js will only be executed once. If other modules in the same application were to import bindings from example.js, those modules would use the same module instance this code uses.
+虽然这里针对相同的模块使用了三个 import 语句，example.js 只会被执行一次。如果应用中的其它模块也从 example.js 中引入了绑定，那么它们会使用相同的本段代码中的模块实例。
 
 <br />
 
-> #### Module Syntax Limitations
+> #### 模块语法的限制（Module Syntax Limitations）
 
-> An important limitation of both export and import is that they must be used outside other statements and functions. For instance, this code will give a syntax error:
+> An important limitation of both export and import is that they must be used outside other statements and functions. For instance, this code will give a syntax error: export 和 import 一个很重要的限制是它们必须在语句和函数的外部使用。例如，下面的代码会抛出语法错误：
 
 ```
 if (flag) {
-    export flag;    // syntax error
+    export flag;    // 语法错误
 }
 ```
 
-> The export statement is inside an if statement, which isn’t allowed. Exports cannot be conditional or done dynamically in any way. One reason module syntax exists is to let the JavaScript engine staticly determine what will be exported. As such, you can only use export at the top-level of a module.
+> export 语句被 if 语句包含是不被允许的。export 不能带有条件或者动态地使用。这种限制的一个理由是 JavaScript 引擎可以静态决定输出的内容。因此，你只能在模块的顶级作用域下使用 export 。
 
-> Similarly, you can’t use import inside of a statement; you can only use it at the top-level. That means this code also gives a syntax error:
+> 相似的是，import 也只能在顶级作用域下而不是语句内部使用，意味着以下的代码也会抛出语法错误：
 
 ```
 function tryImport() {
-    import flag from "./example.js";    // syntax error
+    import flag from "./example.js";    // 语法错误
 }
 ```
 
-> You can’t dynamically import bindings for the same reason you can’t dynamically export bindings. The export and import keywords are designed to be static so that tools like text editors can easily tell what information is available from a module.
+> 基于和 export 相同的理由，你也不能动态地使用 import 绑定。export 和 import 关键字是静态的，所以文本编辑器可以很容易的获取模块中可用内容的信息。
 
 <br />
 
-### A Subtle Quirk of Imported Bindings
+#### import 绑定中微妙的怪异之处（A Subtle Quirk of Imported Bindings）
 
-ECMAScript 6’s import statements create read-only bindings to variables, functions, and classes rather than simply referencing the original bindings like normal variables. Even though the module that imports the binding can’t change its value, the module that exports that identifier can. For example, suppose you want to use this module:
+
+ECMAScript 6 中的 import 语句创建了只读的变量，函数和类而不仅仅只是普通的针对源绑定的引用。虽然从模块中引入的绑定不能对值进行更改，但是输出标识符的模块有这个权利。假如你想使用下面的模块：
 
 ```
 export var name = "Nicholas";
@@ -187,7 +197,7 @@ export function setName(newName) {
 }
 ```
 
-When you import those two bindings, the setName() function can change the value of name:
+当你引入了这两个绑定后，setName() 函数可以改变 name 的值：
 
 ```
 import { name, setName } from "./example.js";
@@ -196,18 +206,19 @@ console.log(name);       // "Nicholas"
 setName("Greg");
 console.log(name);       // "Greg"
 
-name = "Nicholas";       // error
+name = "Nicholas";       // 错误
 ```
 
-The call to setName("Greg") goes back into the module from which setName() was exported and executes there, setting name to "Greg" instead. Note this change is automatically reflected on the imported name binding. That’s because name is the local name for the exported name identifier. The name used in the code above and the name used in the module being imported from aren’t the same.
+调用 setName("Greg") 会回溯到输出 setName() 的模块本身并在那里执行，将 name 更改为 "Greg"。注意这个变化会自动反射到引入的 name 绑定上，因为它是模块输出的 name 标识符的本地命名。以上代码中使用的 name 和模块输出的 name 并不相同。
 
 <br />
 
-### Renaming Exports and Imports
+### <a id="Renaming-Exports-and-Imports"> export 和 import 的重命名（Renaming Exports and Imports） </a>
 
-Sometimes, you may not want to use the original name of a variable, function, or class you’ve imported from a module. Fortunately, you can change the name of an export both during the export and during the import.
 
-In the first case, suppose you have a function that you’d like to export with a different name. You can use the as keyword to specify the name that the function should be known as outside of the module:
+有时候，你不想使用模块中输出的变量，函数和类的原始命名。幸运的是，不论是输出还是引入你都可以对命名进行更改。
+
+首先是 export，假设你想给输出的函数起一个别名。你可以使用 as 关键字来指定它在模块外部可被使用的名称：
 
 ```
 function sum(num1, num2) {
@@ -217,13 +228,13 @@ function sum(num1, num2) {
 export { sum as add };
 ```
 
-Here, the sum() function (sum is the local name) is exported as add() (add is the exported name). That means when another module wants to import this function, it will have to use the name add instead:
+在这里，sum() 函数（sum 是本地命名）作为 add() 函数（add 是输出命名）输出。这意味着如果另一个模块想要引入这个函数，就必须使用 add：
 
 ```
 import { add } from "./example.js";
 ```
 
-If the module importing the function wants to use a different name, it can also use as:
+如果引入该函数的模块也想使用不同的命名，可以这样：
 
 ```
 import { add as sum } from "./example.js";
@@ -231,7 +242,7 @@ console.log(typeof add);            // "undefined"
 console.log(sum(1, 2));             // 3
 ```
 
-This code imports the add() function using the import name and renames it to sum() (the local name). That means there is no identifier named add in this module.
+该段代码引入了 add() 函数并将它重命名为 sum()（本地变量）。这意味着 add 标识符没有添加到该模块内。 
 
 <br />
 
