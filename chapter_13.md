@@ -10,7 +10,7 @@ JavaScript 采用 “共享一切” 的加载代码方式是该语言最令人�
 * [输出的基本概念](#Basic-Exporting)
 * [引入的基本概念](#Basic-Importing)
 * [export 和 import 的重命名](#Renaming-Exports-and-Imports)
-* [Default Values in Modules](#Default-Values-in-Modules)
+* [模块中的默认值](#Default-Values-in-Modules)
 * [Re-exporting a Binding](#Re-exporting-a-Binding)
 * [Importing Without Bindings](#Importing-Without-Bindings)
 * [Loading Modules](#Loading-Modules)
@@ -246,15 +246,17 @@ console.log(sum(1, 2));             // 3
 
 <br />
 
-### Default Values in Modules
+### <a id="Default-Values-in-Modules"> 模块中的默认值（Default Values in Modules） </a>
 
-The module syntax is really optimized for exporting and importing default values from modules, as this pattern was quite common in other module systems, like CommonJS (another specification for using JavaScript outside the browser). The default value for a module is a single variable, function, or class as specified by the default keyword, and you can only set one default export per module. Using the default keyword with multiple exports is a syntax error.
+
+当输出和引用模块的默认值时，模块语法得到了充分地利用，因为这种模式在其它模块系统，如 CommonJS（另一种在浏览器之外运行 JavaScrpit 的模块规范）。模块的默认值是由 default 关键字定义的单个变量，函数或类，而且你只能给模块设定一个默认值。多次使用 default 关键字会抛出语法错误。
 
 <br />
 
-#### Exporting Default Values
+#### 输出默认值（Exporting Default Values）
 
-Here’s a simple example that uses the default keyword:
+
+下面是个使用 default 关键字的简单例子：
 
 ```
 export default function(num1, num2) {
@@ -262,9 +264,9 @@ export default function(num1, num2) {
 }
 ```
 
-This module exports a function as its default value. The default keyword indicates that this is a default export. The function doesn’t require a name because the module itself represents the function.
+这个模块将一个函数作为默认值并输出了它。default 关键字表明这里输出了默认值。该函数的命名并不是必须的，因为它就是这个模块化身。
 
-You can also specify an identifier as the default export by by placing it after export default, such as:
+你也可以定义一个标识符并将它放置在 export default 之后来作为该模块的默认值，例如：
 
 ```
 function sum(num1, num2) {
@@ -274,9 +276,9 @@ function sum(num1, num2) {
 export default sum;
 ```
 
-Here, the sum() function is defined first and later exported as the default value of the module. You may want to choose this approach if the default value needs to be calculated.
+在这里，sum() 函数的定义在前，稍后它作为模块输出的默认值。当输出的默认值需要计算的时候，你或许会使用这个方法。
 
-A third way to specify an identifier as the default export is by using the renaming syntax as follows:
+第三种指定默认输出标识符的方法是使用重命名语法：
 
 ```
 function sum(num1, num2) {
@@ -286,16 +288,16 @@ function sum(num1, num2) {
 export { sum as default };
 ```
 
-The identifier default has special meaning in a renaming export and indicates a value should be the default for the module. Because default is a keyword in JavaScript, it can’t be used for a variable, function, or class name (it can be used as a property name). So the use of default to rename an export is a special case to create a consistency with how non-default exports are defined. This syntax is useful if you want to use a single export statement to specify multiple exports, including the default, at once.
+在重命名的输出中，default 标识符有着特殊的含义，它表明某个值应该由模块默认输出。由于在 JavaScript 中 default 是个关键字，所以它不能被用作变量，函数或类的名称（不过它可以用作属性名）。所以使用 default 作为重命名的输出是个特例，不过它与非默认输出语法保持了一致性。
 
 <br />
 
-#### Importing Default Values
+#### 引入哦默认值（Importing Default Values）
 
-You can import a default value from a module using the following syntax:
+你可以使用下面的语法引入模块的默认值
 
 ```
-// import the default
+// 引入默认值
 import sum from "./example.js";
 
 console.log(sum(1, 2));     // 3
