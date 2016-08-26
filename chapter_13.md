@@ -75,6 +75,7 @@ export { multiply };
 该例中需要注意一些要点。首先，除 export 关键字之外，所有的声明和传统的形式完全一致。每个输出的函数或类都有一个名称；因为名称是必须的。除非你使用了 default 关键字（在 “模块中的默认值” 一节讨论），否则你不能使用该语法来输出匿名函数或类。
 
 其次，multiply() 函数并未在定义的时候被输出。这是因为你不必每次都要输出一个声明：你可以输出一个引用。最后，该例中并未输出 subtract() 函数。该函数在外部是不可见的，因为任何未显式输出的变量，函数或类都是模块私有的。
+
 <br />
 
 ### <a id="Basic-Importing"> 引入的基本概念（Basic Importing） </a>
@@ -163,7 +164,7 @@ import { magicNumber } from "./example.js";
 
 > #### 模块语法的限制（Module Syntax Limitations）
 
-> An important limitation of both export and import is that they must be used outside other statements and functions. For instance, this code will give a syntax error: export 和 import 一个很重要的限制是它们必须在语句和函数的外部使用。例如，下面的代码会抛出语法错误：
+> export 和 import 一个很重要的限制是它们必须在语句和函数的外部使用。例如，下面的代码会抛出语法错误：
 
 ```
 if (flag) {
