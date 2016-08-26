@@ -11,7 +11,7 @@ JavaScript 采用 “共享一切” 的加载代码方式是该语言最令人�
 * [引入的基本概念](#Basic-Importing)
 * [export 和 import 的重命名](#Renaming-Exports-and-Imports)
 * [模块中的默认值](#Default-Values-in-Modules)
-* [Re-exporting a Binding](#Re-exporting-a-Binding)
+* [绑定的再输出](#Re-exporting-a-Binding)
 * [Importing Without Bindings](#Importing-Without-Bindings)
 * [Loading Modules](#Loading-Modules)
 * [Summary](#Summary)
@@ -294,7 +294,7 @@ export { sum as default };
 
 #### 引入默认值（Importing Default Values）
 
-你可以使用下面的语法引入模块的默认值
+你可以使用下面的语法引入模块的默认值：
 
 ```
 // 引入默认值
@@ -303,9 +303,9 @@ import sum from "./example.js";
 console.log(sum(1, 2));     // 3
 ```
 
-This import statement imports the default from the module example.js. Note that no curly braces are used, unlike you’d see in a non-default import. The local name sum is used to represent whatever default function the module exports. This syntax is the cleanest, and the creators of ECMAScript 6 expect it to be the dominant form of import on the Web, allowing you to use an already-existing object.
+该 import 语句引入了 example.js 模块的默认值。注意和引入非默认值不同，这里并没有使用花括号。本地命名 sum 代表模块默认输出的任意函数。这种语法是最简洁的，同时 ECMAScript 6 的缔造者们也期待它称为 web 上最常用的引入方式，因为它允许你使用已存在的对象。
 
-For modules that export both a default and one or more non-default bindings, you can import all exported bindings with one statement. For instance, suppose you have this module:
+对于同时使用了默认输出和非默认输出语法的模块，你可以在一个语句中同时引入它们。例如，如果你有以下的模块：
 
 ```
 export let color = "red";
@@ -315,7 +315,7 @@ export default function(num1, num2) {
 }
 ```
 
-You can import both color and the default function using the following import statement:
+你可以使用下面的 import 语句同时引入 color 和 默认输出的函数：
 
 ```
 import sum, { color } from "./example.js";
@@ -324,23 +324,23 @@ console.log(sum(1, 2));     // 3
 console.log(color);         // "red"
 ```
 
-The comma separates the default local name from the non-defaults, which are also surrounded by curly braces. Keep in mind that the default must come before the non-defaults in the import statement.
+逗号分割了引入的默认和非默认的本地命名，后者仍旧使用了花括号。需要牢记的在同一个 import 语句中，引入的默认值必须在非默认值之前。
 
-As with exporting defaults, you can import defauts with the renaming syntax, too:
+和输出相似的是，你也可以在引入默认值的同时对其进行重命名：
 
 ```
-// equivalent to previous example
+// 和上例等效
 import { default as sum, color } from "example";
 
 console.log(sum(1, 2));     // 3
 console.log(color);         // "red"
 ```
 
-In this code, the default export (default) is renamed to sum and the additional color export is also imported. This example is equivalent to the preceding example.
+该段代码中，默认的输出（default）被重命名为 sum 并和 color 同时被引入。它和上个示例是等效的。
 
 <br />
 
-### Re-exporting a Binding
+### <a id="Re-exporting-a-Binding"> 绑定的再输出（Re-exporting a Binding） </a>
 
 There may be a time when you’d like to re-export something that your module has imported (for instance, if you’re creating a library out of several small modules). You can re-export an imported value with the patterns already discussed in this chapter as follows:
 
