@@ -292,7 +292,7 @@ export { sum as default };
 
 <br />
 
-#### 引入哦默认值（Importing Default Values）
+#### 引入默认值（Importing Default Values）
 
 你可以使用下面的语法引入模块的默认值
 
