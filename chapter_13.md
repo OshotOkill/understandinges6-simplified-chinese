@@ -12,9 +12,9 @@ JavaScript 采用 “共享一切” 的加载代码方式是该语言最令人�
 * [export 和 import 的重命名](#Renaming-Exports-and-Imports)
 * [模块中的默认值](#Default-Values-in-Modules)
 * [绑定的再输出](#Re-exporting-a-Binding)
-* [Importing Without Bindings](#Importing-Without-Bindings)
-* [Loading Modules](#Loading-Modules)
-* [Summary](#Summary)
+* [全局引入](#Importing-Without-Bindings)
+* [模块加载](#Loading-Modules)
+* [总结](#Summary)
 
 <br />
 
@@ -343,58 +343,60 @@ console.log(color);         // "red"
 
 ### <a id="Re-exporting-a-Binding"> 绑定的再输出（Re-exporting a Binding） </a>
 
-There may be a time when you’d like to re-export something that your module has imported (for instance, if you’re creating a library out of several small modules). You can re-export an imported value with the patterns already discussed in this chapter as follows:
+有时你会想重新输出一些引入的模块（例如，你创建了包含一些小模块的库）。你可以使用本章中已经讨论过的方式来重新输出它们：
 
 ```
 import { sum } from "./example.js";
 export { sum }
 ```
 
-That works, but a single statement can also do the same thing:
+这么做没有问题，不过单个语句也能完成相同的任务：
 
 ```
 export { sum } from "./example.js";
 ```
 
-This form of export looks into the specified module for the declaration of sum and then exports it. Of course, you can also choose to export a different name for the same value:
+该种形式会从指定的模块中查找 sum 声明并输出它。当然，你也可以对输出重新命名：
 
 ```
 export { sum as add } from "./example.js";
 ```
 
-Here, sum is imported from "./example.js" and then exported as add.
+在这里，sum 从 "./example.js" 引入并以 add 作为输出。
 
 If you’d like to export everything from another module, you can use the * pattern:
+
+如果你想输出另一个模块中的全部内容，那么你可以使用 * ：
 
 ```
 export * from "./example.js";
 ```
 
-By exporting everything, you’re including the default as well as any named exports, which may affect what you can export from your module. For instance, if example.js has a default export, you’d be unable to define a new default export when using this syntax.
+输出的全部内容包括默认值（default）和已命名的输出，这会影响当前模块可输出的内容。如果 example.js 包含默认的输出值，你就不能再使用 export default 语法来定义当前模块的默认值。
 
 <br />
 
-### Importing Without Bindings
+### <a id="Importing-Without-Bindings"> 全局引入（Importing Without Bindings） </a>
 
-Some modules may not export anything, and instead, only make modifications to objects in the global scope. Even though top-level variables, functions, and classes inside modules don’t automatically end up in the global scope, that doesn’t mean modules cannot access the global scope. The shared definitions of built-in objects such as Array and Object are accessible inside a module and changes to those objects will be reflected in other modules.
+一些模块可能并不输出任何内容，相反，他们只是修改全局作用域内的对象。虽然模块内部的顶级变量，函数和类并不会自动添加到全局作用域，但这不代表它们不能访问全局作用域。共享的内置对象如 Array 和 Object 在模块内部是可供访问的，而且对它们的修改还会影响到其它模块。
 
-For instance, if you want to add a pushAll() method to all arrays, you might define a module like this:
+例如，如果你想给数组添加一个 pushAll() 方法，你可能会像下面这样定义一个模块：
 
 ```
-// module code without exports or imports
+// 没有输出和引入的模块
 Array.prototype.pushAll = function(items) {
 
-    // items must be an array
+    // items 必须是数组
     if (!Array.isArray(items)) {
         throw new TypeError("Argument must be an array.");
     }
 
-    // use built-in push() and spread operator
+    // 使用内置的 push() 和扩展运算符
     return this.push(...items);
 };
 ```
 
-This is a valid module even though there are no exports or imports. This code can be used both as a module and a script. Since it doesn’t export anything, you can use a simplified import to execute the module code without importing any bindings:
+虽然没有输出和引入，该模块仍然是合法的。这段代码可以同时被当作模块和 scrpit 使用。既然没有任何输出内容，你可以使用简单的不需要任何绑定的引入语法来执行它们：
 
 ```
 import "./example.js";
@@ -405,19 +407,23 @@ let items = [];
 items.pushAll(colors);
 ```
 
-This code imports and executes the module containing the pushAll() method, so pushAll() is added to the array prototype. That means pushAll() is now available for use on all arrays inside of this module.
-
-> Imports without bindings are most likely to be used to create polyfills and shims.
+这段代码引入并执行了模块中包含的 pushAll() 方法，所以 pushAll() 被添加给数组的原型。现在这意味着 pushAll() 可以作用于当前模块内的所有数组。
 
 <br />
 
-### Loading Modules
+> 全局引入一般被用来创建 polyfill 和 shim 。
+
+<br />
+
+### <a id="Loading-Modules"> 模块加载（Loading Modules） </a>
 
 While ECMAScript 6 defines the syntax for modules, it doesn’t define how to load them. This is part of the complexity of a specification that’s supposed to be agnostic to implementation environments. Rather than trying to create a single specification that would work for all JavaScript environments, ECMAScript 6 specifies only the syntax and abstracts out the loading mechanism to an undefined internal operation called HostResolveImportedModule. Web browsers and Node.js are left to decide how to implement HostResolveImportedModule in a way that makes sense for their respective environments.
 
+ECMAScript 6 只定义了模块的语法而未说明如何加载它们。
+
 <br />
 
-#### Using Modules in Web Browsers
+#### 在浏览器中使用模块（Using Modules in Web Browsers）
 
 Even before ECMAScript 6, web browsers had multiple ways of including JavaScript in an web application. Those script loading options are:
 
@@ -428,7 +434,7 @@ Loading JavaScript code files to execute as workers (such as a web worker or ser
 
 <br />
 
-##### Using Modules With `<script>`
+##### `<script>` 标签（Using Modules With `<script>`）
 
 The default behavior of the `<script>` element is to load JavaScript files as scripts (not modules). This happens when the type attribute is missing or when the type attribute contains a JavaScript content type (such as "text/javascript"). The `<script>` element can then execute inline code or load the file specified in src. To support modules, the "module" value was added as a type option. Setting type to "module" tells the browser to load any inline code or code contained in the file specified by src as a module instead of a script. Here’s a simple example:
 
