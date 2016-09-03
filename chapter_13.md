@@ -553,62 +553,61 @@ let worker = new Worker("script.js");
 let worker = new Worker("module.js", { type: "module" });
 ```
 
-This example loads module.js as a module instead of a script by passing a second argument with "module" as the type property’s value. (The type property is meant to mimic how the type attribute of `<script>` differentiates modules and scripts.) The second argument is supported for all worker types in the browser.
+该例将第二个参数中的 type 属性值设定为 "module"，因此 module.js 以模块而不是 script 的形式加载（type 属性是对 `<script>` 区分模块和 script 方式的模仿）。在浏览器中所有 worker 类型都支持第二个参数。
 
-该例将第二个参数中的 type 属性值设定为 "module" 
-
-Worker modules are generally the same as worker scripts, but there are a couple of exceptions. First, worker scripts are limited to being loaded from the same origin as the web page in which they are referenced, but worker modules aren’t quite as limited. Although worker modules have the same default restriction, they can also load files that have appropriate Cross-Origin Resource Sharing (CORS) headers to allow access. Second, while a worker script can use the self.importScripts() method to load additional scripts into the worker, self.importScripts() always fails on worker modules because you should use import instead.
+worker 模块与 worker script 大体上相同，不过还是有一些区别。首先，worker script 只能由同源的网页引用并加载，而 worker 模块没有完全被该限制所束缚。虽然 worker 模块的默认限制与 worker script 相同，不过当响应头中包含跨域资源共享（Cross-Origin Resource Sharing, CORS）设置时，它们可以加载那些文件。此外，worker scrpit 使用 self.importScripts() 方法来向 worker 引入额外的 script，但是该方法在 worker 模块中不会执行，你应该使用 import 。
 
 <br />
 
 ##### Browser Module Specifier Resolution
 
-All of the examples to this point in the chapter have used a relative module specifier path such as "./example.js". Browsers require module specifiers to be in one of the following formats:
 
-* Begin with / to resolve from the root directory
-* Begin with ./ to resolve from the current directory
-* Begin with ../ to resolve from the parent directory
-* URL format
+本章到此为止的所有示例都是用了相对模块指示符（relative module specifier）路径，如 "./example.js" 。浏览器中的模块指示符需要符合以下形式之一：
 
+* 以 / 开头表示根目录获取
+* 以 ./ 表示从当前目录获取
+* 以 ../ 表示从父级目录获取
+* URL 形式
 
-For example, suppose you have a module file located at `https://www.example.com/modules/module.js` that contains the following code:
+例如，你有一个位于 `https://www.example.com/modules/module.js` 并包含如下代码的文件：
 
 ```
-// imports from https://www.example.com/modules/example1.js
+// 在 https://www.example.com/modules/example1.js 中引入
 import { first } from "./example1.js";
 
-// imports from https://www.example.com/example2.js
+// 在 https://www.example.com/example2.js 中引入
 import { second } from "../example2.js";
 
-// imports from https://www.example.com/example3.js
+// 在 https://www.example.com/example3.js 中引入
 import { third } from "/example3.js";
 
-// imports from https://www2.example.com/example4.js
+// 在 https://www2.example.com/example4.js 中引入
 import { fourth } from "https://www2.example.com/example4.js";
 ```
 
-Each of the module specifiers in this example is valid for use in a browser, including the complete URL in the final line (you’d need to be sure ww2.example.com has properly configured its Cross-Origin Resource Sharing (CORS) headers to allow cross-domain loading). These are the only module specifier formats that browsers can resolve by default (though the not-yet-complete module loader specification will provide ways to resolve other formats). That means some normal looking module specifiers are actually invalid in browsers and will result in an error, such as:
+该例中的每个模块指示符在浏览器中都似乎合法的，包括最后的完整 URL（你需要确保 www2.example.com 配置了跨域资源共享（CORS）头以允许跨域加载）。这些是目前能被浏览器默认使用的形式（尚未完成的模块加载规范会提供更多的形式）。这意味着一些看起来正常的模块指示符在浏览器中会出现错误，例如：
 
 ```
-// invalid - doesn't begin with /, ./, or ../
+// 非法 - 开头未使用 /，./，或 ../
 import { first } from "example.js";
 
-// invalid - doesn't begin with /, ./, or ../
+// 非法 - 开头未使用 /，./，或 ../
 import { second } from "example/index.js";
 ```
 
-Each of these module specifiers cannot be loaded by the browser. The two module specifiers are in an invalid format (missing the correct beginning characters) even though both will work when used as the value of src in a `<script>` tag. This is an intentional difference in behavior between `<script>` and import.
+以上的模块指示符不能被浏览器识别。它们是以非法的形式存在（缺失正确的起始字符），即使它们能作为 `<script>` 标签中的 src 属性值并正常工作。`<script>` 和 import 之间的这种差异是有意制造的。
 
 <br />
 
 ### Summary
 
-ECMAScript 6 adds modules to the language as a way to package up and encapsulate functionality. Modules behave differently than scripts, as they don’t modify the global scope with their top-level variables, functions, and classes, and this is undefined. To achieve that behavior, modules are loaded using a different mode.
 
-You must export any functionality you’d like to make available to consumers of a module. Variables, functions, and classes can all be exported, and there is also one default export allowed per module. After exporting, another module can import all or some of the exported names. These names act as if defined by let and operate as block bindings that can’t be redeclared in the same module.
+ECMAScript 6 向 JavaScript 语言中添加了模块以用来打包和封装功能。模块的行为和 script 不同，它们不会修改全局作用域中的顶级变量，函数和类，同时 this 的值为 undefined 。为了实现这些差异，模块使用了不同的加载机制。
 
-Modules need not export anything if they are manipulating something in the global scope. You can actually import from such a module without introducing any bindings into the module scope.
+你必须显式地输出一些功能以供模块外部使用。变量，函数和类都可以被输出，而且每个模块允许有一个默认的输出值。在输出之后，另一个模块可以引入部分或全部输出的内容。这些内容的命名在模块内部被当作 let 变量并不能被重新声明。
 
-Because modules must run in a different mode, browsers introduced `<script type="module">` to signal that the source file or inline code should be executed as a module. Module files loaded with `<script type="module">` are loaded as if the defer attribute is applied to them. Modules are also executed in the order in which they appear in the containing document once the document is fully parsed.
+如果模块操作的是全局作用域，那么它不必输出任何内容。实际上你不必使用任何绑定来引入这个模块。
+
+因为模块必须由不同的方式来加载，浏览器引入了 `<script type="module">` 来表示该源文件或内联代码被视为一个模块。`<script type="module">` 默认以 defer 属性的行为来加载模块文件。在文档被完整解析以后，它们会以出现在文档中的顺序来先后执行。
 
 <br />
