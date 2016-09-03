@@ -1,7 +1,7 @@
 # 模块（Encapsulating Code With Modules）
 
 
-JavaScript 采用 “共享一切” 的加载代码方式是该语言最令人迷惑且容易出错的方面之一。其它语言使用包（package）的概念来定义代码的作用范围，然而在 ECMAScript 6 之前，每个 JavaScript 文件中定义的内容都由全局作用域共享。当 web 应用变得复杂并需要书写更多的 JavaScript 代码时，上述加载方式会出现命名冲突或安全方面的问题。ECMAScript 6 的目标之一就是解决作用域的问题并将 JavaScript 应用中的代码整理得更有条理，于是模块应运而生。
+JavaScript 采用 “共享一切” 的代码加载方式是该语言中最令人迷惑且容易出错的方面之一。其它语言使用包（package）的概念来定义代码的作用范围，然而在 ECMAScript 6 之前，每个 JavaScript 文件中定义的内容都由全局作用域共享。当 web 应用变得复杂并需要书写更多的 JavaScript 代码时，上述加载方式会出现命名冲突或安全方面的问题。ECMAScript 6 的目标之一就是解决作用域的问题并将 JavaScript 应用中的代码整理得更有条理，于是模块应运而生。
 
 <br />
 
@@ -21,7 +21,7 @@ JavaScript 采用 “共享一切” 的加载代码方式是该语言最令人�
 ### <a id="What-are-Modules"> 什么是模块？（What are Modules?） </a>
 
 
-模块是指以不同方式加载的 JavaScript 文件（与 script 这种传统的加载模式相反）。这种方式很有必要，因为它和 script 使用不同的语义：
+模块是指采取不同于现有加载方式的 JavaScript 文件（与 script 这种传统的加载模式相对）。这种方式很有必要，因为它和 script 使用不同的语义：
 
 1. 模块中的代码自动运行在严格模式下，并无任何办法修改为非严格模式。
 2. 模块中的顶级（top level）变量不会被添加到全局作用域中。它们只存在于各自的模块中的顶级作用域。
