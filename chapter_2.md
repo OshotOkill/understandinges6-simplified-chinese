@@ -1,7 +1,7 @@
 # 字符串与正则表达式（Strings and Regular Expressions）
 
 
-Strings are arguably one of the most important data types in programming. They’re in nearly every higher-level programming language, and being able to work with them effectively is fundamental for developers to create useful programs. By extension, regular expressions are important because of the extra power they give developers to wield on strings. With these facts in mind, the creators of ECMAScript 6 improved strings and regular expressions by adding new capabilities and long-missing functionality. This chapter gives a tour of both types of changes.
+字符串可以说是程序设计中最为重要的数据类型之一。几乎每种高级编程语言都有它的一席之地，而且能有效的使用它也是开发者编写实用程序的基本准则。作为重要的扩展，正则表达式赋予开发者操作字符串的额外能力。ECMAScript 6 的缔造者们将这些事实牢记于心，改进了字符串和正则表达式，并添加了长久以来缺失的某些功能。本章会讲解它们的变化之处。
 
 <br />
 ### 本章小结
