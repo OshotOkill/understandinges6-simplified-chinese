@@ -1,3 +1,5 @@
+![](http://learnbb.net/oc-content/uploads/674/67362.jpg)
+
 # 关于
 
 原书的观看地址：https://leanpub.com/understandinges6/read
