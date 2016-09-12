@@ -32,7 +32,7 @@ JavaScript 引擎在相同的时间内只能执行一段代码，所以引擎不
 
 当一个用户点击了一个按钮或按下一个键盘上的某个按键时，一个事件如 onclick 会被触发。为了响应该交互，或许一个新的任务会被添加到任务队列中。这就是 JavaScript 异步编程中最基本的形式。关于处理事件的代码知道事件发生后才会执行，此时相应的上下文（context）会出现，例如：
 
-```
+```js
 let button = document.getElementById("my-btn");
 button.onclick = function(event) {
     console.log("Clicked");
@@ -50,7 +50,7 @@ button.onclick = function(event) {
 
 在 Node.js 诞生后，它通过在编程中广泛使用回调模式来进一步发展异步编程模型。回调模式和事件模型有些相似，因为异步的代码在之后的某一时刻才会执行。然而它们之间的差异在于前者要调用的函数是参数，如下所示：
 
-```
+```js
 readFile("example.txt", function(err, contents) {
     if (err) {
         throw err;
@@ -67,7 +67,7 @@ console.log("Hi!");
 
 回调模式比事件更为灵活，因为回调函数更容易将多个调用串联在一起。例如：
 
-```
+```js
 readFile("example.txt", function(err, contents) {
     if (err) {
         throw err;
@@ -87,7 +87,7 @@ readFile("example.txt", function(err, contents) {
 
 该模式使用起来感觉相当不错，不过当回调函数嵌套过多时，你很快就会发现自己陷入了回调地狱（callback hell）。像这样：
 
-```
+```js
 method1(function(err, result) {
 
     if (err) {
@@ -133,7 +133,7 @@ method1(function(err, result) {
 
 promise 是异步操作结果的占位符。函数可以返回一个 promise，而不用订阅一个事件或向函数传递回调参数，像这样
 
-```
+```js
 // readFile 承诺在之后完成该操作
 let promise = readFile("example.txt");
 ```
@@ -163,7 +163,7 @@ let promise = readFile("example.txt");
 
 then() 中的两个参数都是可选的，所以你可以选择同时对 fulfillment 和 rejection 或其中之一进行监听 。例如，考虑下面调用 then() 的例子：
 
-```
+```js
 let promise = readFile("example.txt");
 
 promise.then(function(contents) {
@@ -189,7 +189,7 @@ promise.then(null, function(err) {
 
 promise 也包含一个 catch() 方法，它的行为等效于只传递 rejection 处理（handler）。例如，下面的 catch() 和 then() 调用在功能上是等效的。
 
-```
+```js
 promise.catch(function(err) {
     // rejection
     console.error(err.message);
@@ -207,7 +207,7 @@ then() 和 catch() 的目的是让你组合使用它们以用来正确的处理�
 
 一个 fulfillment 或 rejection 的处理可以在 promise 已定之后被添加到任务队列中。这允许你随时添加 fulfillment 和 rejection 处理并保证它们会被调用。例如：
 
-```
+```js
 let promise = readFile("example.txt");
 
 // 原始的 fulfillment 处理
@@ -236,7 +236,7 @@ promise 由 Promise 构造函数创建。该构造函数接收一个参数：包
 
 下面的例子以本章之前的示例为参考并使用 promise 实现了 Node.js 中的 readFile() 函数：
 
-```
+```js
 // Node.js 示例
 
 let fs = require("fs");
@@ -276,7 +276,7 @@ promise.then(function(contents) {
 
 需要注意的是执行函数在 readFile() 被调用后会立即执行。当 resolve() 和 reject() 在执行函数内部被调用后，为了处理这个 promise，一个任务会被放置到任务队列中。该种行为被称为任务调度（job scheduling），如果你曾经使用过 setTimeout() 或 setInterval() 函数，那么你已经对其有所了解。在任务调度中，你向任务队列添加了一个任务并声明：“现在不要执行它，以后再说。”例如，setTimeout() 函数允许你延迟将任务放入队列中的时间：
 
-```
+```js
 // 500ms 之后将这个函数添加到任务队列
 setTimeout(function() {
     console.log("Timeout");
@@ -287,7 +287,7 @@ console.log("Hi!");
 
 该段代码将任务添加到队列的时间延迟了 500ms 。两段 console.log() 调用会如下输出：
 
-```
+```js
 Hi!
 Timeout
 ```
@@ -296,7 +296,7 @@ Timeout
 
 Promise 的行为与上述相似。promise 中的执行函数会在执行流到达下方的源代码之前立即运行。例如：
 
-```
+```js
 let promise = new Promise(function(resolve, reject) {
     console.log("Promise");
     resolve();
@@ -311,7 +311,7 @@ Hi!
 
 调用 resolve() 会触发一个异步操作。传递给 then() 或 catch() 的函数会被添加到任务队列并异步执行。如下所示：
 
-```
+```js
 let promise = new Promise(function(resolve, reject) {
     console.log("Promise");
     resolve();
@@ -326,7 +326,7 @@ console.log("Hi!");
 
 该例中的输出为：
 
-```
+```js
 Promise
 Hi!
 Resolved
@@ -348,7 +348,7 @@ Promise 构造函数由于其内部执行函数与生俱来的动态特性使得
 
 Promise.resolve() 方法接收单个参数并返回一个 fulfilled 状态的 promise。这意味着没有发生任务调度，而且你需要创建一个 fulfillment 处理来提取这个参数值。例如：
 
-```
+```js
 let promise = Promise.resolve(42);
 
 promise.then(function(value) {
@@ -365,7 +365,7 @@ promise.then(function(value) {
 
 你也可以使用 Promise.reject() 方法来创建状态为 rejected 的 promise 。这和上述的 Promise.resolve() 的唯一区别就是创建的 promise 状态为 rejected，如下所示：
 
-```
+```js
 let promise = Promise.reject(42);
 
 promise.catch(function(value) {
@@ -386,7 +386,7 @@ Promise.resolve() 和 Promise.reject() 也可以接收非 promise 的 thenable �
 
 一个不属于 promise 的 thenable 指的是包含 then() 方法的对象。该方法接收 resolve 和 reject 作为参数，像这样：
 
-```
+```js
 let thenable = {
     then: function(resolve, reject) {
         resolve(42);
@@ -396,7 +396,7 @@ let thenable = {
 
 该例中的 thenable 对象除了 then() 方法之外没有任何可以和 promise 相关联的特征。你可以调用 Promise.resolve() 来将这个对象转化成状态为 fulfilled 的 promise：
 
-```
+```js
 let thenable = {
     then: function(resolve, reject) {
         resolve(42);
@@ -413,7 +413,7 @@ p1.then(function(value) {
 
 上例 Promise.resolve() 和 thenable 的使用方式也可以创建一个 rejected 状态的 promise：
 
-```
+```js
 let thenable = {
     then: function(resolve, reject) {
         reject(42);
@@ -437,7 +437,7 @@ Proimse.resolve() 和 Promise.reject() 以上述的方式工作以便使你方�
 
 当执行函数中抛出了错误，promise 的 rejection 处理会被调用。例如：
 
-```
+```js
 let promise = new Promise(function(resolve, reject) {
     throw new Error("Explosion!");
 });
@@ -449,7 +449,7 @@ promise.catch(function(error) {
 
 该段代码中，执行函数内部抛出了错误。实际上每个执行函数内部都包含一个隐式的 try-catch，因此内部的错误会被捕捉并传入 rejection 处理。该例等效如下：
 
-```
+```js
 let promise = new Promise(function(resolve, reject) {
     try {
         throw new Error("Explosion!");
@@ -473,7 +473,7 @@ promise 最有争议的部分在于如果未提供 rejection 处理，那么 pro
 
 判断 promise 的 rejection 是否被处理不是很直观，这是 promise 的自身设定所导致的。例如，考虑下面的示例：
 
-```
+```js
 let rejected = Promise.reject(42);
 
 // 在当前，rejected 未被处理
@@ -504,7 +504,7 @@ rejected.catch(function(value) {
 
 unhandledRejection 事件处理函数会被传入 rejection 的原因（通常是一个 error 对象）和 rejected 对象。以下代码做了演示：
 
-```
+```js
 let rejected;
 
 process.on("unhandledRejection", function(reason, promise) {
@@ -519,7 +519,7 @@ rejected = Promise.reject(new Error("Explosion!"));
 
 rejectionHandled 事件处理函数只接受单个参数，即关联的曾处于 rejected 状态的 promise。如下所示：
 
-```
+```js
 let rejected;
 
 process.on("rejectionHandled", function(promise) {
@@ -540,7 +540,7 @@ setTimeout(function() {
 
 为了正确追踪潜在的未处理的 rejection，使用 rejectionHandled 和 unhandledRejection 事件能获取并保留它们的一个清单，并在一段时间之后对其检查。例如：
 
-```
+```js
 let possiblyUnhandledRejections = new Map();
 
 // 当 rejection 未处理时，将其添加到 map 中
@@ -588,7 +588,7 @@ Node.js 的实现中，事件处理函数的参数是分别传入的，而浏览
 
 浏览器实现的另一处差异是 rejection 的值（reason）两个事件都可以使用。例如：
 
-```
+```js
 let rejected;
 
 window.onunhandledrejection = function(event) {
@@ -610,7 +610,7 @@ rejected = Promise.reject(new Error("Explosion!"));
 
 在浏览器中书写追踪未处理 rejection 的代码和 Node.js 很相似：
 
-```
+```js
 let possiblyUnhandledRejections = new Map();
 
 // 当 rejection 未处理时，将其添加到 map 中
@@ -649,7 +649,7 @@ setInterval(function() {
 
 实际上每一次调用 then() 和 catch() 都会返回另一个 promise 。它只会在之前的 promise 转化为 fulfilled 或 rejected 状态的那一刻后才会被处理 。考虑下面的示例：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -663,14 +663,14 @@ p1.then(function(value) {
 
 该段代码输出:
 
-```
+```js
 42
 Finished
 ```
 
 调用 p1.then() 返回另一个 promise，而且该例又对新的 promise 调用了 then()。第二次调用 then() 后 fulfillment 处理函数只有在第一个 promise 完成之后被调用。如果你不使用链式调用，那么看起来像是这样：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -693,7 +693,7 @@ p2.then(function() {
 
 promise 链允许你捕获上一个 promise 的 fulfillment 或 rejection 处理中的错误。例如：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -707,7 +707,7 @@ p1.then(function(value) {
 
 在这段代码中，p1 的 fulfillment 处理抛出了错误。该链中的第二个 promise 调用了 catch() 方法，所以它通过 rejection 处理接收了这个错误。同样上一个 promise 如果在 rejection 处理中抛出了错误，这里同样也能接收：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     throw new Error("Explosion!");
 });
@@ -733,7 +733,7 @@ p1.catch(function(error) {
 
 promise 链的另一个重要特征是链中的 promise 能够向下一个 promise 传递数据。你已经知道执行函数中的 resolve() 的参数会被传递给 promise 的 fulfillment 处理函数。你同样可以在 fulfillment 处理中通过返回某个指定值来在链中传递数据。例如：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -750,7 +750,7 @@ p1 的 fulfillment 处理会返回 value + 1 的计算值。因为 value 的值�
 
 你可以用 rejection 处理做相同的事情。当 rejection 处理被调用后，也可以返回一个值。如果这么做，那么该值同样会传递给下一个 promise 的 fulfillment 处理，像这样：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     reject(42);
 });
@@ -774,7 +774,7 @@ p1.catch(function(value) {
 
 fulfillment 和 rejection 处理返回的原始值允许在 promise 中传递数据。如果你想返回一个对象呢？假设这个对象是 promise，那么为了决定下一步该做些什么，这里需要额外的步骤。考虑下面的示例：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -797,7 +797,7 @@ p1.then(function(value) {
 
 认识该模式重要的一点是第二个 fulfillment 处理并没有添加在 p2，而是第三个 promise 上。因此该 fulfillment 处理附着于第三个 promise，使得上例等效于：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -820,7 +820,7 @@ p3.then(function(value) {
 
 这里可以很明显的看到，第二个 fulfillment 处理添加给了 p3 而不是 p2 。这个区别虽不易察觉但至关重要，因为 p2 若处于 rejected 状态则第二个 fulfillment 处理不会被调用。例如：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -841,7 +841,7 @@ p1.then(function(value) {
 
 该例中，因为 p2 的状态是 rejected，所以第二个 fulfillment 处理永远不会被调用。不过，你可以添加一个 rejection 处理：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -864,7 +864,7 @@ p1.then(function(value) {
 
 在 fulfillment 或 rejeciton 处理中返回 thenable 对象并不会改变它们内部执行函数的行为。首个定义的 promise 会最先运行它的执行函数，接下来是第二个定义的 promise，以此类推。返回 thenable 对象仅允许你为这些 promise 定义额外的相应操作。你可以在 fulfillment 处理中创建一个新的 promise 来延迟 fulfillment 处理的执行。例如：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -899,7 +899,7 @@ p1.then(function(value) {
 
 Promise.all() 方法接收单个包含 promise 的可迭代对象参数（如数组），并在该对象包含的所有 promise 全部处理完毕之后返回一个已处理的 promise 。这个返回的 promise 会在所有 promise 处于 fulfilled 状态之后转变为该状态，如下所示：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -926,7 +926,7 @@ p4.then(function(value) {
 
 如果 Promise.all() 中的某个 promise 转变为 rejected 状态，那么会立即返回一个 rejected 状态的 promise 而不用等待其它 promise 完成执行。
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -958,7 +958,7 @@ rejection 处理总是会接收单个值，而不是数组，并且该值是 rej
 
 Promise.race() 方法以另一种稍稍不同的方式来观察多个 promise 。该方法同样接收一个包含 promise 的可迭代类型并返回一个 promise，不过返回的时机是在单个 promise 执行完毕的那一刻，而不是像 Promise.all() 那样需要等待所有的 promise 都处于 fulfilled 状态。只要有 promise 转变为 fulfilled 状态，那么Promise.race() 就会返回它。例如：
 
-```
+```js
 let p1 = Promise.resolve(42);
 
 let p2 = new Promise(function(resolve, reject) {
@@ -978,7 +978,7 @@ p4.then(function(value) {
 
 在该段代码中，p1 是以 fulfilled promise 的身份所创建，而其它的 promise 需要做任务调度。p4 的 fulfillment 处理会被立即调用并传入值 42，其它的 promise 都被忽略。传给 Promise.race() 的 promise 真如竞赛一般看哪一个先处于已定状态，并返回胜出的 fulfilled promise：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -1005,7 +1005,7 @@ p4.catch(function(value) {
 
 和其它内置类型相似，你可以讲 promise 作为派生类的基类。这允许你以内置的 promise 为基础做一些改进。假如，你想创建一个包含 success() 和 failure() 方法的 promise 但又不想丢掉内置版本中的 then() 和 catch()，你可以如下创建该 promise 类型：
 
-```
+```js
 class MyPromise extends Promise {
 
     // 使用默认的构造函数
@@ -1039,7 +1039,7 @@ success() 和 reject() 使用 this 来调用它们模仿的方法。派生的 pr
 
 MyPromise.resolve() 和 MyPromise.reject() 会返回 MyPromise 的示例而无视传给它们的参数，因为这些方法使用了 Symbol.species 属性（第九章已讨论）来决定 promise 返回的类型。如果一个属于内置类型的 promise 被传递给这些方法，该 promise 会被进行处理，并返回了一个新的 MyPromise 以供你赋值 fulfillment 和 rejection 处理。例如：
 
-```
+```js
 let p1 = new Promise(function(resolve, reject) {
     resolve(42);
 });
@@ -1063,7 +1063,7 @@ console.log(p2 instanceof MyPromise);   // true
 
 在第八章，我介绍了生成器并演示了如何使用它来运行异步任务，像这样“
 
-```
+```js
 let fs = require("fs");
 
 function run(taskDef) {
@@ -1123,7 +1123,7 @@ run(function*() {
 
 在 promise 的帮助下，你可以通过判断这些异步操作是否为 promise 来大幅度简化和泛化任务运行器。通用的接口意味着你可以减少大段的异步代码。下面是一种简化任务运行器的方式：
 
-```
+```js
 let fs = require("fs");
 
 function run(taskDef) {
@@ -1192,7 +1192,7 @@ run() 函数可以运行任何使用 yield 操作异步代码的生成器，同�
 
 > 在我写这本书的时候，JavaScript 正准备引入一个新的简化语法来执行异步任务。该种实现是使用 await 语法并能完美作用于上述以 promise 为基础的示例。它的基本理念是使用 async 标记的函数和 await 而不是生成器与 yield 来调用函数，例如：
 
-```
+```js
 (async function() {
     let contents = await readFile("config.json");
     doSomethingWith(contents);

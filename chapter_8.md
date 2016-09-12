@@ -25,7 +25,7 @@
 
 如果你曾使用过 JavaScript 来编程，那么你可能会见过下面的代码：
 
-```
+```js
 var colors = ["red", "green", "blue"];
 
 for (var i = 0, len = colors.length; i < len; i++) {
@@ -48,7 +48,7 @@ for (var i = 0, len = colors.length; i < len; i++) {
 
 了解上述的说明后，在 ECMAScript 5 中创建一个迭代器变得十分简单：
 
-```
+```js
 function createIterator(items) {
 
     var i = 0;
@@ -93,7 +93,7 @@ createIterator() 函数返回一个带有 next() 方法的对象。每次调用�
 生成器是返回迭代器的函数。生成器函数由 function 关键字和之后的星号（*）标识，同时还能使用新的 yield
 关键字。星号的位置不能论是放在 function 关键字的后面还是在它们插入空格都是随意的，如下例所示：
 
-```
+```js
 // 生成器
 function *createIterator() {
     yield 1;
@@ -115,7 +115,7 @@ createIterator() 前面的星号指示该函数是个生成器。ECMAScript 6 �
 
 yield 关键字可以和值或者是表达式一起使用，所以你可以通过生成器给迭代器添加一些项而并非手动地让迭代器一个接一个地返回它们。例如，下面演示了在 for 循环内部使用 yield：
 
-```
+```js
 function *createIterator(items) {
     for (let i = 0; i < items.length; i++) {
         yield items[i];
@@ -141,7 +141,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 > **注意**： yield 关键字只能用在生成器内部。在其它地方甚至是生成器内部的函数中使用都会抛出语法错误，例如：
 
-```
+```js
 function *createIterator(items) {
 
     items.forEach(function(item) {
@@ -161,7 +161,7 @@ function *createIterator(items) {
 
 你可以使用函数表达式来创建生成器，只需在 function 关键字和圆括号之间添加星号（*）。例如：
 
-```
+```js
 let createIterator = function *(items) {
     for (let i = 0; i < items.length; i++) {
         yield items[i];
@@ -193,7 +193,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 生成器本身只是函数，因此可以添加它们到对象中。例如，你可以使用 ECMAScript 5 风格的对象字面量来创建函数表达式：
 
-```
+```js
 var o = {
 
     createIterator: function *(items) {
@@ -208,7 +208,7 @@ let iterator = o.createIterator([1, 2, 3]);
 
 你也可以使用 ECMAScript 6 的简写方法并将星号（*）放在方法名前面：
 
-```
+```js
 var o = {
 
     *createIterator(items) {
@@ -241,7 +241,7 @@ let iterator = o.createIterator([1, 2, 3]);
 
 for-lof 循环会在可迭代类型每次迭代执行后调用 next() 并将结果对象存储在变量中。循环会持续进行直到结果对象的 done 属性为 true。如下所示：
 
-```
+```js
 let values = [1, 2, 3];
 
 for (let num of values) {
@@ -251,7 +251,7 @@ for (let num of values) {
 
 This code outputs the following:
 
-```
+```js
 1
 2
 3
@@ -272,7 +272,7 @@ for-of 循环首先会调用 values 数组的 Symbol.iterator 方法来获取迭
 
 你可以使用 Symbol.iterator 来访问对象默认的迭代器，像这样。
 
-```
+```js
 let values = [1, 2, 3];
 let iterator = values[Symbol.iterator]();
 
@@ -286,7 +286,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 既然 Symbol.iterator 定义了默认的迭代器，你可以如下使用它来确定一个对象是否可迭代：
 
-```
+```js
 function isIterable(object) {
     return typeof object[Symbol.iterator] === "function";
 }
@@ -310,7 +310,7 @@ isIterable() 函数简单地查看对象是否有默认的并且类型为函数�
 
 开发者自定义的对象默认是不可迭代类型，但是你可以为它们创建 Symbol.iterator 属性并指定一个生成器来使这些对象可迭代。例如：
 
-```
+```js
 let collection = {
     items: [],
     *[Symbol.iterator]() {
@@ -332,7 +332,7 @@ for (let x of collection) {
 
 该段代码输出:
 
-```
+```js
 1
 2
 3
@@ -377,7 +377,7 @@ ECMAScript 6 内置了三种类型的集合对象：数组，map 和 set 。它�
 
 这里有一些该迭代器的演示：
 
-```
+```js
 let colors = [ "red", "green", "blue" ];
 let tracking = new Set([1234, 5678, 9012]);
 let data = new Map();
@@ -400,7 +400,7 @@ for (let entry of data.entries()) {
 
 console.log() 会做如下输出：
 
-```
+```js
 [0, "red"]
 [1, "green"]
 [2, "blue"]
@@ -420,7 +420,7 @@ console.log() 会做如下输出：
 
 values() 迭代器简单地返回了集合中每一项的值，正如它们在集合中的表现的那样，例如：
 
-```
+```js
 let colors = [ "red", "green", "blue" ];
 let tracking = new Set([1234, 5678, 9012]);
 let data = new Map();
@@ -443,7 +443,7 @@ for (let value of data.values()) {
 
 这段代码输出如下：
 
-```
+```js
 "red"
 "green"
 "blue"
@@ -464,7 +464,7 @@ The keys() iterator returns each key present in a collection. For arrays, it onl
 
 keys() 迭代器返回集合中每一项的键。其中数组除了数字索引之外不会返回其它属性。由于 set 中的键和值相同，所以 keys() 和 values() 返回了相同的迭代器。对于 map 来讲，keys() 迭代器会返回每一项中的键。以下示例演示了这三种集合：
 
-```
+```js
 let colors = [ "red", "green", "blue" ];
 let tracking = new Set([1234, 5678, 9012]);
 let data = new Map();
@@ -487,7 +487,7 @@ for (let key of data.keys()) {
 
 该例做出如下输出：
 
-```
+```js
 0
 1
 2
@@ -507,7 +507,7 @@ keys() 迭代器获取了 colors，tracking 和 data 各自所有的键，并将
 
 每种集合类型都包含一个默认的迭代器以供 for-of 循环显式或隐式的使用。数组和 set 默认的迭代器是 values() 方法，而 map 则是 entries() 。这些默认设定能方便 for-of 循环迭代集合对象。例如，考虑如下的例子：
 
-```
+```js
 let colors = [ "red", "green", "blue" ];
 let tracking = new Set([1234, 5678, 9012]);
 let data = new Map();
@@ -533,7 +533,7 @@ for (let entry of data) {
 
 由于集合未指定任何迭代器，所以默认的迭代器会被使用。默认迭代器是为了反映如何给数组，set 和 map做初始化而设计的，所以这段代码会输出：
 
-```
+```js
 "red"
 "green"
 "blue"
@@ -552,7 +552,7 @@ for (let entry of data) {
 
 > Map 构造函数的默认行为有助于在 for-of 循环中使用解构。如下所示：
 
-```
+```js
 let data = new Map();
 
 data.set("title", "Understanding ECMAScript 6");
@@ -573,7 +573,7 @@ for (let [key, value] of data) {
 
 在 ECMAScript 5 发布之后，字符串就慢慢的变的越来越像数组。例如 ECMAScript 5 正式对字符串启用了方括号语法来访问字符（例如，text[0] 可以获得该字符串中的首个字符，等等）。不过实际上，方括号语法访问的是编码单元（code unit）而非字符本身，所以当获取双字节字符时会有意想不到的结果，如下例所示：
 
-```
+```js
 var message = "A ð ®· B";
 
 for (let i=0; i < message.length; i++) {
@@ -583,7 +583,7 @@ for (let i=0; i < message.length; i++) {
 
 这段代码使用方括号和 length 属性来迭代和打印一个包含 Unicode 字符的字符串，输出的结果有些出乎意料：
 
-```
+```js
 A
 (blank)
 (blank)
@@ -596,7 +596,7 @@ B
 
 幸好，ECMAScript 6 的目标是完全支持 Unicode（查看第二章），所以字符串的默认迭代器就是为了解决字符的迭代问题而做的努力。于是，字符串默认迭代器作用的是字符本身而非编码单元。将上例中的循环重构为 for-of 会得出更合适的结果。下面是修改过的代码：
 
-```
+```js
 var message = "A ð ®· B";
 
 for (let c of message) {
@@ -606,7 +606,7 @@ for (let c of message) {
 
 输出的内容如下：
 
-```
+```js
 A
 (blank)
 ð ®·
@@ -625,7 +625,7 @@ B
 
 在 ECMAScript 6 添加了默认迭代器之后，关于 NodeList DOM 规范（实际上它是由 HTML 规范定义而非 ECMAScript 6）中也添加了默认迭代器，而且它和数组的默认迭代器行为是一致的。这意味着你可以使用 for-of 循环或在任何对象默认迭代器的内部来迭代 NodeList。例如：
 
-```
+```js
 var divs = document.getElementsByTagName("div");
 
 for (let div of divs) {
@@ -642,7 +642,7 @@ for (let div of divs) {
 
 首先回顾一下在第七章中讨论过的使用扩展运算符将 set 转换为数组的示例：
 
-```
+```js
 let set = new Set([1, 2, 3, 3, 3, 4, 5]),
     array = [...set];
 
@@ -651,7 +651,7 @@ console.log(array);             // [1,2,3,4,5]
 
 这段代码对数组字面量使用扩展运算符以向其填充 set 中的元素。扩展运算符可以和任意的可迭代类型搭配并使用默认的迭代器来决定包含哪些值。迭代器会按顺序返回数据集中所有的项并依次插入到数组当中。该例中由于 set 是可迭代类型所以代码能正常运行，不过使用其它迭代类型也无可厚非，例如：
 
-```
+```js
 let map = new Map([ ["name", "Nicholas"], ["age", 25]]),
     array = [...map];
 
@@ -662,7 +662,7 @@ console.log(array);         // [ ["name", "Nicholas"], ["age", 25]]
 
 你可以不限次数的在数组字面量内使用扩展运算符，而且你可以随时将多个项插入到可迭代对象中。项的位置会根据插入的顺序决定，例如：
 
-```
+```js
 let smallNumbers = [1, 2, 3],
     bigNumbers = [100, 101, 102],
     allNumbers = [0, ...smallNumbers, ...bigNumbers];
@@ -690,7 +690,7 @@ console.log(allNumbers);    // [0, 1, 2, 3, 100, 101, 102]
 
 在本章中，所有的示例都使用迭代器的 next() 方法或生成器的 yield 语句来获取相关值，其实你也可以通过迭代器的 next() 方法进行传值。当你向 next() 方法传入参数时，生成器使用该参数作为 yield 语句的值。该特性对于一些高级用法尤其是异步编程至关重要。下面是个基本的例子：
 
-```
+```js
 function *createIterator() {
     let first = yield 1;
     let second = yield first + 2;       // 4 + 2
@@ -731,7 +731,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 不仅是数据，错误条件（error conditions）也能传入给迭代器。通过使用 throw() 方法，迭代器可以选择在某一次迭代抛出错误。这不仅对于异步编程来讲是相当重要的能力，而且生成器也变得更加灵活，因为你可以自行决定到底是返回值还是抛出错误（退出函数执行的两种方式）。你可以通过传递 Error 对象给 throw() 方法来让迭代器继续运行的时候抛出错误。例如：
 
-```
+```js
 function *createIterator() {
     let first = yield 1;
     let second = yield first + 2;       // yield 4 + 2, 之后抛出错误
@@ -758,7 +758,7 @@ console.log(iterator.throw(new Error("Boom"))); // 由生成器抛出错误
 
 到了解了这些之后，你可以在生成器内部使用 try-catch 块来捕捉这些错误：
 
-```
+```js
 function *createIterator() {
     let first = yield 1;
     let second;
@@ -793,7 +793,7 @@ next() 和 throw() 方法根据 yield 来控制迭代器内部的执行，其实
 
 既然生成器本质上是函数，你可以使用 return 语句来让它提前执行完毕并针对 next() 的调用来指定一个返回值。在本章的大部分实例中，最后一次在迭代器上调用 next() 会返回 undefined，不过你可以像在普通函数中那样使用 return 语句来指定另外的返回值。生成器会将 return 语句的出现判断为所有的任务已处理完毕，所以 done 属性会被赋值为 true，如果指定了返回值那么它会被赋给 value 属性。下面的示例演示了 return 是怎样让生成器提前执行完毕的：
 
-```
+```js
 function *createIterator() {
     yield 1;
     return;
@@ -811,7 +811,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 你也可以指定一个返回值来赋给结果对象中的 value 属性，例如：
 
-```
+```js
 function *createIterator() {
     yield 1;
     return 42;
@@ -836,7 +836,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 在某些情况下，将两个迭代器集中到一起会更实用。生成器可以使用 yield 和星号（*）这种特殊形式来代理其它生成器。根据生成器的规范，星号在哪里出现并无要求，只要它的位置在 yield 和生成器函数名的中间即可。如下所示：
 
-```
+```js
 function *createNumberIterator() {
     yield 1;
     yield 2;
@@ -867,7 +867,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 生成器代理能让你以最简单的方式进一步使用生成器返回的值，同时在处理复杂的任务时也相当有用。例如：
 
-```
+```js
 function *createNumberIterator() {
     yield 1;
     yield 2;
@@ -899,7 +899,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 注意 3 从未被 next() 方法输出。目前它只存在于 createCombinedIterator() 生成器的内部。不过你可以添加额外的 yield 语句来输出它们。例如：
 
-```
+```js
 function *createNumberIterator() {
     yield 1;
     yield 2;
@@ -946,7 +946,7 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 异步操作的传统做法是在它结束之后调用回调函数。例如，考虑如下 Node.js 读取文件的代码：
 
-```
+```js
 let fs = require("fs");
 
 fs.readFile("config.json", function(err, contents) {
@@ -968,7 +968,7 @@ fs.readFile() 方法包含 filename 参数和一个回调函数。当该操作�
 
 因为 yield 可以中断执行，并在继续运行之前等待 next() 方法的调用，你可以不使用回调函数来实现异步调用。首先，你需要一个函数来调用生成器以便让迭代器开始运行，例如这样：
 
-```
+```js
 function run(taskDef) {
 
     // 创建迭代器，使它们可以在别处使用
@@ -997,7 +997,7 @@ run() 函数接收一个已定义的任务（生成器函数）作为参数。�
 
 随着 run() 的实现，你可以运行一个带有多个 yield 语句的生成器。例如：
 
-```
+```js
 run(function*() {
     console.log(1);
     yield;
@@ -1016,7 +1016,7 @@ run(function*() {
 
 给任务运行器传入数据最简单的办法是将上一次 yield 返回的值传给下一次调用的 next() 方法。为此你只需传入result.value，如下所示：
 
-```
+```js
 function run(taskDef) {
 
     // 创建迭代器，使它们可以在别处使用
@@ -1043,7 +1043,7 @@ function run(taskDef) {
 
 既然 result.value 成为了 next() 的参数，那么在 yield 调用之间传递数据成为了可能，如下：
 
-```
+```js
 run(function*() {
     let value = yield 1;
     console.log(value);         // 1
@@ -1066,7 +1066,7 @@ Here’s one way you might signal that a value is an asynchronous operation:
 
 下面是标识包含异步操作的一种方法：
 
-```
+```js
 function fetchData() {
     return function(callback) {
         callback(null, "Hi!");
@@ -1076,7 +1076,7 @@ function fetchData() {
 
 该例的目的是让任何由任务运行器调用的方函数返回另一个函数以供回调函数的执行。fetchData() 函数会返回一个参数为回调函数的函数。当返回的函数被调用后，回调函数和一块额外的数据（"Hi!" 字符串）一起执行。该作为参数的回调函数需要由任务运行器提供以确保回调函数能和当前的迭代器正确交互并执行。虽然 fetchData() 函数是同步的，你可以延迟回调函数的执行以将它改造为异步函数，例如：
 
-```
+```js
 function fetchData() {
     return function(callback) {
         setTimeout(function() {
@@ -1090,7 +1090,7 @@ function fetchData() {
 
 当对函数如何标识自己包含异步操作有深入地了解之后，你可以将任务运行器以上述方式改造。当 result.value 为函数的时候，任务运行器会执行它而不是将它直接返回给 next() 方法。下面是重构的代码：
 
-```
+```js
 function run(taskDef) {
 
     // 创建迭代器，使它们可以在别处使用
@@ -1132,7 +1132,7 @@ function run(taskDef) {
 
 这个新版本的任务运行器已经做好了处理异步任务的准备。为了在 Node.js 中读取文件，你需要创建一个容器来包裹 fs.readFile() 以便让返回的函数和本节开始示例中 fetchData() 调用后的结果更为接近，例如：
 
-```
+```js
 let fs = require("fs");
 
 function readFile(filename) {
@@ -1144,7 +1144,7 @@ function readFile(filename) {
 
 readfile() 方法接收 filename 参数，并返回一个内部调用回调函数的函数。该回调函数会直接传给 fs.readFile() 方法并在异步方法结束后执行。你可以像下面这样使用 yield 来运行这个任务：
 
-```
+```js
 run(function*() {
     let contents = yield readFile("config.json");
     doSomethingWith(contents);

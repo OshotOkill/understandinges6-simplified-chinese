@@ -29,7 +29,7 @@ The first 2<sup>16</sup> code points in UTF-16 are represented as single 16-bit 
 
 In ECMAScript 5, all string operations work on 16-bit code units, meaning that you can get unexpected results from UTF-16 encoded strings containing surrogate pairs, as in this example:
 
-```
+```js
 var text = "𠮷";
 
 console.log(text.length);           // 2
@@ -56,7 +56,7 @@ ECMAScript 6, on the other hand, enforces UTF-16 string encoding to address prob
 
 One method ECMAScript 6 added to fully support UTF-16 is the codePointAt() method, which retrieves the Unicode code point that maps to a given position in a string. This method accepts the code unit position rather than the character position and returns an integer value, as these console.log() examples show:
 
-```
+```js
 var text = "𠮷a";
 
 console.log(text.charCodeAt(0));    // 55362
@@ -72,7 +72,7 @@ The codePointAt() method returns the same value as the charCodeAt() method unles
 
 Calling the codePointAt() method on a character is the easiest way to determine if that character is represented by one or two code points. Here’s a function you could write to check:
 
-```
+```js
 function is32Bit(c) {
     return c.codePointAt(0) > 0xFFFF;
 }
@@ -89,7 +89,7 @@ The upper bound of 16-bit characters is represented in hexadecimal as FFFF, so a
 
 When ECMAScript provides a way to do something, it also tends to provide a way to do the reverse. You can use codePointAt() to retrieve the code point for a character in a string, while String.fromCodePoint() produces a single-character string from a given code point. For example:
 
-```
+```js
 console.log(String.fromCodePoint(134071));  // "𠮷"
 ```
 
@@ -112,7 +112,7 @@ ECMAScript 6 supports Unicode normalization forms by giving strings a normalize(
 
 It’s beyond the scope of this book to explain the differences between these four forms. Just keep in mind that when comparing strings, both strings must be normalized to the same form. For example:
 
-```
+```js
 var normalized = values.map(function(text) {
     return text.normalize();
 });
@@ -130,7 +130,7 @@ normalized.sort(function(first, second) {
 
 This code converts the strings in the values array into a normalized form so that the array can be sorted appropriately. You can also sort the original array by calling normalize() as part of the comparator, as follows:
 
-```
+```js
 values.sort(function(first, second) {
     var firstNormalized = first.normalize(),
         secondNormalized = second.normalize();
@@ -147,7 +147,7 @@ values.sort(function(first, second) {
 
 Once again, the most important thing to note about this code is that both first and second are normalized in the same way. These examples have used the default, NFC, but you can just as easily specify one of the others, like this:
 
-```
+```js
 values.sort(function(first, second) {
     var firstNormalized = first.normalize("NFD"),
         secondNormalized = second.normalize("NFD");
@@ -178,7 +178,7 @@ You can accomplish many common string operations through regular expressions. Bu
 
 When a regular expression has the u flag set, it switches modes to work on characters, not code units. That means the regular expression should no longer get confused about surrogate pairs in strings and should behave as expected. For example, consider this code:
 
-```
+```js
 var text = "𠮷";
 
 console.log(text.length);           // 2
@@ -194,7 +194,7 @@ The regular expression /^.$/ matches any input string with a single character. W
 
 Unfortunately, ECMAScript 6 doesn’t add a method to determine how many code points a string has, but with the u flag, you can use regular expressions to figure it out as follows:
 
-```
+```js
 function codePointLength(text) {
     var result = text.match(/[\s\S]/gu);
     return result ? result.length : 0;
@@ -216,7 +216,7 @@ This example calls match() to check text for both whitespace and non-whitespace 
 
 Since the u flag is a syntax change, attempting to use it in JavaScript engines that aren’t compatible with ECMAScript 6 throws a syntax error. The safest way to determine if the u flag is supported is with a function, like this one:
 
-```
+```js
 function hasRegExpU() {
     try {
         var pattern = new RegExp(".", "u");
@@ -249,7 +249,7 @@ Developers have used the indexOf() method to identify strings inside other strin
 
 Each methods accept two arguments: the text to search for and an optional index from which to start the search. When the second argument is provided, includes() and startsWith() start the match from that index while endsWith() starts the match from the length of the string minus the second argument; when the second argument is omitted, includes() and startsWith() search from the beginning of the string, while endsWith() starts from the end. In effect, the second argument minimizes the amount of the string being searched. Here are some examples showing these three methods in action:
 
-```
+```js
 var msg = "Hello world!";
 
 console.log(msg.startsWith("Hello"));       // true
@@ -279,7 +279,7 @@ While these three methods make identifying the existence of substrings easier, e
 
 ECMAScript 6 also adds a repeat() method to strings, which accepts the number of times to repeat the string as an argument. It returns a new string containing the original string repeated the specified number of times. For example:
 
-```
+```js
 console.log("x".repeat(3));         // "xxx"
 console.log("hello".repeat(2));     // "hellohello"
 console.log("abc".repeat(4));       // "abcabcabcabc"
@@ -287,7 +287,7 @@ console.log("abc".repeat(4));       // "abcabcabcabc"
 
 This method is a convenience function above all else, and it can be especially useful when manipulating text. It’s particularly useful in code formatting utilities that need to create indentation levels, like this:
 
-```
+```js
 // indent using a specified number of spaces
 var indent = " ".repeat(4),
     indentLevel = 0;
@@ -312,7 +312,7 @@ Regular expressions are an important part of working with strings in JavaScript,
 
 ECMAScript 6 standardized the y flag after it was implemented in Firefox as a proprietary extension to regular expressions. The y flag affects a regular expression search’s sticky property, and it tells the search to start matching characters in a string at the position specified by the regular expression’s lastIndex property. If there is no match at that location, then the regular expression stops matching. To see how this works, consider the following code:
 
-```
+```js
 var text = "hello1 hello2 hello3",
     pattern = /hello\d\s?/,
     result = pattern.exec(text),
@@ -344,7 +344,7 @@ After that, the lastIndex property is changed to 1 on all three patterns, meanin
 
 The sticky flag saves the index of the next character after the last match in lastIndex whenever an operation is performed. If an operation results in no match, then lastIndex is set back to 0. The global flag behaves the same way, as demonstrated here:
 
-```
+```js
 var text = "hello1 hello2 hello3",
     pattern = /hello\d\s?/,
     result = pattern.exec(text),
@@ -383,7 +383,7 @@ There are two more subtle details about the sticky flag to keep in mind:
 
 As with other regular expression flags, you can detect the presence of y by using a property. In this case, you’d check the sticky property, as follows:
 
-```
+```js
 var pattern = /hello\d/y;
 
 console.log(pattern.sticky);    // true
@@ -393,7 +393,7 @@ The sticky property is set to true if the sticky flag is present, and the proper
 
 Similar to the u flag, the y flag is a syntax change, so it will cause a syntax error in older JavaScript engines. You can use the following approach to detect support:
 
-```
+```js
 function hasRegExpY() {
     try {
         var pattern = new RegExp(".", "y");
@@ -412,14 +412,14 @@ Just like the u check, this returns false if it’s unable to create a regular e
 
 In ECMAScript 5, you can duplicate regular expressions by passing them into the RegExp constructor like this:
 
-```
+```js
 var re1 = /ab/i,
     re2 = new RegExp(re1);
 ```
 
 The re2 variable is just a copy of the re1 variable. But if you provide the second argument to the RegExp constructor, which specifies the flags for the regular expression, your code won’t work, as in this example:
 
-```
+```js
 var re1 = /ab/i,
 
     // throws an error in ES5, okay in ES6
@@ -428,7 +428,7 @@ var re1 = /ab/i,
 
 If you execute this code in an ECMAScript 5 environment, you’ll get an error stating that the second argument cannot be used when the first argument is a regular expression. ECMAScript 6 changed this behavior such that the second argument is allowed and overrides any flags present on the first argument. For example:
 
-```
+```js
 var re1 = /ab/i,
 
     // throws an error in ES5, okay in ES6
@@ -453,7 +453,7 @@ In this code, re1 has the case-insensitive i flag while re2 has only the global 
 
 Along with adding a new flag and changing how you can work with flags, ECMAScript 6 added a property associated with them. In ECMAScript 5, you could get the text of a regular expression by using the source property, but to get the flag string, you’d have to parse the output of the toString() method as shown below:
 
-```
+```js
 function getFlags(re) {
     var text = re.toString();
     return text.substring(text.lastIndexOf("/") + 1, text.length);
@@ -471,7 +471,7 @@ ECMAScript 6 makes fetching flags easier by adding a flags property to go along 
 
 A late addition to ECMAScript 6, the flags property returns the string representation of any flags applied to a regular expression. For example:
 
-```
+```js
 var re = /ab/g;
 
 console.log(re.source);     // "ab"
@@ -508,7 +508,7 @@ Rather than trying to add more functionality to JavaScript’s already-existing 
 
 At their simplest, template literals act like regular strings delimited by backticks (`) instead of double or single quotes. For example, consider the following:
 
-```
+```js
 let message = `Hello world!`;
 
 console.log(message);               // "Hello world!"
@@ -519,7 +519,7 @@ console.log(message.length);        // 12
 This code demonstrates that the variable message contains a normal JavaScript string. The template literal syntax is used to create the string value, which is then assigned to the message variable.
 If you want to use a backtick in your string, then just escape it with a backslash (\), as in this version of the message variable:
 
-```
+```js
 let message = `\`Hello\` world!`;
 
 console.log(message);               // "`Hello` world!"
@@ -541,7 +541,7 @@ JavaScript developers have wanted a way to create multiline strings since the fi
 
 Thanks to a long-standing syntax bug, JavaScript does have a workaround. You can create multiline strings if there’s a backslash (\) before a newline. Here’s an example:
 
-```
+```js
 var message = "Multiline \
 string";
 
@@ -550,7 +550,7 @@ console.log(message);       // "Multiline string"
 
 The message string has no newlines present when printed to the console because the backslash is treated as a continuation rather than a newline. In order to show a newline in output, you’d need to manually include it:
 
-```
+```js
 var message = "Multiline \n\
 string";
 
@@ -562,7 +562,7 @@ This should print Multiline String on two separate lines in all major JavaScript
 
 Other pre-ECMAScript 6 attempts to create multiline strings usually relied on arrays or string concatenation, such as:
 
-```
+```js
 var message = [
     "Multiline ",
     "string"
@@ -582,7 +582,7 @@ ECMAScript 6’s template literals make multiline strings easy because there’s
 let message = `Multiline
 string`;
 
-```
+```js
 console.log(message);           // "Multiline
                                 //  string"
 console.log(message.length);    // 16
@@ -590,7 +590,7 @@ console.log(message.length);    // 16
 
 All whitespace inside the backticks is part of the string, so be careful with indentation. For example:
 
-```
+```js
 let message = `Multiline
                string`;
 
@@ -601,7 +601,7 @@ console.log(message.length);    // 31
 
 In this code, all whitespace before the second line of the template literal is considered part of the string itself. If making the text line up with proper indentation is important to you, then consider leaving nothing on the first line of a multiline template literal and then indenting after that, as follows:
 
-```
+```js
 let html = `
 <div>
     <h1>Title</h1>
@@ -614,7 +614,7 @@ This code begins the template literal on the first line but doesn’t have any t
 
 > If you prefer, you can also use \n in a template literal to indicate where a newline should be inserted:
 
-```
+```js
 let message = `Multiline\nstring`;
 
 console.log(message);           // "Multiline
@@ -630,7 +630,7 @@ At this point, template literals may look like fancier versions of normal JavaSc
 
 Substitutions are delimited by an opening ${ and a closing } that can have any JavaScript expression inside. The simplest substitutions let you embed local variables directly into a resulting string, like this:
 
-```
+```js
 let name = "Nicholas",
     message = `Hello, ${name}.`;
 
@@ -647,7 +647,7 @@ The substitution ${name} accesses the local variable name to insert name into th
 
 Since all substitutions are JavaScript expressions, you can substitute more than just simple variable names. You can easily embed calculations, function calls, and more. For example:
 
-```
+```js
 let count = 10,
     price = 0.25,
     message = `${count} items cost $ ${(count * price).toFixed(2)}.`;
@@ -659,7 +659,7 @@ This code performs a calculation as part of the template literal. The variables 
 
 Template literals are also JavaScript expressions, which means you can place a template literal inside of another template literal, as in this example:
 
-```
+```js
 let name = "Nicholas",
     message = `Hello, ${
         `my name is ${ name }`
@@ -676,7 +676,7 @@ This example nests a second template literal inside the first. After the first $
 
 Now you’ve seen how template literals can create multiline strings and insert values into strings without concatenation. But the real power of template literals comes from tagged templates. A template tag performs a transformation on the template literal and returns the final string value. This tag is specified at the start of the template, just before the first ` character, as shown here:
 
-```
+```js
 let message = tag`Hello world`;
 ```
 
@@ -690,7 +690,7 @@ A tag is simply a function that is called with the processed template literal da
 
 Tag functions are typically defined using rest arguments as follows, to make dealing with the data easier:
 
-```
+```js
 function tag(literals, ...substitutions) {
     // return a string
 }
@@ -698,7 +698,7 @@ function tag(literals, ...substitutions) {
 
 To better understand what gets passed to tags, consider the following:
 
-```
+```js
 let count = 10,
     price = 0.25,
     message = passthru`${count} items cost $${(count * price).toFixed(2)}.`;
@@ -716,7 +716,7 @@ Note that the first item in literals is an empty string. This ensures that liter
 
 Using this pattern, the literals and substitutions arrays can be interwoven to create a resulting string. The first item in literals comes first, the first item in substitutions is next, and so on, until the string is complete. As an example, you can mimic the default behavior of a template literal by alternating values from these two arrays:
 
-```
+```js
 function passthru(literals, ...substitutions) {
     let result = "";
 
@@ -751,7 +751,7 @@ This example defines a passthru tag that performs the same transformation as the
 
 Template tags also have access to raw string information, which primarily means access to character escapes before they are transformed into their character equivalents. The simplest way to work with raw string values is to use the built-in String.raw() tag. For example:
 
-```
+```js
 let message1 = `Multiline\nstring`,
     message2 = String.raw`Multiline\nstring`;
 
@@ -764,7 +764,7 @@ In this code, the \n in message1 is interpreted as a newline while the \n in mes
 
 The raw string information is also passed into template tags. The first argument in a tag function is an array with an extra property called raw. The raw property is an array containing the raw equivalent of each literal value. For example, the value in literals[0] always has an equivalent literals.raw[0] that contains the raw string information. Knowing that, you can mimic String.raw() using the following code:
 
-```
+```js
 function raw(literals, ...substitutions) {
     let result = "";
 

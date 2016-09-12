@@ -39,7 +39,7 @@ JavaScript 采用 “共享一切” 的代码加载方式是该语言中最令�
 
 你可以使用 export 关键字来对外暴露模块中的部分代码。一般情况下，你可以在任何变量，函数或类声明之前添加这个关键字来输出它们，像这样：
 
-```
+```js
 // 输出变量
 export var color = "red";
 export let name = "Nicholas";
@@ -83,7 +83,7 @@ export { multiply };
 
 一旦你有了包含输出内容的模块，你可以在另一个模块内使用 import 关键字来获取它的相关功能。import 语句包含两部分内容，分别为引入的标识符和输出这些标识符的模块。以下是该语句的基本形式：
 
-```
+```js
 import { identifier1, identifier2 } from "./example.js";
 ```
 
@@ -103,7 +103,7 @@ import 之后的花括号表示从模块中引入的绑定。from 关键字表�
 
 假设 “输出的基本概念” 一节中的首个示例中的代码包含在一个命名为 example.js 的模块中。你可以使用多种方式来引入并使用这个模块中的绑定。例如，只引入一个标识符：
 
-```
+```js
 // 只引入单个标识符
 import { sum } from "./example.js";
 
@@ -125,7 +125,7 @@ sum = 1;        // 错误
 
 如果你想从 example 模块引入多个绑定，你可以像下面这样显式的列出它们：
 
-```
+```js
 // 引入多个绑定
 import { sum, multiply, magicNumber } from "./example.js";
 console.log(sum(1, magicNumber));   // 8
@@ -141,7 +141,7 @@ console.log(multiply(1, 2));        // 2
 
 有一种特殊的情况允许你将整个模块视为单个对象引入。所有的输出可以以对象属性的方式访问。例如：
 
-```
+```js
 // 输出所有
 import * as example from "./example.js";
 console.log(example.sum(1, example.magicNumber));          // 8
@@ -152,7 +152,7 @@ console.log(example.multiply(1, 2));    // 2
 
 需要留意的是，不管你针对相同的模块使用了多少次 import 语句，该模块只会被执行一次。当 import 语句执行后，实例化的模块会驻留在内存中并随时可由另一个 import 语句引用。考虑如下的例子：
 
-```
+```js
 import { sum } from "./example.js";
 import { multiply } from "./example.js";
 import { magicNumber } from "./example.js";
@@ -166,7 +166,7 @@ import { magicNumber } from "./example.js";
 
 > export 和 import 一个很重要的限制是它们必须在语句和函数的外部使用。例如，下面的代码会抛出语法错误：
 
-```
+```js
 if (flag) {
     export flag;    // 语法错误
 }
@@ -176,7 +176,7 @@ if (flag) {
 
 > 相似的是，import 也只能在顶级作用域下而不是语句内部使用，意味着以下的代码也会抛出语法错误：
 
-```
+```js
 function tryImport() {
     import flag from "./example.js";    // 语法错误
 }
@@ -191,7 +191,7 @@ function tryImport() {
 
 ECMAScript 6 中的 import 语句创建了只读的变量，函数和类而不仅仅只是普通的针对源绑定的引用。虽然从模块中引入的绑定不能对值进行更改，但是输出标识符的模块有这个权利。假如你想使用下面的模块：
 
-```
+```js
 export var name = "Nicholas";
 export function setName(newName) {
     name = newName;
@@ -200,7 +200,7 @@ export function setName(newName) {
 
 当你引入了这两个绑定后，setName() 函数可以改变 name 的值：
 
-```
+```js
 import { name, setName } from "./example.js";
 
 console.log(name);       // "Nicholas"
@@ -221,7 +221,7 @@ name = "Nicholas";       // 错误
 
 首先是 export，假设你想给输出的函数起一个别名。你可以使用 as 关键字来指定它在模块外部可被使用的名称：
 
-```
+```js
 function sum(num1, num2) {
     return num1 + num2;
 }
@@ -231,13 +231,13 @@ export { sum as add };
 
 在这里，sum() 函数（sum 是本地命名）作为 add() 函数（add 是输出命名）输出。这意味着如果另一个模块想要引入这个函数，就必须使用 add：
 
-```
+```js
 import { add } from "./example.js";
 ```
 
 如果引入该函数的模块也想使用不同的命名，可以这样：
 
-```
+```js
 import { add as sum } from "./example.js";
 console.log(typeof add);            // "undefined"
 console.log(sum(1, 2));             // 3
@@ -259,7 +259,7 @@ console.log(sum(1, 2));             // 3
 
 下面是个使用 default 关键字的简单例子：
 
-```
+```js
 export default function(num1, num2) {
     return num1 + num2;
 }
@@ -269,7 +269,7 @@ export default function(num1, num2) {
 
 你也可以定义一个标识符并将它放置在 export default 之后来作为该模块的默认值，例如：
 
-```
+```js
 function sum(num1, num2) {
     return num1 + num2;
 }
@@ -281,7 +281,7 @@ export default sum;
 
 第三种指定默认输出标识符的方法是使用重命名语法：
 
-```
+```js
 function sum(num1, num2) {
     return num1 + num2;
 }
@@ -297,7 +297,7 @@ export { sum as default };
 
 你可以使用下面的语法引入模块的默认值：
 
-```
+```js
 // 引入默认值
 import sum from "./example.js";
 
@@ -308,7 +308,7 @@ console.log(sum(1, 2));     // 3
 
 对于同时使用了默认输出和非默认输出语法的模块，你可以在一个语句中同时引入它们。例如，如果你有以下的模块：
 
-```
+```js
 export let color = "red";
 
 export default function(num1, num2) {
@@ -318,7 +318,7 @@ export default function(num1, num2) {
 
 你可以使用下面的 import 语句同时引入 color 和 默认输出的函数：
 
-```
+```js
 import sum, { color } from "./example.js";
 
 console.log(sum(1, 2));     // 3
@@ -329,7 +329,7 @@ console.log(color);         // "red"
 
 和输出相似的是，你也可以在引入默认值的同时对其进行重命名：
 
-```
+```js
 // 和上例等效
 import { default as sum, color } from "example";
 
@@ -345,20 +345,20 @@ console.log(color);         // "red"
 
 有时你会想重新输出一些引入的模块（例如，你创建了包含一些小模块的库）。你可以使用本章中已经讨论过的方式来重新输出它们：
 
-```
+```js
 import { sum } from "./example.js";
 export { sum }
 ```
 
 这么做没有问题，不过单个语句也能完成相同的任务：
 
-```
+```js
 export { sum } from "./example.js";
 ```
 
 该种形式会从指定的模块中查找 sum 声明并输出它。当然，你也可以对输出重新命名：
 
-```
+```js
 export { sum as add } from "./example.js";
 ```
 
@@ -368,7 +368,7 @@ If you’d like to export everything from another module, you can use the * patt
 
 如果你想输出另一个模块中的全部内容，那么你可以使用 * ：
 
-```
+```js
 export * from "./example.js";
 ```
 
@@ -382,7 +382,7 @@ export * from "./example.js";
 
 例如，如果你想给数组添加一个 pushAll() 方法，你可能会像下面这样定义一个模块：
 
-```
+```js
 // 没有输出和引入的模块
 Array.prototype.pushAll = function(items) {
 
@@ -398,7 +398,7 @@ Array.prototype.pushAll = function(items) {
 
 虽然没有输出和引入，该模块仍然是合法的。这段代码可以同时被当作模块和 scrpit 使用。既然没有任何输出内容，你可以使用简单的不需要任何绑定的引入语法来执行它们：
 
-```
+```js
 import "./example.js";
 
 let colors = ["red", "green", "blue"];
@@ -441,7 +441,7 @@ In order to fully support modules, web browsers had to update each of these mech
 
 `script` 元素默认以 script 方式来加载 JavaScrpit 文件（不是模块）。同样在 type 属性缺失或值与 JavaScript content type 相关时（如 "text/javascript"）也是如此。`script` 元素可以执行内联或 src 定义文件中的代码。为了支持模块，type 的可选值中添加了 "module"。将 type 设定为 module 会通知浏览器将相关内联或文件中的代码视为模块而不是 script。这里有个简单示例：
 
-```
+```js
 <!-- 加载一个 JavaScript 模块文件 -->
 <script type="module" src="module.js"></script>
 
@@ -474,7 +474,7 @@ As you can see, including modules in web pages is fairly simple and similar to i
 
 当加载 script 文件时，defer 属性是可选的，然而加载模块文件时 defer 会自动施行。模块文件会在 HTML 解析器遇到 `<script type="module">` 后立即下载，但是它们会在整个文档解析完毕之后执行。模块的执行顺序完全取决于它们在 HTML 文件中的位置。这意味着首个 `<script type="module">` 一定会最先执行，即使后面存在不使用 src 属性的内联模块。例如：
 
-```
+```js
 <!-- 最先执行 -->
 <script type="module" src="module1.js"></script>
 
@@ -526,7 +526,7 @@ let result = sum(1, 2);
 
 async 属性也可以用于模块。对 `<script type="module">` 添加 async 属性使得它们的行为与包含 async 属性的 script 类似。唯一的区别在于模块中引入的资源会在模块本身执行之前下载，以保证模块需要的函数会事先获得；但是模块的执行顺序是不能确定。考虑如下的代码：
 
-```
+```js
 <!-- 无法确定哪个模块会首先运行 -->
 <script type="module" async src="module1.js"></script>
 <script type="module" async src="module2.js"></script>
@@ -541,14 +541,14 @@ async 属性也可以用于模块。对 `<script type="module">` 添加 async �
 
 worker，包括 web worker 和 service worker，会在网页之外的上下文中执行 JavaScript 代码。创建一个新的 worker 需要 worker 实例（或类）并传递 JavaScript 文件的位置。worker 默认的加载机制是将文件视为 script，像这样：
 
-```
+```js
 // 以 script 的方式加载 script.js
 let worker = new Worker("script.js");
 ```
 
 为了支持模块的加载，负责 HTML 标准的开发者们给构造函数添加了第二个参数。这个参数是包含 type 属性并且默认值为 script 的对象。你可以将 type 设定为 "module" 来加载模块。
 
-```
+```js
 // 以模块的方式加载 module.js
 let worker = new Worker("module.js", { type: "module" });
 ```
@@ -571,7 +571,7 @@ worker 模块与 worker script 大体上相同，不过还是有一些区别。�
 
 例如，你有一个位于 `https://www.example.com/modules/module.js` 并包含如下代码的文件：
 
-```
+```js
 // 在 https://www.example.com/modules/example1.js 中引入
 import { first } from "./example1.js";
 
@@ -587,7 +587,7 @@ import { fourth } from "https://www2.example.com/example4.js";
 
 该例中的每个模块指示符在浏览器中都似乎合法的，包括最后的完整 URL（你需要确保 www2.example.com 配置了跨域资源共享（CORS）头以允许跨域加载）。这些是目前能被浏览器默认使用的形式（尚未完成的模块加载规范会提供更多的形式）。这意味着一些看起来正常的模块指示符在浏览器中会出现错误，例如：
 
-```
+```js
 // 非法 - 开头未使用 /，./，或 ../
 import { first } from "example.js";
 

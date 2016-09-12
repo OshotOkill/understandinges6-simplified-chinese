@@ -25,7 +25,7 @@ JavaScript 使用 IEEE 754 编码系统来表示整型（integer）和浮点类�
 
 首先，ECMAScript 6 添加了 Number.isInterger() 方法用来判断某个值在 JavaScript 中是否为整型。虽然 JavaScript 使用 IEEE 754 来表示所有的数型，但是浮点类型和整型的存储方式是有差异的。Number.isInteger() 方法在调用时 JavaScript 引擎会根据值的存储形式来判断参数是否为整型。这意味着外观上看起来像浮点类型的数字也会被当作整型来存储，将它传给 Number.isInteger() 会返回 true 。例如：
 
-```
+```js
 console.log(Number.isInteger(25));      // true
 console.log(Number.isInteger(25.0));    // true
 console.log(Number.isInteger(25.1));    // false
@@ -41,7 +41,7 @@ console.log(Number.isInteger(25.1));    // false
 IEEE 754 只能精确表示 -2<sup>53</sup> 到 2<sup>53</sup> 之间的整型数字，在该 “安全” 范围之外，数字的二进制表达就不再唯一（译者：参考 IEEE 754 的整型规范）。这意味着 JavaScript 只能在 IEEE 754 所能精确表示的范围内保证准确度。例如，考虑下面的例子：
 
 
-```
+```js
 console.log(Math.pow(2, 53));      // 9007199254740992
 console.log(Math.pow(2, 53) + 1);  // 9007199254740992
 ```
@@ -50,7 +50,7 @@ console.log(Math.pow(2, 53) + 1);  // 9007199254740992
 
 ECMAScript 6 引入了 Number.isSafeInteger() 方法来检查整型是否在该语言所能精确表达的范围内，同时还添加了 Number.MAX_SAFE_INTEGER 和 Number.MIN_SAFE_INTEGER 属性来分别表示安全范围的上下边界。Number.isSafeInteger() 方法判断一个值是否为整型并位于安全的整数范围内，如下所示：
 
-```
+```js
 var inside = Number.MAX_SAFE_INTEGER,
     outside = inside + 1;
 
@@ -101,7 +101,7 @@ inside 代表最大的安全整数，所以 Number.isInteger() 和 Number.isSafe
 
 ECMAScript 6 提供了比之前版本的更好的 Unicode 支持度，同时也增添了标识符的种类。在 EMCAScript 5 中，你已经可以使用 Unicode 的转义字符串作为标识符。例如：
 
-```
+```js
 // 在 ECMAScript 5 and 6 中有效
 var \u0061 = "abc";
 
@@ -113,7 +113,7 @@ console.log(a);          // "abc"
 
 该例中在 var 声明之后你可以同时使用 \u0061 或 a 来访问这个变量。在 EMCAScript 6 中，你还能使用转义的 Unicode code point 作为标识符，像这样：
 
-```
+```js
 // 在 ECMAScript 5 and 6 中有效
 var \u{61} = "abc";
 
@@ -121,7 +121,7 @@ console.log(\u{61});      // "abc"
 
 // 等效于:
  console.log(a);          // "abc"
- ```
+```
 
 
 本例只是使用了等效的 code point 替换了 \u0061 。除此之外它的行为和上例相同。
@@ -153,7 +153,7 @@ ECMAScript 规范更推荐使用 Object.getPrototypeOf() 和 Object.setPrototype
 
 虽然你应该避免使用 \_\_proto\_\_ 属性，但是它的规范定义很有意思。在实现了 ECMAScript 6 的引擎中，Object.prototype.\_\_proto\_\_ 是一个访问器属性，它的 get 和 set 方法分别调用 Object.getPrototypeOf() 和 Object.setPrototypeOf() 。这意味着使用 \_\_proto\_\_ 和 Object.getPrototypeOf() 和 Object.setPrototypeOf() 没有本质上的区别，除了 \_\_proto\_\_ 可以直接在对象字面量中使用。以下是它的使用方式：
 
-```
+```js
 let person = {
     getGreeting() {
         return "Hello";

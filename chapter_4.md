@@ -45,7 +45,7 @@ JavaScript 混合了多种术语来描述规范中定义的对象，而非针对
 
 在 ECMAScript 5 及之前的版本中，对象字面量是简单的键值对的集合。这意味着属性被初始化时可能有所重复，如下所示：
 
-```
+```js
 function createPerson(name, age) {
     return {
         name: name,
@@ -53,11 +53,12 @@ function createPerson(name, age) {
     };
 }
 ```
+
 createPerson() 函数创建了一个属性名和参数名相同的对象。从结果上来看 name 和 age 有所重复，即使它们分别指的是对象的属性名和给提供值的变量。在返回的对象中，name 键的值被 name 变量赋给，age 键同理。
 
 在 ECMAScript 6 中，你可以使用简写属性来消除对象属性名和本地变量名的重复。当对象属性名和本地变量名相同时，你可以省略冒号与值。如下，createPerson() 可以用 ECMAScript 6 重写：
 
-```
+```js
 function createPerson(name, age) {
     return {
         name,
@@ -77,7 +78,7 @@ function createPerson(name, age) {
 
 ECMAScript 6 同样改进了对象字面量中方法的赋值。在 ECMAScript 5 和更早的版本中，你必须指定一个名字并使用函数定义的完整形式来给对象添加方法，如下：
 
-```
+```js
 var person = {
     name: "Nicholas",
     sayName: function() {
@@ -88,7 +89,7 @@ var person = {
 
 在 ECMAScript 6 中，该语法通过省略冒号和 function 关键字变得更简洁，也就是说你可以像下面这样重写上个例子：
 
-```
+```js
 var person = {
     name: "Nicholas",
     sayName() {
@@ -107,7 +108,7 @@ var person = {
 
 在 ECMAScript 5 和早期的版本中，在对象实例名称后使用方括号包含而非点操作符操作的属性可以被动态计算。方括号允许你使用变量或包含字符串的字面量来指定属性名，虽然后者作为标识符和有语法错误 *，这里有个范例：
 
-```
+```js
 var person = {},
     lastName = "last name";
 
@@ -122,7 +123,7 @@ console.log(person[lastName]);          // "Zakas"
 
 另外，你可以在对象字面量中直接使用字符串字面量做属性，像这样：
 
-```
+```js
 var person = {
     "first name": "Nicholas"
 };
@@ -134,7 +135,7 @@ console.log(person["first name"]);      // "Nicholas"
 
 在 ECMAScript 6 中，动态计算属性名是对象字面量语法中的一部分，同样使用方括号来标识它在对象实例中的身份为计算得到的属性名。例如：
 
-```
+```js
 var lastName = "last name";
 
 var person = {
@@ -148,7 +149,7 @@ console.log(person[lastName]);          // "Zakas"
 
 对象字面量内的方括号说明该属性名需要计算得到，得出的结果是以一个字符串。这意味着你可以如下在方括号内放入表达式：
 
-```
+```js
 var suffix = " name";
 
 var person = {
@@ -178,7 +179,7 @@ ECMAScript 从第五版开始避免在 Object.prototype 上添加新的全局函
 
 ECMAScript 6 引入了 Object.is() 方法来补偿严格等于操作符怪异行为的过失。该函数接受两个参数并在它们相等的返回 true 。只有两者在类型和值都相同的情况下才会判为相等。如下所示：
 
-```
+```js
 console.log(+0 == -0);              // true
 console.log(+0 === -0);             // true
 console.log(Object.is(+0, -0));     // false
@@ -204,7 +205,7 @@ console.log(Object.is(5, "5"));     // false
 
 混入（Mixin）是 JavaScript 中最流行的对象协作（object composition）模式。在一个混入中，一个对象接收另一个对象的属性及方法。很多 JavaScript 的库中都有类似于下例中的 mixin 方法：
 
-```
+```js
 function mixin(receiver, supplier) {
     Object.keys(supplier).forEach(function(key) {
         receiver[key] = supplier[key];
@@ -216,7 +217,7 @@ function mixin(receiver, supplier) {
 
 mixin() 函数在迭代提供者（supplier）对象的过程中会将该对象的属性拷贝到接收者（receiver）对象的内部（浅拷贝，若属性值为对象则共享其引用）。这允许接收者对象不需要继承即可获得新的属性，如下面的代码所示：
 
-```
+```js
 function EventTarget() { /*...*/ }
 EventTarget.prototype = {
     constructor: EventTarget,
@@ -238,7 +239,7 @@ myObject.emit("somethingChanged");
 
 你可以在任何可以使用 mixin() 函数的场景来利用 Object.assign()。这里有个例子：
 
-```
+```js
 function EventTarget() { /*...*/ }
 EventTarget.prototype = {
     constructor: EventTarget,
@@ -255,7 +256,7 @@ myObject.emit("somethingChanged");
 Object.assign() 方法接收任意数量的提供者对象，接收者对象根据提供者内部的属性定义顺序来接收它们。这意味
 着后面的提供者对象可以重写前面的提供者对象的属性值。该情况在下面的例子出现：
 
-```
+```js
 var receiver = {};
 
 Object.assign(receiver,
@@ -282,7 +283,7 @@ Object.assign() 方法并未在 ECMAScript 6 中掀起多大波澜，不过它�
 >
 需要注意的是 Object.assign() 在接收提供的访问器属性的时候不会创建自己的访问器属性。由于 Object.assign() 使用了赋值操作，所以访问器属性在接收者对象中作为数据属性（data property）存在。例如：
 
-```
+```js
 var receiver = {},
     supplier = {
         get name() {
@@ -297,7 +298,10 @@ var descriptor = Object.getOwnPropertyDescriptor(receiver, "name");
 console.log(descriptor.value);      // "file.js"
 console.log(descriptor.get);        // undefined
 ```
->在该段代码中，提供者对象包含一个 name 访问器属性。在使用 Object.assign() 方法之后，receive.name 作为数据属性存在且值为 "file.js"，因为 Object.assign() 被调用时 supplier.name 返回 "file.js"。
+
+<br />
+
+> 在该段代码中，提供者对象包含一个 name 访问器属性。在使用 Object.assign() 方法之后，receive.name 作为数据属性存在且值为 "file.js"，因为 Object.assign() 被调用时 supplier.name 返回 "file.js"。
 
 <br />
 
@@ -306,7 +310,7 @@ console.log(descriptor.get);        // undefined
 
 ECMAScript 5 在严格模式中检查对象字面量的属性，如若有重复存在便抛出错误。例如，下面的代码会有问题：
 
-```
+```js
 "use strict";
 
 var person = {
@@ -317,7 +321,7 @@ var person = {
 
 在 ECMAScript 5 的严格模式下运行时，第二个 name 属性会造成语法错误。但是在 ECMAScript 6 中，重复属性的检查被移除了，而且后面的同名属性值成为了该对象属性的最终值，如下所示：
 
-```
+```js
 "use strict";
 
 var person = {
@@ -345,7 +349,7 @@ ECMAScript 5 并没有定义枚举对象属性的顺序，并将其交给各 Jav
 
 这里有个示例：
 
-```
+```js
 var obj = {
     a: 1,
     0: 1,
@@ -382,7 +386,7 @@ for-in 循环的枚举顺序仍不明确，因为各 JavaScript 引擎的实现�
 
 ECMAScript 6 通过添加 Object.setPrototypeOf() 方法来对该约定做了变更。它允许你改变任何给定对象实例的原型。Object.setPrototypeof() 方法接收两个参数：需要改变原型的对象和你期望的原型对象。如下例所示：
 
-```
+```js
 let person = {
     getGreeting() {
         return "Hello";
@@ -420,7 +424,7 @@ The actual value of an object’s prototype is stored in an internal-only proper
 
 在上文中提到，原型对于 JavaScript 来讲至关重要，ECMAScript 6 也增强了它的易用性，包括使用 super 引用来方便的获取对象原型中的功能。例如，当你重写原型中的方法时需要调用该原型方法，在 ECMAScript 5 中你可能会这么做：
 
-```
+```js
 let person = {
     getGreeting() {
         return "Hello";
@@ -455,7 +459,7 @@ console.log(Object.getPrototypeOf(friend) === dog);     // true
 
 使用 Object.getPrototypeOf() 和 .call(this) 来调用原型方法显得有些笨重，所以 ECMAScript 6 引入了 super。简单的讲，super 是指向当前函数原型的指针，其值等同于 Object.getPrototypeof(this)。了解之后，你可以如下简化 getGreeting() 方法：
 
-```
+```js
 let friend = {
     getGreeting() {
         // 相比上个例子，等同于：
@@ -467,7 +471,7 @@ let friend = {
 
 上例中，调用 super.getGreeting() 等同于调用 Object.getPrototypeOf(this).getGreeing.call(this)。类似的是，你可以使用 super 引用来调用任何存在于原型中的方法。super 只能在简写方法中使用（concise methods），除此之外将发生语法错误，正如下例所示：
 
-```
+```js
 let friend = {
     getGreeting: function() {
         // 语法错误
@@ -480,7 +484,7 @@ let friend = {
 
 当你使用了多重继承的时候，super 引用是相当强大的，因为该情况下 Object.getPrototypeOf() 并不适用于所有的场景，例如：
 
-```
+```js
 let person = {
     getGreeting() {
         return "Hello";
@@ -508,7 +512,7 @@ console.log(relative.getGreeting());                // 错误！
 
 这个问题在 ECMAScript 5 中很难解决，但是 ECMAScript 6 引入了 super 使得该问题变得小菜一碟：
 
-```
+```js
 let person = {
     getGreeting() {
         return "Hello";
@@ -541,7 +545,7 @@ console.log(relative.getGreeting());                // "Hello, hi!"
 
 在 ECMAScript 6 之前，“方法” 这一概念并未有过正式定义。方法泛指那些对象中值为函数而非数据的属性。ECMAScript 6 正式将方法定义为带有 [[HomeObject]] 内部属性的函数，该属性指出方法的拥有者。考虑如下的例子：
 
-```
+```js
 let person = {
 
     // 方法
@@ -560,7 +564,7 @@ function shareGreeting() {
 
 任何 super 引用都要由 [[HomeObject]] 来决定它们要做的工作。当使用时，首先做的是在 [[HomeObject]] 上调用 Object.getPrototypeOf() 来提取原型的引用，接下来在原型中寻找调用方法的命名。最后，绑定 this 值并调用该方法。下面有个例子：
 
-```
+```js
 let person = {
     getGreeting() {
         return "Hello";
