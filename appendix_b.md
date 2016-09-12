@@ -23,7 +23,7 @@ ECMAScript 2016 对 JavaScript 语法的唯一改进就是引入了求幂运算�
 
 求幂运算符是两颗星号（**），左侧为基数，右侧为指数。例如：
 
-```
+```js
 let result = 5 ** 2;
 
 console.log(result);                        // 25
@@ -39,7 +39,7 @@ console.log(result === Math.pow(5, 2));     // true
 
 求幂运算符的优先级是在二元运算符中最高的（但是低于一元运算符）。这意味着在复合运算中它会被优先计算，如下所示：
 
-```
+```js
 let result = 2 * 5 ** 2;
 console.log(result);        // 50
 ```
@@ -53,14 +53,14 @@ console.log(result);        // 50
 
 相比其它运算符，求幂运算符有一个独特的限制。运算符左侧不能为除了 ++ 或 -- 之外的一元表达式。例如，下面的示例会抛出错误。
 
-```
+```js
 // 语法错误
 let result = -5 ** 2;
 ```
 
 该例中，-5 会抛出语法错误，因为它包含歧义。- 作用的到底是 5 还是 5 ** 2 的结果呢？禁止左侧的一元表达式消除了这个歧义。为了阐明你的意图，你需要给 -5 或 5 ** 2 像下例这样添加圆括号：
 
-```
+```js
 // 没问题
 let result1 = -(5 ** 2);    // 等于 -25
 
@@ -72,7 +72,7 @@ let result2 = (-5) ** 2;    // 等于 25
 
 如果在求幂运算符左侧使用 ++ 或 -- ，圆括号就没有必要使用，因为它们作用于操作数的行为十分明确。++ 或 -- 作为前缀时会在任何其它的操作发生之前修改操作数的值，而作为后缀则会在整个表达式计算完成之前不会有任何操作。这两种在求幂运算符左侧的用例都很安全，如下所示：
 
-```
+```js
 let num1 = 2,
     num2 = 2;
 
@@ -99,7 +99,7 @@ console.log(num2);              // 1
 
 Array.prototype.includes() 方法接收两个参数：要搜索的值和开始搜索的初始索引。当第二个参数被提供时，includes() 会从该索引处往后搜索（默认的初始索引值为 0）。如果想要搜索的值在数组中存在就会返回 true，否则为 false。例如：
 
-```
+```js
 let values = [1, 2, 3];
 
 console.log(values.includes(1));        // true
@@ -118,7 +118,7 @@ console.log(values.includes(1, 2));     // false
 
 includes() 方法中使用 === 操作符来做值的比较。不过有一点除外： NaN 被认为和另一个 NaN 相等，即使 Nan === Nan 的计算结果为 false 。这和 indexOf() 方法的行为不同，因为后者严格使用 === 判断。为了阐明这项差异，考虑如下的代码：
 
-```
+```js
 let values = [1, NaN, 2];
 
 console.log(values.indexOf(NaN));       // -1
@@ -135,7 +135,7 @@ values.indexOf() 方法返回 -1，即使 NaN 存在于 values 数组中。另�
 
 在实现中另一项怪异（quirk）之处是 +0 和 -0 被认为是相同的。在这个方面，indexOf() 和 includes() 的行为是一致的：
 
-```
+```js
 let values = [1, +0, 2];
 
 console.log(values.indexOf(-0));        // 1
@@ -151,7 +151,7 @@ console.log(values.includes(-0));       // true
 
 ECMAScript 5 引入了严格模式，此时它相比 ECMAScript 6 的严格模式要简单些。先不管这些，ECMAScript 6 仍然允许你使用 "use strict" 在全局作用域（使所有的代码运行在严格模式下）或函数作用域（只有该函数内部为严格模式）内定义严格模式。后者在 ECMAScript 6 中由于参数定义的多样性会存在一些问题，特别是当你使用解构和默认参数的时候。为了理解这个问题，考虑如下的代码：
 
-```
+```js
 function doSomething(first = this) {
     "use strict";
 
@@ -163,7 +163,7 @@ function doSomething(first = this) {
 
 咎于该实现的复杂性，ECMAScript 2016 规定如果函数使用了解构参数或默认参数，那么内部使用 "use strict" 声明将是违法的。只有当参数列表是简单的，并没有解构和默认值的情况下，函数主体才能有 "use strict" 出现。下面有一些示例：
 
-```
+```js
 // 没有问题 - 使用了简单的参数列表
 function okay(first, second) {
     "use strict";
