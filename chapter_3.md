@@ -32,7 +32,7 @@ JavaScript 的函数比较特殊的是可以接受任意个数的参数，完全
 
 在 ECMAScript 5 或更早的版本中，你可能会使用下面的这种模式来给参数添加默认值
 
-``` default-paramter-in-es5
+```js
 function makeRequest(url, timeout, callback) {
 
     timeout = timeout || 2000;
@@ -68,7 +68,7 @@ function makeRequest(url, timeout, callback) {
 
 ECMAScript 6 中函数参数能更方便地获取默认值，当未传入实参给形参时形参的默认值会被使用，如下所示：
 
-``` deafult-parameter-in-es6
+```js
 function makeRequest(url, timeout = 2000, callback = function() {}) {
 
     // 其余代码
@@ -141,7 +141,8 @@ function mixArgs(first, second) {
 }
 
 mixArgs("a", "b");
-```js
+```
+
 输出:
 
 ```js
@@ -196,7 +197,8 @@ function mixArgs(first, second = "b") {
 }
 
 mixArgs("a");
-```js
+```
+
 输出：
 
 ```js
@@ -427,7 +429,7 @@ function pick(object, ...keys) {
 
 剩余参数有两点限制。其一是函数只能有一个剩余参数，且必须放在最后的位置。下面例子中的代码是不正确的：
 
-``` rest-parameter
+```js
 // 语法错误：剩余参数后不应有命名参数
 function pick(object, ...keys, last) {
     let result = Object.create(null);
