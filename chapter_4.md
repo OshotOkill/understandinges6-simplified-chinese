@@ -412,8 +412,6 @@ console.log(Object.getPrototypeOf(friend) === dog);     // true
 
 该段代码定义了两个对象：person 与 dog ，它们拥有返回字符串的同名方法。friend 对象继承了 person 对象，意味从 friend 上调用 gretGreeting() 会输出 "Hello"。当原型变更为 dog 对象之后，friend.getGretting() 会输出 "Woof"，因为 friend 和 person 之间的联系已被切断。
 
-The actual value of an object’s prototype is stored in an internal-only property called [[Prototype]]. The Object.getPrototypeOf() method returns the value stored in [[Prototype]] and Object.setPrototypeOf() changes the value stored in [[Prototype]]. However, these aren’t the only ways to work with the value of [[Prototype]].
-
 对象原型的实际值由一个内部属性 [[Prototype]] 存储。Object.getPrototypeOf() 方法返回的就是 [[Prototype]] 的值，而 Object.setPrototypeOf() 则会更改它。不过，操作 [[Prototype]] 值的方法并不只有这些。
 
 <br />

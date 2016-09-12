@@ -460,7 +460,6 @@ for (let value of data.values()) {
 
 ##### keys() 迭代器（the keys() Iterator）
 
-The keys() iterator returns each key present in a collection. For arrays, it only returns numeric keys, never other own properties of the array. For sets, the keys are the same as the values, and so keys() and values() return the same iterator. For maps, the keys() iterator returns each unique key. Here’s an example that demonstrates all three:
 
 keys() 迭代器返回集合中每一项的键。其中数组除了数字索引之外不会返回其它属性。由于 set 中的键和值相同，所以 keys() 和 values() 返回了相同的迭代器。对于 map 来讲，keys() 迭代器会返回每一项中的键。以下示例演示了这三种集合：
 
@@ -715,7 +714,9 @@ console.log(iterator.next());           // "{ value: undefined, done: true }"
 
 <br />
 
-![](https://leanpub.com/site_images/understandinges6/fg0601.png) 　　　　　　　　　　　　　　　　　　　图 8-1: 生成器内部的代码执行
+![](https://leanpub.com/site_images/understandinges6/fg0601.png)
+
+图 8-1: 生成器内部的代码执行
 
 <br />
 
@@ -750,7 +751,8 @@ console.log(iterator.throw(new Error("Boom"))); // 由生成器抛出错误
 <br />
 
 ![](https://leanpub.com/site_images/understandinges6/fg0602.png)
-　　　　　　　　　　　　　　　　　　　图 8-2: 在生成器中抛出错误
+
+图 8-2: 在生成器中抛出错误
 
 <br />
 

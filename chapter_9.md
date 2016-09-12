@@ -87,7 +87,11 @@ console.log(typeof PersonClass.prototype.sayName);  // "function"
 
 PersonClass 类声明的行为和上个例子中的 PersonType 类似。作为构造函数的替代，类声明允许你直接在类的内部使用命名为 constructor 的方法来定义构造函数。因为类的方法使用简写语法，所以不需要 function 关键字。至于其它的方法并没有什么特殊的含义，你可以随意添加的需要的方法。
 
+<br />
+
 > 自有属性：属性只出现在实例而不是原型上，而且只能由构造函数和方法来创建。在本例中，name 就是自有属性。我建议尽可能的将所有自有属性创建在构造函数中，这样当查找属性时可以做到一目了然。
+
+<br />
 
 有意思的是，类声明只是上例中自定义类型的语法糖。PersonClass 声明实际上创建了一个行为和 constructor 方法相同的构造函数，这也是 typeof PersonClass 返回 "function" 的原因。sayName() 在本例中作为 PersonClass.prototype 的方法，和上个示例中 sayName() 和 PersonType.prototype 关系一致。这些相似度允许你混合使用自定义类型和类而不需要纠结使用方式。
 

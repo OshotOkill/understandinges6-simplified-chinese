@@ -74,23 +74,23 @@ inside 代表最大的安全整数，所以 Number.isInteger() 和 Number.isSafe
 
 于是，ECMAScript 6 给 Math 对象添加了几个方法来提升常用的数学运算的性能，同时包含大量数学运算的应用性能也会提升，比如图形编程（graphics program）。下面列出了这些新的方法：
 
-* Math.acosh(x) 返回 x 的反双曲余弦值（Returns the inverse hyperbolic cosine of x）。
-* Math.asinh(x) 返回 x 的反双曲正弦值（Returns the inverse hyperbolic sine of x）。
-* Math.atanh(x) 返回 x 的反双曲正切值（Returns the inverse hyperbolic tangent of x）。
-* Math.cbrt(x)  返回 x 的立方根（Returns the cubed root of x）。
-* Math.clz32(x) 返回 x 以 32 位整型数字的二进制表达形式开头为 0 的个数（Returns the number of leading zero bits in the 32-bit integer representation of x）。
-* Math.cosh(x)  返回 x 的双曲余弦值（Returns the hyperbolic cosine of x）。
-* Math.expm1(x) 返回 e<sup>x</sup> - 1 的值（Returns the result of subtracting 1 from the exponential function of x）。
-* Math.fround(x) 返回最接近 x 的单精度浮点数（Returns the nearest single-precision float of x）。
-* Math.hypot(...values) 返回参数平方和的平方根（Returns the square root of the sum of the squares of each argument）。
-* Math.imul(x, y) 返回两个参数之间真正的 32 位乘法运算结果（Returns the result of performing true 32-bit multiplication of the two arguments）。
-* Math.log1p(x) 返回以 自然对数为底的 x + 1 的对数（Returns the natural logarithm of 1 + x）。
-* Math.log10(x) 返回以 10 为底 x 的对数Returns the base 10 logarithm of x.
-* Math.log2(x)  返回以 2 为底 x 的对数（Returns the base 2 logarithm of x）。
-* Math.sign(x)  如果 x 为负数返回 -1；+0 和 -0 返回 0；正数则返回 1（Returns -1 if the x is negative, 0 if x is +0 or -0, or 1 if x is positive）。
-* Math.sinh(x)  返回 x 的双曲正弦值（Returns the hyperbolic sine of x）。
-* Math.tanh(x)  返回 x 的双曲正切值（Returns the hyperbolic tangent of x）。
-* Math.trunc(x) 移除浮点类型小数点后面的数字并返回一个整型数字（Removes fraction digits from a float and returns an integer）。
+* `Math.acosh(x)`  返回 x 的反双曲余弦值（Returns the inverse hyperbolic cosine of x）。
+* `Math.asinh(x)`  返回 x 的反双曲正弦值（Returns the inverse hyperbolic sine of x）。
+* `Math.atanh(x)`  返回 x 的反双曲正切值（Returns the inverse hyperbolic tangent of x）。
+* `Math.cbrt(x)`  返回 x 的立方根（Returns the cubed root of x）。
+* `Math.clz32(x)`  返回 x 以 32 位整型数字的二进制表达形式开头为 0 的个数（Returns the number of leading zero bits in the 32-bit integer representation of x）。
+* `Math.cosh(x)`  返回 x 的双曲余弦值（Returns the hyperbolic cosine of x）。
+* `Math.expm1(x)`  返回 e<sup>x</sup> - 1 的值（Returns the result of subtracting 1 from the exponential function of x）。
+* `Math.fround(x)`  返回最接近 x 的单精度浮点数（Returns the nearest single-precision float of x）。
+* `Math.hypot(...values)`  返回参数平方和的平方根（Returns the square root of the sum of the squares of each argument）。
+* `Math.imul(x, y)`  返回两个参数之间真正的 32 位乘法运算结果（Returns the result of performing true 32-bit multiplication of the two arguments）。
+* `Math.log1p(x)`  返回以 自然对数为底的 x + 1 的对数（Returns the natural logarithm of 1 + x）。
+* `Math.log10(x)`  返回以 10 为底 x 的对数Returns the base 10 logarithm of x.
+* `Math.log2(x)`  返回以 2 为底 x 的对数（Returns the base 2 logarithm of x）。
+* `Math.sign(x)`  如果 x 为负数返回 -1；+0 和 -0 返回 0；正数则返回 1（Returns -1 if the x is negative, 0 if x is +0 or -0, or 1 if x is positive）。
+* `Math.sinh(x)`  返回 x 的双曲正弦值（Returns the hyperbolic sine of x）。
+* `Math.tanh(x)`  返回 x 的双曲正切值（Returns the hyperbolic tangent of x）。
+* `Math.trunc(x)`  移除浮点类型小数点后面的数字并返回一个整型数字（Removes fraction digits from a float and returns an integer）。
 
 详细这些新的方法和实线细节超出了本书的描述范围。不过如果你的应用需要这些计算的话，那么确保在自己实现它之前先查看一下有没有现成的方法。
 
