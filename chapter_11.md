@@ -382,7 +382,7 @@ promise.catch(function(value) {
 ##### 非 promise 的 thenable 对象（Non-Promise Thenables）
 
 
-Promise.resolve() 和 Promise.reject() 也可以接收非 promise 的 thenable 对象作为参数。在传递它之后，这些方法在调用 then() 之后创建一个新的 promise 。 
+Promise.resolve() 和 Promise.reject() 也可以接收非 promise 的 thenable 对象作为参数。在传递它之后，这些方法在调用 then() 之后创建一个新的 promise 。
 
 一个不属于 promise 的 thenable 指的是包含 then() 方法的对象。该方法接收 resolve 和 reject 作为参数，像这样：
 
@@ -487,7 +487,7 @@ rejected.catch(function(value) {
 
 你可以随时调用 then() 或 catch() 并在无视 promise 是否已定的情况下正常工作，这导致获知处理 promise 的确切时机变得相当困难。在本例的情况下，promise 立即转变为 rejected 状态但并未马上处理。
 
-虽然下个版本的 ECMAScript 很有可能会解决这个问题 ，但是浏览器和 Node.js 都施行了一些变化以解决开发者的痛点。这些变化并不是 ECMAScript 6 规范的一部分但都是处理 promise 的宝贵工具。 
+虽然下个版本的 ECMAScript 很有可能会解决这个问题 ，但是浏览器和 Node.js 都施行了一些变化以解决开发者的痛点。这些变化并不是 ECMAScript 6 规范的一部分但都是处理 promise 的宝贵工具。
 
 <br />
 
@@ -890,7 +890,7 @@ p1.then(function(value) {
 ### <a id="Responding-to-Multiple-Promises"> 响应多个 promise（Responding to Multiple Promises） </a>
 
 
-到目前为止，本章中的每个示例在同一时间内都只响应了一个 promise。不过有时，你想要观察多个 promise 的进度来决定下一步的操作。ECMAScript 6 提供了两个方法负责此事：Promise.all() 和 Promise.race() 
+到目前为止，本章中的每个示例在同一时间内都只响应了一个 promise。不过有时，你想要观察多个 promise 的进度来决定下一步的操作。ECMAScript 6 提供了两个方法负责此事：Promise.all() 和 Promise.race()
 
 <br />
 
@@ -1037,7 +1037,7 @@ success() 和 reject() 使用 this 来调用它们模仿的方法。派生的 pr
 
 既然静态方法也会被继承，那么 MyPromise.resolve()，MyPromise.reject()，MyPromise.race() 和 MyPromise.all() 方法同样在派生类内部存在。后两者和原版表现一直，而前两者有些不同。
 
-MyPromise.resolve() 和 MyPromise.reject() 会返回 MyPromise 的示例而无视传给它们的参数，因为这些方法使用了 Symbol.species 属性（第九章已讨论）来决定 promise 返回的类型。如果一个属于内置类型的 promise 被传递给这些方法，该 promise 会被进行处理，并返回了一个新的 MyPromise 以供你赋值 fulfillment 和 rejection 处理。例如： 
+MyPromise.resolve() 和 MyPromise.reject() 会返回 MyPromise 的示例而无视传给它们的参数，因为这些方法使用了 Symbol.species 属性（第九章已讨论）来决定 promise 返回的类型。如果一个属于内置类型的 promise 被传递给这些方法，该 promise 会被进行处理，并返回了一个新的 MyPromise 以供你赋值 fulfillment 和 rejection 处理。例如：
 
 ```
 let p1 = new Promise(function(resolve, reject) {

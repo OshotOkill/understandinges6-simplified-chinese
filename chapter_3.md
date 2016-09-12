@@ -43,7 +43,7 @@ function makeRequest(url, timeout, callback) {
 }
 ```
 
-在这个例子中，timeout 和 callback 都是可选参数因为未传入实参给它们的情况下会使用各自的默认值。或逻辑操作符（logical OR operator, ||）当左侧的值为假的情况下总会返回右侧的运算数。既然未被传入实参的形参的缺省值为 undefined，或逻辑操作符就经常被用来给遗漏的参数添加默认值。不过这个方案有个瑕疵，如果给 timeout 传入的值为 0，那么 timeout 的值会被替换为 2000，因为 0 被默认为假值。 
+在这个例子中，timeout 和 callback 都是可选参数因为未传入实参给它们的情况下会使用各自的默认值。或逻辑操作符（logical OR operator, ||）当左侧的值为假的情况下总会返回右侧的运算数。既然未被传入实参的形参的缺省值为 undefined，或逻辑操作符就经常被用来给遗漏的参数添加默认值。不过这个方案有个瑕疵，如果给 timeout 传入的值为 0，那么 timeout 的值会被替换为 2000，因为 0 被默认为假值。
 
 
 下面这个例子中会对参数实行类型检查：
@@ -78,7 +78,7 @@ function makeRequest(url, timeout = 2000, callback = function() {}) {
 
 该函数只期待传入第一个参数。其余两个参数有各自的默认值。这使得函数体更加小巧因为你不再需要添加额外的代码来检查是否有遗漏的参数值。
 
-如果使用三个参数来调用 makeRequest()，那么所有的默认值都不会被使用，例如： 
+如果使用三个参数来调用 makeRequest()，那么所有的默认值都不会被使用，例如：
 
 ```
 // timeout 和 callback 使用默认值
@@ -153,7 +153,7 @@ true
 
 arguments 对象在非严格模式下总是实行更新反映出命名参数的变化。因此当 first 和 second 变量获得新值之后，arguments[0] 和 arguments[1] 也同步更新，使得 === 比较的值为 true 。
 
-然而在 ECMAScript 5 的严格模式下，这个机制被取消了，arguments 对象不会反映任何命名参数。如下依旧是上例中的函数，但现在处在严格模式下： 
+然而在 ECMAScript 5 的严格模式下，这个机制被取消了，arguments 对象不会反映任何命名参数。如下依旧是上例中的函数，但现在处在严格模式下：
 
 ```
 function mixArgs(first, second) {
@@ -1065,7 +1065,7 @@ var PageHandler = {
 };
 ```
 
-本例中 this.doSomething() 是在处理事件的箭头回调函数中调用。this 的值和 init() 方法相同，所以以上代码的作用和 bind(this) 类似。虽然 doSomething() 方法并不返回任何值，它仍然是函数主体中唯一需要运行的语句，所以花括号的使用没有必要。 
+本例中 this.doSomething() 是在处理事件的箭头回调函数中调用。this 的值和 init() 方法相同，所以以上代码的作用和 bind(this) 类似。虽然 doSomething() 方法并不返回任何值，它仍然是函数主体中唯一需要运行的语句，所以花括号的使用没有必要。
 
 箭头函数被定义为 “用完即仍” 的函数，所以不能被用来定义新类型；证据是箭头函数不存在一般函数中包含的 property 属性。使用 new 来调用箭头函数会发生错误，如下所示：
 

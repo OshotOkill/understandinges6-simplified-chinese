@@ -149,7 +149,7 @@ let PersonType2 = (function() {
 <br />
 
 > #### 恒定的类名（Constant Class Names）
-> 
+>
 >   在类的内部，类名被视为由 const 声明的常量。这意味着你只有在类的外部才能对类名进行重写。例如：
 
 ```
@@ -443,7 +443,7 @@ class CustomHTMLElement {
 }
 ```
 
-在这里，getter 和 setter 绑定在以 propertyName 变量值命名的属性上。使用 .html 访问该属性只作用于定义本身。 
+在这里，getter 和 setter 绑定在以 propertyName 变量值命名的属性上。使用 .html 访问该属性只作用于定义本身。
 
 你已经看到了类与对象字面量之间从方法，访问器属性和动态计算命名等多个方面的相似之处。除此之外还有一处值得一提：生成器。
 
@@ -989,7 +989,7 @@ console.log(clone2 instanceof MyClass);             // true
 console.log(clone2 instanceof MyDerivedClass2);     // false
 ```
 
-在这里，MyDerivedClass1 继承了 MyClass 且并没有修改 Symbol.species 属性。当 clone() 调用后，它返回了 MyDerivedClass1 的实例，这正是由 this.constructor[Symbol.species] 所设定的。MyDerivedClass2 类继承了 MyClass 并将 Symbol.species 的返回值重写为 MyClass。即使 clone() 是由 MyDerivedClass2 调用的，它返回的依然是 MyClass 的实例。任何使用 Symbol.species 的派生类都能自行决定方法返回的实例类型。  
+在这里，MyDerivedClass1 继承了 MyClass 且并没有修改 Symbol.species 属性。当 clone() 调用后，它返回了 MyDerivedClass1 的实例，这正是由 this.constructor[Symbol.species] 所设定的。MyDerivedClass2 类继承了 MyClass 并将 Symbol.species 的返回值重写为 MyClass。即使 clone() 是由 MyDerivedClass2 调用的，它返回的依然是 MyClass 的实例。任何使用 Symbol.species 的派生类都能自行决定方法返回的实例类型。
 
 例如，数组使用 Symbol.species 来指定返回值为数组的方法的返回类型。如果一个类是数组的派生，那么你可以决定继承的方法返回哪种类型，例如：*
 

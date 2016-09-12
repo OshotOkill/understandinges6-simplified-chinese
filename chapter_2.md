@@ -98,7 +98,7 @@ Think of String.fromCodePoint() as a more complete version of the String.fromCha
 <br />
 
 #### The normalize() Method
- 
+
 Another interesting aspect of Unicode is that different characters may be considered equivalent for the purpose of sorting or other comparison-based operations. There are two ways to define these relationships. First, canonical equivalence means that two sequences of code points are considered interchangeable in all respects. For example, a combination of two characters can be canonically equivalent to one character. The second relationship is compatibility. Two compatible sequences of code points look different but can be used interchangeably in certain situations.
 
 Due to these relationships, two strings representing fundamentally the same text can contain different code point sequences. For example, the character “æ” and the two-character string “ae” may be used interchangeably but are strictly not equivalent unless normalized in some way.

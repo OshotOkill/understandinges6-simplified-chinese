@@ -167,7 +167,7 @@ console.log(person["last name"]);       // "Zakas"
 ### <a id="New-Methods"> 新的方法（New Method） </a>
 
 
-ECMAScript 从第五版开始避免在 Object.prototype 上添加新的全局函数或方法，转而去考虑具体的对象类型如数组）应该有什么方法。当某些方法不适合这些具体类型时就将它们添加到全局 Object 上 *。ECMAScript 6 在全局 Object 上添加了几个新的方法来轻松地完成一些特定任务。 
+ECMAScript 从第五版开始避免在 Object.prototype 上添加新的全局函数或方法，转而去考虑具体的对象类型如数组）应该有什么方法。当某些方法不适合这些具体类型时就将它们添加到全局 Object 上 *。ECMAScript 6 在全局 Object 上添加了几个新的方法来轻松地完成一些特定任务。
 
 <br />
 
@@ -279,7 +279,7 @@ Object.assign() 方法并未在 ECMAScript 6 中掀起多大波澜，不过它�
 <br />
 
 > #### 操作访问器属性（Working with Accessor Properties）
-> 
+>
 需要注意的是 Object.assign() 在接收提供的访问器属性的时候不会创建自己的访问器属性。由于 Object.assign() 使用了赋值操作，所以访问器属性在接收者对象中作为数据属性（data property）存在。例如：
 
 ```
@@ -343,7 +343,7 @@ ECMAScript 5 并没有定义枚举对象属性的顺序，并将其交给各 Jav
 2. 类型为字符的键按照被添加到对象时的顺序保持不变。
 3. 类型为 Symbol（在第六章讲解）的键按照被添加到对象时的顺序保持不变。
 
-这里有个示例： 
+这里有个示例：
 
 ```
 var obj = {
@@ -451,7 +451,7 @@ console.log(friend.getGreeting());                      // "Woof, hi!"
 console.log(Object.getPrototypeOf(friend) === dog);     // true
 ```
 
-在本例中，friend 在调用 getGreeting() 后需要使用同名的原型方法来输出额外的字符。附加的 .call(this) 保证原型方法拥有正确的 this 值。  
+在本例中，friend 在调用 getGreeting() 后需要使用同名的原型方法来输出额外的字符。附加的 .call(this) 保证原型方法拥有正确的 this 值。
 
 使用 Object.getPrototypeOf() 和 .call(this) 来调用原型方法显得有些笨重，所以 ECMAScript 6 引入了 super。简单的讲，super 是指向当前函数原型的指针，其值等同于 Object.getPrototypeof(this)。了解之后，你可以如下简化 getGreeting() 方法：
 

@@ -105,9 +105,9 @@ ECMAScript 6 中所有选定草案完全被标准化的日期在2015年，因此
 > 阐释了原生数组的一些变化及新的有趣的使用方式。
 
 
-<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_11.html" target="_blank"> 第十一章：**Promise 与异步编程（Promises and Asynchronous Programming）** </a> 
+<a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_11.html" target="_blank"> 第十一章：**Promise 与异步编程（Promises and Asynchronous Programming）** </a>
 
->  Promises 成为了语言的一部分，由底层实现并被广泛且流行的库所支持。ECMAScript 6 原生支持并标准化了 promises 。 
+>  Promises 成为了语言的一部分，由底层实现并被广泛且流行的库所支持。ECMAScript 6 原生支持并标准化了 promises 。
 
 
 <a href="https://oshotokill.gitbooks.io/understandinges6-simplified-chinese/content/chapter_12.html" target="_blank"> 第十二章： **代理与反射API（Proxies and the Reflection API）** </a>

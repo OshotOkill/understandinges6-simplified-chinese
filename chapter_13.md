@@ -5,7 +5,7 @@ JavaScript 采用 “共享一切” 的代码加载方式是该语言中最令�
 
 <br />
 
-### 
+###
 * [什么是模块?](#What-are-Modules)
 * [输出的基本概念](#Basic-Exporting)
 * [引入的基本概念](#Basic-Importing)
@@ -243,7 +243,7 @@ console.log(typeof add);            // "undefined"
 console.log(sum(1, 2));             // 3
 ```
 
-该段代码引入了 add() 函数并将它重命名为 sum()（本地变量）。这意味着 add 标识符没有添加到该模块内。 
+该段代码引入了 add() 函数并将它重命名为 sum()（本地变量）。这意味着 add 标识符没有添加到该模块内。
 
 <br />
 

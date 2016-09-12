@@ -59,7 +59,7 @@ console.log(name);      // "foo"
 <br />
 
 > ##### 不要忘记初始化（Don’t Forget the Initializer）
-> 
+>
 > 当在解构中使用 var，let 或 const 来声明变量时，必须要由初始化操作。下面的代码会因为未初始化的存在而抛出错误：
 
 ```
@@ -118,7 +118,7 @@ console.log(type);      // "Identifier"
 console.log(name);      // "foo"
 ```
 
-outputInfo() 函数在调用时被传入解构赋值表达式。表达式计算的结果为 node 是因为它就是右侧的值。type 和 name 的赋值正常进行同时 node 被传给了 outputInfo()。 
+outputInfo() 函数在调用时被传入解构赋值表达式。表达式计算的结果为 node 是因为它就是右侧的值。type 和 name 的赋值正常进行同时 node 被传给了 outputInfo()。
 
 <br />
 

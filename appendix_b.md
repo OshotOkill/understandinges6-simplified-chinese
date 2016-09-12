@@ -109,7 +109,7 @@ console.log(values.includes(0));        // false
 console.log(values.includes(1, 2));     // false
 ```
 
-这里，调用 values.includes() 并传入 1 会返回 true，而传入 0 返回的是 false ，因为 0 在数组中不存在。当第二个参数被添加后，数组会从索引值为 2 的位置开始搜索（包括的值为 3）并返回 false，因为从索引的位置到数组末尾不存在 1 这个值。 
+这里，调用 values.includes() 并传入 1 会返回 true，而传入 0 返回的是 false ，因为 0 在数组中不存在。当第二个参数被添加后，数组会从索引值为 2 的位置开始搜索（包括的值为 3）并返回 false，因为从索引的位置到数组末尾不存在 1 这个值。
 
 <br />
 
