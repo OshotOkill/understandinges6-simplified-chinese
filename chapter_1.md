@@ -38,7 +38,7 @@ function getValue(condition) {
 }
 ```
 
-如果你不太熟悉 JavaScript，或许会认为只有 condition 为 true 的变量 value 才会被创建。实际上，value 总是会被创建。JavaScript 引擎在幕后对 getValue 函数做了调整，可以视为：
+如果你不太熟悉 JavaScript，或许会认为只有 condition 为 true 时变量 value 才会被创建。实际上，value 总是会被创建。JavaScript 引擎在幕后对 getValue 函数做了调整，可以视为：
 
 ```js
 function getValue(condition) {
@@ -69,7 +69,7 @@ function getValue(condition) {
 块级声明指的是该声明的变量无法被代码块外部访问。块作用域，又被称为词法作用域（lexical scopes），可以在如下的条件下创建：
 
 * 函数内部
-* 在代码块（即 { 和 } 内部）内部
+* 在代码块（即 { 和 }）内部
 
 块级作用域是很多类C语言的工作机制，ECMAScript 6 引入块级声明的目的是增强 JavaScript 的灵活性，同时又能与其它编程语言保持一致。
 
@@ -111,7 +111,7 @@ function getValue(condition) {
 ```js
 var count = 30;
 
-// Syntax error
+// 语法错误
 let count = 40;
 ```
 
@@ -141,7 +141,7 @@ if (condition) {
 // 合法的声明
 const maxItems = 30;
 
-// Syntax error: missing initialization（语法错误：未初始化）
+// 语法错误：未初始化
 const name;
 ```
 
