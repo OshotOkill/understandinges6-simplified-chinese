@@ -17,17 +17,18 @@
 ### <a id ="Better-Unicode-Support"> 更佳的 Unicode 支持（Better Unicode Support） </a>
 
 
-Before ECMAScript 6, JavaScript strings revolved around 16-bit character encoding (UTF-16). Each 16-bit sequence is a code unit representing a character. All string properties and methods, like the length property and the charAt() method, were based on these 16-bit code units. Of course, 16 bits used to be enough to contain any character. That’s no longer true thanks to the expanded character set introduced by Unicode.
+ECMAScript 6 诞生之前，JavaScript 字符串（string）由 16 位编码的字符组成（UTF-16）。每个字符又由包含一个 16 位序列的代码单元（code unit）表示。所有的字符串属性和方法，例如 length 和 charAt()，都基于这些 16 位编码单元。曾经，16 位的容量对于任意字符的存放都是足够的，然而 Unicode 引入了扩展字符集（expanded character set）使得
 
 <br />
 
-#### UTF-16 Code Points
+#### UTF-16 代码点（UTF-16 Code Points）
 
-Limiting character length to 16 bits wasn’t possible for Unicode’s stated goal of providing a globally unique identifier to every character in the world. These globally unique identifiers, called code points, are simply numbers starting at 0. Code points are what you may think of as character codes, where a number represents a character. A character encoding must encode code points into code units that are internally consistent. For UTF-16, code points can be made up of many code units.
 
-The first 2<sup>16</sup> code points in UTF-16 are represented as single 16-bit code units. This range is called the Basic Multilingual Plane (BMP). Everything beyond that is considered to be in one of the supplementary planes, where the code points can no longer be represented in just 16-bits. UTF-16 solves this problem by introducing surrogate pairs in which a single code point is represented by two 16-bit code units. That means any single character in a string can be either one code unit for BMP characters, giving a total of 16 bits, or two units for supplementary plane characters, giving a total of 32 bits.
+限制字符的长度在 16 位以内难以满足 Unicode 意图给世界上所有字符提供全局唯一标识符的雄心壮志。这些全局唯一标识符，也被称为代码点，仅是从 0 开始的数字。字符代码（character code）可能是你所想象的那样，由一个数字（代码点）来代表一个对应的字符。编码一个字符就必须要将代码点转换为对应一致的代码单元。对于 UTF-16 来讲，代码点可以由多个代码单元组成。
 
-In ECMAScript 5, all string operations work on 16-bit code units, meaning that you can get unexpected results from UTF-16 encoded strings containing surrogate pairs, as in this example:
+UTF-16 的前 2<sup>16</sup> 个代码点由单个 16 位代码单元表示。这个范围被称作基本多语言面（Basic Multilingual Plane，BMP）。任何超出该范围的部分都是增补的语言面（supplementary plane），代码点将不能被单一的 16 位代码单元表示。为了解决这个问题，UTF-16 引入了代理项对（surrogate pair）来让两个 16 位代码单元表示一个代码点。这意味着字符既可能是包含单个代码单元的 16位 BMP 字符，也可能是由两个代码单元组成的位于增补语言面的 32 位字符。
+
+在 ECMAScript 5 中，所有的字符串操作针对的是 16 位代码单元，意味着如果编码的 UTF-16 字符串包含代理项对，那么可能会得到意想不到的结果，如下所示：
 
 ```js
 var text = "𠮷";
@@ -42,19 +43,23 @@ console.log(text.charCodeAt(1));    // 57271
 
 The single Unicode character "𠮷" is represented using surrogate pairs, and as such, the JavaScript string operations above treat the string as having two 16-bit characters. That means:
 
-* The length of text is 2, when it should be 1.
-* A regular expression trying to match a single character fails because it thinks there are two characters.
-* The charAt() method is unable to return a valid character string, because neither set of 16 bits corresponds to a printable character.
+单个 Unicode 字符 "𠮷" 由代理项对表示，因此，本例中 JavaScript 在操作该字符串时会将它视为两个 16 位字符。这意味着：
 
-The charCodeAt() method also just can’t identify the character properly. It returns the appropriate 16-bit number for each code unit, but that is the closest you could get to the real value of text in ECMAScript 5.
+* text 的长度为 2，即使它看起来是 1 。
+* 试图匹配单个字符的正则表达式会以失败告终，因为表达式将其视作两个字符。
+* charAt() 方法无法返回一个有效的字符串，因为包含的两个 16 位代码单元都无法被打印（printable）。
 
-ECMAScript 6, on the other hand, enforces UTF-16 string encoding to address problems like these. Standardizing string operations based on this character encoding means that JavaScript can support functionality designed to work specifically with surrogate pairs. The rest of this section discusses a few key examples of that functionality.
+charCodeAt() 方法也不能正确识别字符。它返回的是对应代码单元的 16 位数字，但是在 ECMAScript 5 中这已经是所能获取到的最精确的文本值了。
+
+另一方面，ECMAScript 6 要求以上 UTF-16 字符的编码问题必须得到解决。标准化基于新字符编码规范的字符串操作意味着 JavaScript 支持专门处理代理项对的功能。本章剩下的部分讨论了使用该功能的几个关键案例。
 
 <br />
 
-#### The codePointAt() Method
+#### codePointAt() 方法（The codePointAt() Method）
 
 One method ECMAScript 6 added to fully support UTF-16 is the codePointAt() method, which retrieves the Unicode code point that maps to a given position in a string. This method accepts the code unit position rather than the character position and returns an integer value, as these console.log() examples show:
+
+为了全面支持 UTF-16，ECMAScript 6 新添加的方法之一就是 codePointAt()，它可以提取给定位置字符串的对应 Unicode 代码点。该方法接收代码单元而非字符的位置并返回一个整型值，正如下例中所展示的那样：
 
 ```js
 var text = "𠮷a";
@@ -68,9 +73,9 @@ console.log(text.codePointAt(1));   // 57271
 console.log(text.codePointAt(2));   // 97
 ```
 
-The codePointAt() method returns the same value as the charCodeAt() method unless it operates on non-BMP characters. The first character in text is non-BMP and is therefore comprised of two code units, meaning the length property is 3 rather than 2. The charCodeAt() method returns only the first code unit for position 0, but codePointAt() returns the full code point even though the code point spans multiple code units. Both methods return the same value for positions 1 (the second code unit of the first character) and 2 (the "a" character).
+除非操作的是非 BMP 字符，否则 codePointAt 方法的返回值与 charCodeAt() 相同。示例中的首个字符并没有位于 BMP 范围内，因此它包含两个代码单元，意味着 length 属性是 3 而不是 2 。charCodeAt() 方法返回的只是处于位置 0 的第一个代码单元，而 codePointAt() 返回的是完整的代码点，即使它分配给了多个代码单元。位置 1 （第一个字符的第二个代码单元）和位置 2 的值，两个方法返回的结果是相同的。
 
-Calling the codePointAt() method on a character is the easiest way to determine if that character is represented by one or two code points. Here’s a function you could write to check:
+对一个字符调用 codePointAt() 方法是判断它所包含代码单元数量的最容易的方法。你可以书写下面的方法：
 
 ```js
 function is32Bit(c) {
@@ -81,36 +86,40 @@ console.log(is32Bit("𠮷"));         // true
 console.log(is32Bit("a"));          // false
 ```
 
-The upper bound of 16-bit characters is represented in hexadecimal as FFFF, so any code point above that number must be represented by two code units, for a total of 32 bits.
+16 位字符的上边界由十六进制 FFFF 表示，所以任何大于该数字的代码点必定由两个代码单元表示，总大小为 32 位。
 
 <br />
 
-#### The String.fromCodePoint() Method
+#### String.fromCodePoint() 方法（The String.fromCodePoint() Method）
 
-When ECMAScript provides a way to do something, it also tends to provide a way to do the reverse. You can use codePointAt() to retrieve the code point for a character in a string, while String.fromCodePoint() produces a single-character string from a given code point. For example:
+
+每当 ECMAScript 提供了完成某件事的方法，一般情况下它也会给出相反操作的解决方案。你可以使用 codePointAt() 来提取字符串中某个字符的代码点，也可以调用 String.fromCodePoint() 并使用给定的代码点来产生相应的单个字符。例如：
 
 ```js
 console.log(String.fromCodePoint(134071));  // "𠮷"
 ```
 
-Think of String.fromCodePoint() as a more complete version of the String.fromCharCode() method. Both give the same result for all characters in the BMP. There’s only a difference when you pass code points for characters outside of the BMP.
+可以将 String.fromCharCode() 视为 String.fromCharCode() 的完善版本。针对 BMP 字符两者会产生相同的结果，只有 BMP 之外的字符才会有差异。
 
 <br />
 
-#### The normalize() Method
+#### normalize() 方法（The normalize() Method）
+
 
 Another interesting aspect of Unicode is that different characters may be considered equivalent for the purpose of sorting or other comparison-based operations. There are two ways to define these relationships. First, canonical equivalence means that two sequences of code points are considered interchangeable in all respects. For example, a combination of two characters can be canonically equivalent to one character. The second relationship is compatibility. Two compatible sequences of code points look different but can be used interchangeably in certain situations.
 
-Due to these relationships, two strings representing fundamentally the same text can contain different code point sequences. For example, the character “æ” and the two-character string “ae” may be used interchangeably but are strictly not equivalent unless normalized in some way.
+Unicode 另一个有趣的方面是，不同的字符在某些排序或比较操作中被认为是相同的。有两种方式可以确立两者之间的关系。第一，canonical equivalence 意味着两个代码点序列在各个方面都可以进行互换。例如，两个字符的组合根据 canonically equivalent 可以等同于一个字符。第二，是字符间的兼容性。两个兼容的代码点序列可能看上去不同，实际上在特定条件下可以互换（interchangeably）。
 
-ECMAScript 6 supports Unicode normalization forms by giving strings a normalize() method. This method optionally accepts a single string parameter indicating one of the following Unicode normalization forms to apply:
+由于这些关系的存在，两个在根本（fundamentally）上相同的字符串可以包含不同的代码点序列。例如，字符 "æ" 和两个字符组成的 "ae" 字符串或许可以互换，但是除非以某种形式进行规范化，否则严格意义上讲它们并不相等。
 
-* Normalization Form Canonical Composition ("NFC"), which is the default
+ECMAScript 6 通过给字符串提供 normalize() 方法来支持 Unicode 规范格式。该方法接收一个字符串参数来获取以下 Unicode 规范格式中的一种并据此运行：
+
+* Normalization Form Canonical Composition ("NFC"), 默认的规范格式
 * Normalization Form Canonical Decomposition ("NFD")
 * Normalization Form Compatibility Composition ("NFKC")
 * Normalization Form Compatibility Decomposition ("NFKD")
 
-It’s beyond the scope of this book to explain the differences between these four forms. Just keep in mind that when comparing strings, both strings must be normalized to the same form. For example:
+解释这四种格式的区别超出了本书的范围。只需记住，当比较字符串时，它们必须被规范成同一种格式。例如：
 
 ```js
 var normalized = values.map(function(text) {
@@ -128,7 +137,7 @@ normalized.sort(function(first, second) {
 });
 ```
 
-This code converts the strings in the values array into a normalized form so that the array can be sorted appropriately. You can also sort the original array by calling normalize() as part of the comparator, as follows:
+该段代码讲 values 数组中的字符串转换为一种规范格式以便让元素可以被正确的排序。你也可以在比较函数中调用 normalize() 来对原始数组进行排序操作。如下所示：
 
 ```js
 values.sort(function(first, second) {
@@ -145,7 +154,7 @@ values.sort(function(first, second) {
 });
 ```
 
-Once again, the most important thing to note about this code is that both first and second are normalized in the same way. These examples have used the default, NFC, but you can just as easily specify one of the others, like this:
+该段代码再一次需要注意的是，first 和 second 都由同一种格式规范。这些示例都使用了默认的 NFC 格式，不过，使用其它格式也相当容易，像这样：
 
 ```js
 values.sort(function(first, second) {
@@ -162,21 +171,25 @@ values.sort(function(first, second) {
 });
 ```
 
-If you’ve never worried about Unicode normalization before, then you probably won’t have much use for this method now. But if you ever work on an internationalized application, you’ll definitely find the normalize() method helpful.
+如果之前你从未担心过 Unicode 的规范化问题，那么暂时你可能用不到这个方法。倘若你曾经开发过一款国际化应用，你绝对会认为 normalize() 方法相当有用。
 
-Methods aren’t the only improvements that ECMAScript 6 provides for working with Unicode strings, though. The standard also adds two useful syntax elements.
+这些方法并不是 ECMAScript 6 针对 Unicode 字符串的全部改进。它还引入了两项实用的语法。
 
 <br />
 
-#### The Regular Expression u Flag
+#### 正则表达式的 u 标志（The Regular Expression u Flag）
+
 
 You can accomplish many common string operations through regular expressions. But remember, regular expressions assume 16-bit code units, where each represents a single character. To address this problem, ECMAScript 6 defines a u flag for regular expressions, which stands for Unicode.
 
+你可以使用正则表达式来完成很多字符串的基本操作。但是你需要牢记，正则表达式针对的是 16 位代码单元表示的单个字符。为了解决这个问题，ECMAScript 6 为正则表达式定义了代表 Unicode 字符的 u 标志。
+
 <br />
 
-##### The u Flag in Action
+##### u 标志的使用场景（The u Flag in Action）
 
-When a regular expression has the u flag set, it switches modes to work on characters, not code units. That means the regular expression should no longer get confused about surrogate pairs in strings and should behave as expected. For example, consider this code:
+
+当一个正则表达式启用了 u 标志符时，它将切换模式以作用于字符，而不是代码单元。这意味着正则表达式面对字符串中的代理项对时不再迷茫，并如预期的那样工作。例如，考虑以下的代码：
 
 ```js
 var text = "𠮷";
@@ -186,13 +199,14 @@ console.log(/^.$/.test(text));      // false
 console.log(/^.$/u.test(text));     // true
 ```
 
-The regular expression /^.$/ matches any input string with a single character. When used without the u flag, this regular expression matches on code units, and so the Japanese character (which is represented by two code units) doesn’t match the regular expression. When used with the u flag, the regular expression compares characters instead of code units and so the Japanese character matches.
+正则表达式 /&.$/ 匹配单个字符的输入。当不使用 u 标志时，正则表达式匹配的是代码单元，所以它不能匹配日文字符（由两个代码单元表示）。启用 u 标志后，正则表达式比较字符而不是代码单元，所以日文字符会被匹配到。
 
 <br />
 
-##### Counting Code Points
+##### 代码点的数量（Counting Code Points）
 
-Unfortunately, ECMAScript 6 doesn’t add a method to determine how many code points a string has, but with the u flag, you can use regular expressions to figure it out as follows:
+
+遗憾的是，ECMAScript 6 并没有添加能判断字符串所包含代码单元个数的方法，但是通过 u 标志，你可以使用正则表达式来进行计算它们，如下所示：
 
 ```js
 function codePointLength(text) {
@@ -204,17 +218,18 @@ console.log(codePointLength("abc"));    // 3
 console.log(codePointLength("𠮷bc"));   // 3
 ```
 
-This example calls match() to check text for both whitespace and non-whitespace characters (using [\s\S] to ensure the pattern matches newlines), using a regular expression that is applied globally with Unicode enabled. The result contains an array of matches when there’s at least one match, so the array length is the number of code points in the string. In Unicode, the strings "abc" and "𠮷bc" both have three characters, so the array length is three.
+该例调用了 match() 方法和 gu 标志来全局检查 text 中的空白和非空白字符（使用 [\s\S] 以确保匹配换行符），当至少有一个以上的匹配项时，返回包含它们的数组，所以数组的长度即为字符串中的代码单元数量。在 Unicode 中，字符串 "abc" 和 "𠮷bc" 同时含有三个字符，所以返回的数组长度为 3 。
 
 <br />
 
-> **NOTE**: Although this approach works, it’s not very fast, especially when applied to long strings. You can use a string iterator (discussed in Chapter 8) as well. In general, try to minimize counting code points whenever possible.
+> **注意**： 虽然该实现可以正常工作，但是它的运行速度并不快，尤其是操作一个长字符串。你也可以使用字符串迭代器来实现相同的需求（第八章讨论）。一般来讲，尽可能的减少需要操作的字符串中的代码点数量。
 
 <br />
 
-##### Determining Support for the u Flag
+##### 判断是否支持 u 标志（Determining Support for the u Flag）
 
-Since the u flag is a syntax change, attempting to use it in JavaScript engines that aren’t compatible with ECMAScript 6 throws a syntax error. The safest way to determine if the u flag is supported is with a function, like this one:
+
+既然 u 标志是一项语法变更，在不兼容 ECMAScript 6 的 JavaScript 引擎中使用它会抛出一个语法错误。使用一个函数来判断是否支持 u 标志是最安全的方法，像这样：
 
 ```js
 function hasRegExpU() {
@@ -227,27 +242,29 @@ function hasRegExpU() {
 }
 ```
 
-This function uses the RegExp constructor to pass in the u flag as an argument. This syntax is valid even in older JavaScript engines, but the constructor will throw an error if u isn’t supported.
+该函数使用 RegExp 构造函数并传递 u 标志作为参数。该语法即使在旧版本的 JavaScript 引擎中都是有效的，但是构造函数在不识别 u 标志的情况下会抛出一个错误。
 
-If your code still needs to work in older JavaScript engines, always use the RegExp constructor when using the u flag. This will prevent syntax errors and allow you to optionally detect and use the u flag without aborting execution.
-
-<br />
-
-### Other String Changes
-
-JavaScript strings have always lagged behind similar features of other languages. It was only in ECMAScript 5 that strings finally gained a trim() method, for example, and ECMAScript 6 continues extending JavaScript’s capacity to parse strings with new functionality.
+如果你的代码仍然需要在老旧的 JavaScript 引擎中运行，那么最好在构造函数中使用 u 标志。这会预防语法错误的发生并允许你选择性地检测和使用 u 标志，而且代码执行不会被中断。
 
 <br />
 
-#### Methods for Identifying Substrings
+### 字符串的其它改进（Other String Changes）
 
-Developers have used the indexOf() method to identify strings inside other strings since JavaScript was first introduced. ECMAScript 6 includes the following three methods, which are designed to do just that:
 
-* The includes() method returns true if the given text is found anywhere within the string. It returns false if not.
-* The startsWith() method returns true if the given text is found at the beginning of the string. It returns false if not.
-* The endsWith() method returns true if the given text is found at the end of the string. It returns false if not.
+JavaScript 的字符串特性总是落后于其它语言。比如，直到 ECMAScript 5 字符串才总算拥有了 trim() 方法，ECMAScript 6 则继续添加新功能以扩展 JavaScript 解析字符串的能力。
 
-Each methods accept two arguments: the text to search for and an optional index from which to start the search. When the second argument is provided, includes() and startsWith() start the match from that index while endsWith() starts the match from the length of the string minus the second argument; when the second argument is omitted, includes() and startsWith() search from the beginning of the string, while endsWith() starts from the end. In effect, the second argument minimizes the amount of the string being searched. Here are some examples showing these three methods in action:
+<br />
+
+#### 确认子字符串的方法（Methods for Identifying Substrings）
+
+
+自 JavaScript 引入了 indexOf() 方法后，开发者们使用它来确认字符串是否存在于其它字符串中。ECMAScript 6 包含以下三种方法来满足相同的需求：
+
+* includes() 方法会在给定文本存在于字符串中的任意位置时返回 true，否则返回 false 。
+* startsWith() 方法会在给定文本出现在字符串开头时返回 true，否则返回 false 。
+* endsWith() 方法会在给定文本出现在字符串末尾时返回 true，否则返回 false 。
+
+每个方法都接收两个参数：需要搜索的文本和可选的起始索引值。当提供第二个参数后，includes() 和 startsWith() 会以该索引为起始点进行匹配，而 endsWith() 将字符串的长度与参数值相减并将得到的值作为检索的起始点。若第二个参数未提供，includes() 和 startsWith() 会从字符串的起始中开始检索，endsWith() 则是从字符串的末尾。实际上，第二个参数减少了需要检索的字符串的总量。以下是使用这些方法的演示：
 
 ```js
 var msg = "Hello world!";
@@ -265,19 +282,22 @@ console.log(msg.endsWith("o", 8));          // true
 console.log(msg.includes("o", 8));          // false
 ```
 
-The first three calls don’t include a second parameter, so they’ll search the whole string if needed. The last three calls only check part of the string. The call to msg.startsWith("o", 4) starts the match by looking at index 4 of the msg string, which is the “o” in “Hello”. The call to msg.endsWith("o", 8) starts the match at index 4 as well, because the 8 argument is subtracted from the string length (12). The call to msg.includes("o", 8) starts the match from index 8, which is the “r” in “world”.
+前三次调用不包含第二个参数，所以它们在必要的情况下会检索整个字符串。最后三次调用只会检索字符串的一部分。调用 msg.startsWith("o", 4) 会从索引值为 4 ，即 "hello" 中的 o 处开始检索。调用 msg.endsWith("o", 8) 的起始检索位置和前者相同，因为参数 8 会由字符串的长度值（12）减去。调用 msg.includes("o", 8) 则会从索引值为 8，即 "world" 中的 "r" 处开始检索。
 
 While these three methods make identifying the existence of substrings easier, each only returns a boolean value. If you need to find the actual position of one string within another, use the indexOf() or lastIndexOf() methods.
 
-<br />
-
-> **NOTE**: The startsWith(), endsWith(), and includes() methods will throw an error if you pass a regular expression instead of a string. This stands in contrast to indexOf() and lastIndexOf(), which both convert a regular expression argument into a string and then search for that string.
+虽然这三个方法使得判断子字符串是否存在变得更容易，但是它们返回的只是一个布尔（boolean）值。如果你需要返回它们在另一个字符串中存在的确切位置，请使用 indexOf() 和 lastIndexOf() 。
 
 <br />
 
-#### The repeat() Method
+> **注意**： 向 startsWith()，endsWith()，和 includes() 方法传入正则表达式会抛出错误，这和 indexOf() 与 lastIndexOf() 的表现相反，它们会将正则表达式转换为字符串并搜索它。
 
-ECMAScript 6 also adds a repeat() method to strings, which accepts the number of times to repeat the string as an argument. It returns a new string containing the original string repeated the specified number of times. For example:
+<br />
+
+#### repeat() 方法（The repeat() Method）
+
+
+ECMAScript 6 还向字符串添加了 repeat() 方法，它接受一个数字参数作为字符串的重复次数。该方法返回一个重复包含初始字符串的新字符串，重复次数等于参数。例如：
 
 ```js
 console.log("x".repeat(3));         // "xxx"
@@ -285,30 +305,31 @@ console.log("hello".repeat(2));     // "hellohello"
 console.log("abc".repeat(4));       // "abcabcabcabc"
 ```
 
-This method is a convenience function above all else, and it can be especially useful when manipulating text. It’s particularly useful in code formatting utilities that need to create indentation levels, like this:
+该方法在同类中最为便利，在操作文本的场景中特别实用。当实现了格式化代码的实用程序（utility）需要添加缩进时，该方法非常适合，像这样：
 
 ```js
-// indent using a specified number of spaces
+// 使用指定的数字添加空格缩进
 var indent = " ".repeat(4),
     indentLevel = 0;
 
-// whenever you increase the indent
+// 增加缩进
 var newIndent = indent.repeat(++indentLevel);
 ```
 
-The first repeat() call creates a string of four spaces, and the indentLevel variable keeps track of the indent level. Then, you can just call repeat() with an incremented indentLevel to change the number of spaces.
+首次调用 repeat() 创建包含 4 个空格的字符串，indentLevel 变量会持续追踪缩进的级别。之后，你可以仅通过增加 repeat() 的参数值来改变空格数量。
 
-ECMAScript 6 also makes some useful changes to regular expression functionality that don’t fit into a particular category. The next section highlights a few.
-
-<br />
-
-### Other Regular Expression Changes
-
-Regular expressions are an important part of working with strings in JavaScript, and like many parts of the language, they haven’t changed much in recent versions. ECMAScript 6, however, makes several improvements to regular expressions to go along with the updates to strings.
+ECMAScript 6 同样为正则表达式添加了一些实用的功能来增加它们的适用场景。下一节会简要的介绍它们。
 
 <br />
 
-#### The Regular Expression y Flag
+### 正则表达式的其它改进（Other Regular Expression Changes）
+
+
+正则表达式是在 JavaScript 中操作字符串的重要方式之一，和很多其它语言相似，它在最近的几个版本中并未发生太大的变化。不过，为了和针对字符串的修改一起作伴，ECMAScript 6 也给正则表达式做了一些改进。
+
+<br />
+
+#### 正则表达式的 y 标志（The Regular Expression y Flag）
 
 ECMAScript 6 standardized the y flag after it was implemented in Firefox as a proprietary extension to regular expressions. The y flag affects a regular expression search’s sticky property, and it tells the search to start matching characters in a string at the position specified by the regular expression’s lastIndex property. If there is no match at that location, then the regular expression stops matching. To see how this works, consider the following code:
 
