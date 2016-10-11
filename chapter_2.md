@@ -9,8 +9,12 @@
 * [更佳的 Unicode 支持](#Better-Unicode-Support)
 * [字符串的其它改进](#Other-String-Changes)
 * [正则表达式的其它改进](#Other-Regular-Expression-Changes)
-* [模板字符串](#Template-Literals)
+* [模板字面量](#Template-Literals)
 * [总结](#Summary)
+
+<br />
+
+> **注意**： gitbook 无法正常解析 \$\$ 字符，所以在模板字面量一节中 \$ \$ 实际上为 \$\$ 。
 
 <br />
 
@@ -41,8 +45,6 @@ console.log(text.charCodeAt(0));    // 55362
 console.log(text.charCodeAt(1));    // 57271
 ```
 
-The single Unicode character "𠮷" is represented using surrogate pairs, and as such, the JavaScript string operations above treat the string as having two 16-bit characters. That means:
-
 单个 Unicode 字符 "𠮷" 由代理项对表示，因此，本例中 JavaScript 在操作该字符串时会将它视为两个 16 位字符。这意味着：
 
 * text 的长度为 2，即使它看起来是 1 。
@@ -57,7 +59,6 @@ charCodeAt() 方法也不能正确识别字符。它返回的是对应代码单�
 
 #### codePointAt() 方法（The codePointAt() Method）
 
-One method ECMAScript 6 added to fully support UTF-16 is the codePointAt() method, which retrieves the Unicode code point that maps to a given position in a string. This method accepts the code unit position rather than the character position and returns an integer value, as these console.log() examples show:
 
 为了全面支持 UTF-16，ECMAScript 6 新添加的方法之一就是 codePointAt()，它可以提取给定位置字符串的对应 Unicode 代码点。该方法接收代码单元而非字符的位置并返回一个整型值，正如下例中所展示的那样：
 
@@ -106,9 +107,7 @@ console.log(String.fromCodePoint(134071));  // "𠮷"
 #### normalize() 方法（The normalize() Method）
 
 
-Another interesting aspect of Unicode is that different characters may be considered equivalent for the purpose of sorting or other comparison-based operations. There are two ways to define these relationships. First, canonical equivalence means that two sequences of code points are considered interchangeable in all respects. For example, a combination of two characters can be canonically equivalent to one character. The second relationship is compatibility. Two compatible sequences of code points look different but can be used interchangeably in certain situations.
-
-Unicode 另一个有趣的方面是，不同的字符在某些排序或比较操作中被认为是相同的。有两种方式可以确立两者之间的关系。第一，canonical equivalence 意味着两个代码点序列在各个方面都可以进行互换。例如，两个字符的组合根据 canonically equivalent 可以等同于一个字符。第二，是字符间的兼容性。两个兼容的代码点序列可能看上去不同，实际上在特定条件下可以互换（interchangeably）。
+Unicode 另一个有趣的方面是，不同的字符在某些排序或比较操作中被认为是相同的。有两种方式可以确立两者之间的关系。第一，规范相等性（canonical equivalence）意味着两个代码点序列在各个方面都可以进行互换。例如，两个字符的组合根据规范相等性可以等同于一个字符。第二，是字符间的兼容性。两个兼容的代码点序列可能看上去不同，实际上在特定条件下可以互换（interchangeably）。
 
 由于这些关系的存在，两个在根本（fundamentally）上相同的字符串可以包含不同的代码点序列。例如，字符 "æ" 和两个字符组成的 "ae" 字符串或许可以互换，但是除非以某种形式进行规范化，否则严格意义上讲它们并不相等。
 
@@ -119,7 +118,7 @@ ECMAScript 6 通过给字符串提供 normalize() 方法来支持 Unicode 规范
 * Normalization Form Compatibility Composition ("NFKC")
 * Normalization Form Compatibility Decomposition ("NFKD")
 
-解释这四种格式的区别超出了本书的范围。只需记住，当比较字符串时，它们必须被规范成同一种格式。例如：
+解释这四种格式的差异超出了本书的范围。只需记住，当比较字符串时，它们必须被规范成同一种格式。例如：
 
 ```js
 var normalized = values.map(function(text) {
@@ -179,8 +178,6 @@ values.sort(function(first, second) {
 
 #### 正则表达式的 u 标志（The Regular Expression u Flag）
 
-
-You can accomplish many common string operations through regular expressions. But remember, regular expressions assume 16-bit code units, where each represents a single character. To address this problem, ECMAScript 6 defines a u flag for regular expressions, which stands for Unicode.
 
 你可以使用正则表达式来完成很多字符串的基本操作。但是你需要牢记，正则表达式针对的是 16 位代码单元表示的单个字符。为了解决这个问题，ECMAScript 6 为正则表达式定义了代表 Unicode 字符的 u 标志。
 
@@ -284,8 +281,6 @@ console.log(msg.includes("o", 8));          // false
 
 前三次调用不包含第二个参数，所以它们在必要的情况下会检索整个字符串。最后三次调用只会检索字符串的一部分。调用 msg.startsWith("o", 4) 会从索引值为 4 ，即 "hello" 中的 o 处开始检索。调用 msg.endsWith("o", 8) 的起始检索位置和前者相同，因为参数 8 会由字符串的长度值（12）减去。调用 msg.includes("o", 8) 则会从索引值为 8，即 "world" 中的 "r" 处开始检索。
 
-While these three methods make identifying the existence of substrings easier, each only returns a boolean value. If you need to find the actual position of one string within another, use the indexOf() or lastIndexOf() methods.
-
 虽然这三个方法使得判断子字符串是否存在变得更容易，但是它们返回的只是一个布尔（boolean）值。如果你需要返回它们在另一个字符串中存在的确切位置，请使用 indexOf() 和 lastIndexOf() 。
 
 <br />
@@ -331,7 +326,8 @@ ECMAScript 6 同样为正则表达式添加了一些实用的功能来增加它�
 
 #### 正则表达式的 y 标志（The Regular Expression y Flag）
 
-ECMAScript 6 standardized the y flag after it was implemented in Firefox as a proprietary extension to regular expressions. The y flag affects a regular expression search’s sticky property, and it tells the search to start matching characters in a string at the position specified by the regular expression’s lastIndex property. If there is no match at that location, then the regular expression stops matching. To see how this works, consider the following code:
+
+ECMAScript 6 将 Firefox 对正则表达式拓展的私有 y 标志纳入了标准。y 标志涉及正则表达式与检索相关的 sticky 属性，它表示从正则表达式设置的 lastIndex 属性值的位置开始检索字符串中的匹配字符。如果以该位置为起点，之后没有相应的匹配，那么正则表达式将停止检索。为了展示它是如何工作的，考虑如下的代码：
 
 ```js
 var text = "hello1 hello2 hello3",
@@ -359,11 +355,11 @@ console.log(globalResult[0]);   // "hello2 "
 console.log(stickyResult[0]);   // Error! stickyResult is null
 ```
 
-This example has three regular expressions. The expression in pattern has no flags, the one in globalPattern uses the g flag, and the one in stickyPattern uses the y flag. In the first trio of console.log() calls, all three regular expressions should return "hello1 " with a space at the end.
+该例分别创建了未启用标志，启用 g 标志和启用 y 标志以使用粘滞模式（stickyPattern）的三个正则表达式。前三次 console.log() 调用后，它们都返回了末尾带有空格的 "hello " 字符串。
 
-After that, the lastIndex property is changed to 1 on all three patterns, meaning that the regular expression should start matching from the second character on all of them. The regular expression with no flags completely ignores the change to lastIndex and still matches "hello1 " without incident. The regular expression with the g flag goes on to match "hello2 " because it is searching forward from the second character of the string ("e"). The sticky regular expression doesn’t match anything beginning at the second character so stickyResult is null.
+在那之后，三种匹配模式的 lastIndex 属性全部更改为 1，意味着它们的匹配起始位置为第二个字符。无标志位的正则表达式会完全忽略掉 lastIndex 并像往常那样返回 "hello1 " 匹配。带有 g 标志位的正则表达式返回的匹配是 "hello2 "，因为它的搜索起点为第二个字符（"e"）。启用粘滞模式的正则表达式在第二个字符之后没有获得任何匹配，所以 stickyResult 为 null 。
 
-The sticky flag saves the index of the next character after the last match in lastIndex whenever an operation is performed. If an operation results in no match, then lastIndex is set back to 0. The global flag behaves the same way, as demonstrated here:
+匹配操作一旦发生，带有粘滞标志位的匹配模式会保存上次匹配结果末尾的下一个字符的索引。如果一次匹配没有获得任何结果，那么 lastIndex 的值将重置为 0 。全局标志位的行为与其相同，如下所示：
 
 ```js
 var text = "hello1 hello2 hello3",
@@ -395,14 +391,14 @@ console.log(globalPattern.lastIndex);   // 14
 console.log(stickyPattern.lastIndex);   // 14
 ```
 
-The value of lastIndex changes to 7 after the first call to exec() and to 14 after the second call, for both the stickyPattern and globalPattern variables.
+首次和第二次调用 exec() 之后，stickyPattern 和 globalPattern 的 lastIndex 属性值均分别为 7 和 14 。
 
-There are two more subtle details about the sticky flag to keep in mind:
+关于粘滞标志位，有两处微妙的细节需要牢记：
 
-1. The lastIndex property is only honored when calling methods that exist on the regular expression object, like the exec() and test() methods. Passing the regular expression to a string method, such as match(), will not result in the sticky behavior.
-2. When using the ^ character to match the start of a string, sticky regular expressions only match from the start of the string (or the start of the line in multiline mode). While lastIndex is 0, the ^ makes a sticky regular expression no different from a non-sticky one. If lastIndex doesn’t correspond to the beginning of the string in single-line mode or the beginning of a line in multiline mode, the sticky regular expression will never match.
+1. 只有在正则表达式对象上（regular expression object）上调用方法 lastIndex 才会生效，例如 exec() 和 test()。如果将正则表达式传递给 match() 这样的字符串方法，粘滞行为则无法体现。
+2. 当使用 ^ 字符来匹配字符串的首部时，粘滞正则表达式只会匹配整个字符串的首部位置（或多行模式下的行首）。如果 lastIndex 为 0，那么不论正则表达式是否带有粘滞标志位，^ 的表现均一致。
 
-As with other regular expression flags, you can detect the presence of y by using a property. In this case, you’d check the sticky property, as follows:
+和其它正则表达式标志位相同，你可以根据属性来探测 y 是否存在。你可以如下检查 sticky 属性：
 
 ```js
 var pattern = /hello\d/y;
@@ -410,9 +406,9 @@ var pattern = /hello\d/y;
 console.log(pattern.sticky);    // true
 ```
 
-The sticky property is set to true if the sticky flag is present, and the property is false if not. The sticky property is read-only based on the presence of the flag and cannot be changed in code.
+如果粘滞标志存在，那么 sticky 属性为 true，否则为 false 。sticky 作为只读属性仅被用来检查 y 标志的存在而不能在代码中修改其值。
 
-Similar to the u flag, the y flag is a syntax change, so it will cause a syntax error in older JavaScript engines. You can use the following approach to detect support:
+和 u 标志类似，y 标志同样是个语法变动，所以在旧的 JavaScript 引擎中它会造成语法错误。你可以使用下面的方式来检测：
 
 ```js
 function hasRegExpY() {
@@ -425,34 +421,35 @@ function hasRegExpY() {
 }
 ```
 
-Just like the u check, this returns false if it’s unable to create a regular expression with the y flag. In one final similarity to u, if you need to use y in code that runs in older JavaScript engines, be sure to use the RegExp constructor when defining those regular expressions to avoid a syntax error.
+这段代码类似于 u 标志的检查，即如果不能使用 y 标志来创建正则表达式则返回 false 。同样，为了避免语法错误的发生，请确保在旧的 JavaScript 引擎中使用 RegExp 构造函数来定义使用 y 标志的正则表达式。
 
 <br />
 
-#### Duplicating Regular Expressions
+#### 正则表达式副本（Duplicating Regular Expressions）
 
-In ECMAScript 5, you can duplicate regular expressions by passing them into the RegExp constructor like this:
+
+在 ECMAScript 5 中，你可以将正则表达式传递给 RegExp 构造函数来创建它的副本，例如：
 
 ```js
 var re1 = /ab/i,
     re2 = new RegExp(re1);
 ```
 
-The re2 variable is just a copy of the re1 variable. But if you provide the second argument to the RegExp constructor, which specifies the flags for the regular expression, your code won’t work, as in this example:
+re2 变量只是 re1 的一个拷贝。但如果你为 RegExp 构造函数提供了第二个参数，即正则表达式的标志位，那么该段代码就失效了，正如下例所示：
 
 ```js
 var re1 = /ab/i,
 
-    // throws an error in ES5, okay in ES6
+    // ES6 中尚可，但是在 ES5 中会抛出错误
     re2 = new RegExp(re1, "g");
 ```
 
-If you execute this code in an ECMAScript 5 environment, you’ll get an error stating that the second argument cannot be used when the first argument is a regular expression. ECMAScript 6 changed this behavior such that the second argument is allowed and overrides any flags present on the first argument. For example:
+如果你在 ECMAScript 5 中运行这段代码，那么你会收到一段错误说明，表示你不该在第一个参数已经为正则表达式的情况下提供第二个参数。ECMAScript 6 修改了上述行为，允许使用第二个参数且覆盖掉第一个参数中的标志位。例如：
 
 ```js
 var re1 = /ab/i,
 
-    // throws an error in ES5, okay in ES6
+    // ES6 中尚可，但是在 ES5 中会抛出错误
     re2 = new RegExp(re1, "g");
 
 
@@ -466,13 +463,14 @@ console.log(re1.test("AB"));            // true
 console.log(re2.test("AB"));            // false
 ```
 
-In this code, re1 has the case-insensitive i flag while re2 has only the global g flag. The RegExp constructor duplicated the pattern from re1 and substituted the g flag for the i flag. Without the second argument, re2 would have the same flags as re1.
+该段代码中，re1 带有忽略匹配项大小写的 i 标志，re2 则含有 g 全局标志。RegExp 构造函数创建了 re1 匹配规则的副本并将 i 标志替换为 g 。如果第二个参数未提供，那么 re2 的标志和 re1 相同。
 
 <br />
 
-#### The flags Property
+#### 标志位属性（The flags Property）
 
-Along with adding a new flag and changing how you can work with flags, ECMAScript 6 added a property associated with them. In ECMAScript 5, you could get the text of a regular expression by using the source property, but to get the flag string, you’d have to parse the output of the toString() method as shown below:
+
+ECMAScript 6 在添加了新的标志位并改变了已有的一些标志位的行为的同时还为它们添加了一个关联属性。在 ECMAScript 5 中，你可以使用 source 属性来获得正则表达式中的文本，不过你若想获得字符串表示的标志位，则需要像下面这样解析 toString() 方法输出的内容：
 
 ```js
 function getFlags(re) {
@@ -480,17 +478,17 @@ function getFlags(re) {
     return text.substring(text.lastIndexOf("/") + 1, text.length);
 }
 
-// toString() is "/ab/g"
+// toString() 输出 "/ab/g"
 var re = /ab/g;
 
 console.log(getFlags(re));          // "g"
 ```
 
-This converts a regular expression into a string and then returns the characters found after the last /. Those characters are the flags.
+正则表达式会被转换为字符串并返回最后一个 / 之后的字符，即标志位。
 
-ECMAScript 6 makes fetching flags easier by adding a flags property to go along with the source property. Both properties are prototype accessor properties with only a getter assigned, making them read-only. The flags property makes inspecting regular expressions easier for both debugging and inheritance purposes.
+ECMAScript 6 添加了 flags 属性使其和 source 属性作伴，于是标志位字符串的获取容易了许多。两者均为原型上的 getter 访问器属性，因此它们是只读的。flags 属性令正则表达式调试与继承的分析工作变得更加轻松。
 
-A late addition to ECMAScript 6, the flags property returns the string representation of any flags applied to a regular expression. For example:
+flags 属性返回正则表达式所有标志位的字符串形式。例如：
 
 ```js
 var re = /ab/g;
@@ -499,35 +497,37 @@ console.log(re.source);     // "ab"
 console.log(re.flags);      // "g"
 ```
 
-This fetches all flags on re and prints them to the console with far fewer lines of code than the toString() technique can. Using source and flags together allows you to extract the pieces of the regular expression that you need without parsing the regular expression string directly.
+本例使用了比 toString() 方案少得多的代码并向控制台输出了 re 所有的标志位。同时使用 source 和 flags 允许你提取正则表达式的片段而不需要直接解析正则表达式本身。
 
-The changes to strings and regular expressions that this chapter has covered so far are definitely powerful, but ECMAScript 6 improves your power over strings in a much bigger way. It brings a type of literal to the table that makes strings more flexible.
-
-<br />
-
-### Template Literals
-
-JavaScript’s strings have always had limited functionality compared to strings in other languages. For instance, until ECMAScript 6, strings lacked the methods covered so far in this chapter, and string concatenation is as simple as possible. To allow developers to solve more complex problems, ECMAScript 6’s template literals provide syntax for creating domain-specific languages (DSLs) for working with content in a safer way than the solutions available in ECMAScript 5 and earlier. (A DSL is a programming language designed for a specific, narrow purpose, as opposed to general-purpose languages like JavaScript.) The ECMAScript wiki offers the following description on the [template literal strawman](http://wiki.ecmascript.org/doku.php?id=harmony:quasis):
+目前为止本章介绍的字符串和正则表达式的改善的意义无疑是重大的，不过 ECMAScript 6 对字符串还有一项重大改进，它引入了一种新的字面量形式使得字符串的使用更加灵活。
 
 <br />
 
-> This scheme extends ECMAScript syntax with syntactic sugar to allow libraries to provide DSLs that easily produce, query, and manipulate content from other languages that are immune or resistant to injection attacks such as XSS, SQL Injection, etc.
+### 模板字面量（Template Literals）
+
+
+JavaScript 中的字符串相比其它语言有着太多的限制。例如，在 ECMAScript 6 之前本章介绍过的字符串的所有新方法都不能使用，而且字符串的拼接方式过于简陋。为了能让开发者解决更复杂的问题，ECMAScript 6 中的模板字面量提供了创建领域特定语言（domain-specific languages, DSLs）的语法使其相比 ECMAScript 5 或更早的版本能更安全的操作相应的内容（领域特定语言面向且专注于的是某单一特定目标的计算机程序设计语言，与通用目的语言如 JavaScript 相反）。ECMAScript wiki 提供了 [template literal strawman](http://wiki.ecmascript.org/doku.php?id=harmony:quasis) 的如下描述：
 
 <br />
 
-In reality, though, template literals are ECMAScript 6’s answer to the following features that JavaScript lacked all the way through ECMAScript 5:
-
-* **Multiline strings** A formal concept of multiline strings.
-* **Basic string formatting** The ability to substitute parts of the string for values contained in variables.
-* **HTML escaping** The ability to transform a string such that it is safe to insert into HTML.
-
-Rather than trying to add more functionality to JavaScript’s already-existing strings, template literals represent an entirely new approach to solving these problems.
+> 本方案通过语法糖扩展了 ECMAScript 的语法并允许库提供 DSLs 以便产生，查询并操作其它语言的相关内容且对 XSS，SQL 注入等攻击免疫或具有抗性。
 
 <br />
 
-#### Basic Syntax
+不过实际上，模板字面量是 ECMAScript 6 针对 JavaScript 直到 ECMAScript 5 依然缺失的如下功能的回应：
 
-At their simplest, template literals act like regular strings delimited by backticks (`) instead of double or single quotes. For example, consider the following:
+* **多行字符串** 针对多行字符串的形式概念（formal concept）。
+* **基本的字符串格式化** 将字符串中的变量置换为值的能力。
+* **转义 HTML** 能将字符串进行转义并使其安全地插入到 HTML 的能力。
+
+模板字面量以一种全新的表现形式解决了这些问题而不需要向 JavaScript 已有的字符串添加额外的功能。
+
+<br />
+
+#### 基本语法（Basic Syntax）
+
+
+简言之，模板字面量由反引号（`）而非一般字符串使用的单或双引号囊括。考虑如下的例子：
 
 ```js
 let message = `Hello world!`;
@@ -537,8 +537,9 @@ console.log(typeof message);        // "string"
 console.log(message.length);        // 12
 ```
 
-This code demonstrates that the variable message contains a normal JavaScript string. The template literal syntax is used to create the string value, which is then assigned to the message variable.
-If you want to use a backtick in your string, then just escape it with a backslash (\), as in this version of the message variable:
+该段代码证实 message 变量包含的是一个普通的 JavaScript 字符串。模板字面量语法创建了一个字符串并将其赋值给 message 变量。
+
+如果你想在字符串中包含反引号，只需使用反斜杠（\）转义即可，如下所示：
 
 ```js
 let message = `\`Hello\` world!`;
@@ -548,19 +549,20 @@ console.log(typeof message);        // "string"
 console.log(message.length);        // 14
 ```
 
-There’s no need to escape either double or single quotes inside of template literals.
+模板字面量中无需转义单双引号。
 
 <br />
 
-#### Multiline Strings
+#### 多行字符串（Multiline Strings）
 
-JavaScript developers have wanted a way to create multiline strings since the first version of the language. But when using double or single quotes, strings must be completely contained on a single line.
+JavaScript 开发者自从该语言诞生起就一直想要一种能创建多行字符串的方法。但是使用单或双引号时，整个字符串只能放在一行。
 
 <br />
 
-##### Pre-ECMAScript 6 Workarounds
+##### ECMAScript 6 之前的解决方案（Pre-ECMAScript 6 Workarounds）
 
-Thanks to a long-standing syntax bug, JavaScript does have a workaround. You can create multiline strings if there’s a backslash (\) before a newline. Here’s an example:
+
+感谢一个长久存在的 bug，JavaScript 的确有一种解决方案。你可以在新行之前放置反斜杠（\）来创建多行字符串。如下所示：
 
 ```js
 var message = "Multiline \
@@ -569,7 +571,7 @@ string";
 console.log(message);       // "Multiline string"
 ```
 
-The message string has no newlines present when printed to the console because the backslash is treated as a continuation rather than a newline. In order to show a newline in output, you’d need to manually include it:
+输出的 message 字符串不包含新行，因为反斜杠被视作续延（continuation）信号。为了在输出中包含新行，你需要手动添加它：
 
 ```js
 var message = "Multiline \n\
@@ -579,9 +581,9 @@ console.log(message);       // "Multiline
                             //  string"
 ```
 
-This should print Multiline String on two separate lines in all major JavaScript engines, but the behavior is defined as a bug and many developers recommend avoiding it.
+在所有主流的 JavaScript 引擎中这应该会输出两行，但是该行为被定义为一个 bug 而且许多开发者都建议避免使用这种形式。
 
-Other pre-ECMAScript 6 attempts to create multiline strings usually relied on arrays or string concatenation, such as:
+其它的解决方案一般依赖于数组或字符串拼接，例如：
 
 ```js
 var message = [
@@ -593,23 +595,25 @@ let message = "Multiline \n" +
     "string";
 ```
 
-All of the ways developers worked around JavaScript’s lack of multiline strings left something to be desired.
+针对 JavaScript 缺乏的多行字符串特性，开发者给出的所有解决方案都存在某些瑕疵。
 
 <br />
 
-##### Multiline Strings the Easy Way
+##### 多行字符串的简单使用方式（Multiline Strings the Easy Way)
 
-ECMAScript 6’s template literals make multiline strings easy because there’s no special syntax. Just include a newline where you want, and it shows up in the result. For example:
+
+ECMAScript 6 的模板字面量使多行字符串的创建更容易，因为它不需要特殊的语法。只需在想要的位置包含新行即可，而且输出结果也会包含它。例如：
+
+```js
 let message = `Multiline
 string`;
 
-```js
 console.log(message);           // "Multiline
                                 //  string"
 console.log(message.length);    // 16
 ```
 
-All whitespace inside the backticks is part of the string, so be careful with indentation. For example:
+反引号中的所有空白符都是字符串的一部分，使用缩进要小心。例如：
 
 ```js
 let message = `Multiline
@@ -620,7 +624,7 @@ console.log(message);           // "Multiline
 console.log(message.length);    // 31
 ```
 
-In this code, all whitespace before the second line of the template literal is considered part of the string itself. If making the text line up with proper indentation is important to you, then consider leaving nothing on the first line of a multiline template literal and then indenting after that, as follows:
+该段代码中，模板字面量第二行之前的空白符被视作字符串本身的一部分。如果将文本分行缩进对你来讲很重要，请考虑将多行模板字面量的第一行空置并在第二行开始缩进，如下所示：
 
 ```js
 let html = `
@@ -629,11 +633,11 @@ let html = `
 </div>`.trim();
 ```
 
-This code begins the template literal on the first line but doesn’t have any text until the second. The HTML tags are indented to look correct and then the trim() method is called to remove the initial empty line.
+该段代码在第一行开始创建模板字面量但是在第二行之前并没有包含任何字符。HTML 标签的缩进增强了可读性，之后 trim() 方法的调用移除了起始空白行。
 
 <br />
 
-> If you prefer, you can also use \n in a template literal to indicate where a newline should be inserted:
+> 如果你愿意的话，也可以在模板字面量中使用 \n 来指示新行的插入位置：
 
 ```js
 let message = `Multiline\nstring`;
@@ -645,11 +649,12 @@ console.log(message.length);    // 16
 
 <br />
 
-#### Making Substitutions
+#### 字符串置换（Making Substitutions）
 
-At this point, template literals may look like fancier versions of normal JavaScript strings. The real difference between the two lies in template literal substitutions. Substitutions allow you to embed any valid JavaScript expression inside a template literal and output the result as part of the string.
 
-Substitutions are delimited by an opening ${ and a closing } that can have any JavaScript expression inside. The simplest substitutions let you embed local variables directly into a resulting string, like this:
+在这里，模板字面量看上去像是普通 JavaScript 字符串的升级版。两者之间的真正区别在于前者包含的置换操作。置换允许你将 JavaScript 表达式嵌入到模板字面量中并将其结果作为输出字符串中的一部分。
+
+置换部分由 ${ 和 } 包含，其中可以放入任意 JavaScript 表达式。最简单的置换是将本地变量直接嵌入到结果字符串中，例如：
 
 ```js
 let name = "Nicholas",
@@ -658,15 +663,15 @@ let name = "Nicholas",
 console.log(message);       // "Hello, Nicholas."
 ```
 
-The substitution ${name} accesses the local variable name to insert name into the message string. The message variable then holds the result of the substitution immediately.
+置换 ${name} 会访问本地变量 name 并将其值插入到 message 字符串中。message 变量会立即持有置换结果。
 
 <br />
 
-> A template literal can access any variable accessible in the scope in which it is defined. Attempting to use an undeclared variable in a template literal throws an error in both strict and non-strict modes.
+> 模板字面量可以访问作用域中定义的任何变量。若变量未定义，在严格和非严格模式下都会抛出错误。
 
 <br />
 
-Since all substitutions are JavaScript expressions, you can substitute more than just simple variable names. You can easily embed calculations, function calls, and more. For example:
+既然置换的对象都是 JavaScript 表达式，那么可以置换的不仅仅是简单的变量名。你可以很容易地嵌入任意运算，函数调用，等等。例如：
 
 ```js
 let count = 10,
@@ -676,9 +681,9 @@ let count = 10,
 console.log(message);       // "10 items cost $2.50."
 ```
 
-This code performs a calculation as part of the template literal. The variables count and price are multiplied together to get a result, and then formatted to two decimal places using .toFixed(). The dollar sign before the second substitution is output as-is because it’s not followed by an opening curly brace.
+该段代码中模板字面量的一部分执行了一次计算。count 和 price 变量进行相乘并使用 .toFixed() 方法将结果的精度格式化为百分位。第二处置换位置之前的美元符号照常输出，因为没有花括号紧随其后。
 
-Template literals are also JavaScript expressions, which means you can place a template literal inside of another template literal, as in this example:
+模板字面量本身也是 JavaScript 表达式，意味着你可以将模板字面量放入到另一个模板字面量内部，如下所示：
 
 ```js
 let name = "Nicholas",
@@ -689,65 +694,69 @@ let name = "Nicholas",
 console.log(message);        // "Hello, my name is Nicholas."
 ```
 
-This example nests a second template literal inside the first. After the first ${, another template literal begins. The second ${ indicates the beginning of an embedded expression inside the inner template literal. That expression is the variable name, which is inserted into the result.
+该例将第二个模板字面量嵌入到第一个内。在首处 ${ 之后使用了另一个模板字面量。第二处 ${ 表示将要嵌入到内层模板字面量的表达式，即 name 变量。
 
 <br />
 
-#### Tagged Templates
+#### 模板标签（Tagged Templates）
 
-Now you’ve seen how template literals can create multiline strings and insert values into strings without concatenation. But the real power of template literals comes from tagged templates. A template tag performs a transformation on the template literal and returns the final string value. This tag is specified at the start of the template, just before the first ` character, as shown here:
+
+现在你已见识过模板字面量如何创建多行字符串，以及它不需要连接（concatenation）即可将值插入到字符串中。不过模板字面量真正的强大之处来源于模板标签。一个模板标签可以被转换为模板字面量并作为最终值返回。标签在模板的头部，即左 ` 字符之前指定，如下所示：
 
 ```js
 let message = tag`Hello world`;
 ```
 
-In this example, tag is the template tag to apply to the \`Hello world\` template literal.
+本例中，tag 即模板标签，并可被转换为 \`Hello world\` 模板字面量。
 
 <br />
 
-##### Defining Tags
+##### 定义标签（Defining Tags）
 
-A tag is simply a function that is called with the processed template literal data. The tag receives data about the template literal as individual pieces and must combine the pieces to create the result. The first argument is an array containing the literal strings as interpreted by JavaScript. Each subsequent argument is the interpreted value of each substitution.
 
-Tag functions are typically defined using rest arguments as follows, to make dealing with the data easier:
+一个标签仅代表一个函数，它接收需要处理的模板字面量。标签分别接收模板字面量中的片段，且必须将它们组合以得出结果。函数的首个参数为包含普通 JavaScript 字符串的数组。余下的参数为每次置换的对应值。
+
+标签函数一般使用剩余参数来定义，以便轻松地处理数据。如下：
 
 ```js
 function tag(literals, ...substitutions) {
-    // return a string
+    // 返回一个字符串
 }
 ```
 
-To better understand what gets passed to tags, consider the following:
+为了更好地理解向标签传递的参数，考虑如下的例子：
 
 ```js
 let count = 10,
     price = 0.25,
-    message = passthru`${count} items cost $${(count * price).toFixed(2)}.`;
+    message = passthru`${count} items cost $ ${(count * price).toFixed(2)}.`;
+
+    // 注意：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
 ```
 
-If you had a function called passthru(), that function would receive three arguments. First, it would get a literals array, containing the following elements:
+如果你拥有一个 passthru() 函数，那么它会接收三个参数。首当其冲的是一个 literals 数组，包含如下的元素：
 
-* The empty string before the first substitution ("")
-* The string after the first substitution and before the second (" items cost $")
-* The string after the second substitution (".")
+* 在首次置换位置之前的空字符串（""）。
+* 首次置换位置到第二次置换位置之前的字符串（" items cost $"）。
+* 第二次置换位置之后的字符串（"."）。
 
-The next argument would be 10, which is the interpreted value for the count variable. This becomes the first element in a substitutions array. The final argument would be "2.50", which is the interpreted value for (count * price).toFixed(2) and the second element in the substitutions array.
+下个参数为 10，它刚好为 count 变量的值，同时也是 substitutions 数组的首个元素。最后的参数为 "2.50"，即 (count * price).toFixed(2) 的计算结果，并作为 substitutions 数组的第二个元素。
 
-Note that the first item in literals is an empty string. This ensures that literals[0] is always the start of the string, just like literals[literals.length - 1] is always the end of the string. There is always one fewer substitution than literal, which means the expression substitutions.length === literals.length - 1 is always true.
+注意 literals 的首个元素为空字符串，以保证 literals[0] 总是代表字符串的起始位置，正如 literals[literals.length - 1] 涵盖字符串的末尾。同时置换（substitution）元素数目也总是比字面量（literal）元素少 1，意味着表达式 substitutions.length === literals.length - 1 的值总是为 true 。
 
-Using this pattern, the literals and substitutions arrays can be interwoven to create a resulting string. The first item in literals comes first, the first item in substitutions is next, and so on, until the string is complete. As an example, you can mimic the default behavior of a template literal by alternating values from these two arrays:
+使用这种模式可以将 literals 与 substitutions 数组中的元素相互交织以创建一个结果字符串。literals 中的首个元素起头，substitutions 中的首个元素跟上，以此行动，直到结果字符串被创建完毕。你可以像下例这样交织使用两个数组中的值来模仿模板字面量的默认行为：
 
 ```js
 function passthru(literals, ...substitutions) {
     let result = "";
 
-    // run the loop only for the substitution count
+    // 只根据 substitution 的数目来运行循环
     for (let i = 0; i < substitutions.length; i++) {
         result += literals[i];
         result += substitutions[i];
     }
 
-    // add the last literal
+    // 添加最后一个 literal
     result += literals[literals.length - 1];
 
     return result;
@@ -755,22 +764,23 @@ function passthru(literals, ...substitutions) {
 
 let count = 10,
     price = 0.25,
-    message = passthru`${count} items cost $${(count * price).toFixed(2)}.`;
+    message = passthru`${count} items cost $ ${(count * price).toFixed(2)}.`;
 
 console.log(message);       // "10 items cost $2.50."
 ```
 
-This example defines a passthru tag that performs the same transformation as the default template literal behavior. The only trick is to use substitutions.length for the loop rather than literals.length to avoid accidentally going past the end of the substitutions array. This works because the relationship between literals and substitutions is well-defined in ECMAScript 6.
+该例定义了 passthru 标签并具有模板字面量的默认行为。唯一的技巧是在循环中使用 substituions.length 而不是 literals.length 来避免 substituions 数组的越界。它的生效归功于 ECMAScript 6 对 literals 和 substituions 的良好定义。
 
 <br />
 
-> The values contained in substitutions are not necessarily strings. If an expression evaluates to a number, as in the previous example, then the numeric value is passed in. Determining how such values should output in the result is part of the tag’s job.
+> substituions 中包含的值不必是字符串。如上例所示，若表达式计算后的值为数字，那么该数值也会被传入。决定这些值的输出方式才是标签的本职工作
 
 <br />
 
-##### Using Raw Values in Template Literals
+##### 在模板字面量中使用原始值（Using Raw Values in Template Literals）
 
-Template tags also have access to raw string information, which primarily means access to character escapes before they are transformed into their character equivalents. The simplest way to work with raw string values is to use the built-in String.raw() tag. For example:
+
+模板标签也可以访问字符串的原始信息，主要是它可以在转义字符生效前访问它，而最简单的方式是使用内置的 String.raw() 标签。如下所示：
 
 ```js
 let message1 = `Multiline\nstring`,
@@ -781,21 +791,21 @@ console.log(message1);          // "Multiline
 console.log(message2);          // "Multiline\\nstring"
 ```
 
-In this code, the \n in message1 is interpreted as a newline while the \n in message2 is returned in its raw form of "\\n" (the slash and n characters). Retrieving the raw string information like this allows for more complex processing when necessary.
+该段代码中，message1 中的 \n 被解释为新行，而 message2 返回了 \n 的原始形式 "\\n"（斜杠与字符 n）。类似于该种提取字符串原始信息的行为可以在必要时做更复杂的处理。
 
-The raw string information is also passed into template tags. The first argument in a tag function is an array with an extra property called raw. The raw property is an array containing the raw equivalent of each literal value. For example, the value in literals[0] always has an equivalent literals.raw[0] that contains the raw string information. Knowing that, you can mimic String.raw() using the following code:
+字符串的原始信息同样会被传递给模板标签。标签函数中的首个参数为包含额外属性 raw 的数组。raw 属性是含有每个字面量值的对应原始值的数组。例如，literals[0] 总是等同于它的原始值 literals.raw[0]。了解这些之后，你可以使用如下的代码来模仿默认的 String.raw()：
 
 ```js
 function raw(literals, ...substitutions) {
     let result = "";
 
-    // run the loop only for the substitution count
+    // 只根据 substitution 的数目来运行循环
     for (let i = 0; i < substitutions.length; i++) {
         result += literals.raw[i];      // use raw values instead
         result += substitutions[i];
     }
 
-    // add the last literal
+    // 添加最后一个 literal
     result += literals.raw[literals.length - 1];
 
     return result;
@@ -807,19 +817,21 @@ console.log(message);           // "Multiline\\nstring"
 console.log(message.length);    // 17
 ```
 
-This uses literals.raw instead of literals to output the string result. That means any character escapes, including Unicode code point escapes, should be returned in their raw form. Raw strings are helpful when you want to output a string containing code in which you’ll need to include the character escaping (for instance, if you want to generate documentation about some code, you may want to output the actual code as it appears).
+这里并非使用 literals 而是 literals.raw 来输出结果字符串。这意味着包括 Unicode 代码点在内的任何转义字符都会以原始的形式返回。当你想在输出的字符串中包含转义字符时原始字符串非常好用（例如，如果你想要生成包含代码的文档，那么你期待的是输出实际代码而不是产生的效果）。
 
 <br />
 
-### <a id="Summary"> Summary </a>
+### <a id="Summary"> 总结（Summary） </a>
 
-Full Unicode support allows JavaScript to deal with UTF-16 characters in logical ways. The ability to transfer between code point and character via codePointAt() and String.fromCodePoint() is an important step for string manipulation. The addition of the regular expression u flag makes it possible to operate on code points instead of 16-bit characters, and the normalize() method allows for more appropriate string comparisons.
 
-ECMAScript 6 also added new methods for working with strings, allowing you to more easily identify a substring regardless of its position in the parent string. More functionality was added to regular expressions, too.
+完整的 Unicode 支持允许 JavaScript 以合理的方式处理 UTF-16 字符。codePointAt() 和 String.fromCodePoint() 拥有的在代码点和字符之间的转换能力是字符串操作的一项重大进步。正则表达式新引入的 u 标志使得直接操作代码点而不是 16 位字符串变为可能，同时 normalize() 方法使得字符串之间的比较结果更为准确。
 
-Template literals are an important addition to ECMAScript 6 that allows you to create domain-specific languages (DSLs) to make creating strings easier. The ability to embed variables directly into template literals means that developers have a safer tool than string concatenation for composing long strings with variables.
+ECMAScript 6 也提供了操作字符串的新方法，允许你更容易地确认子字符串而无需获取它在整个字符串中的位置。正则表达式也引入了许多功能。
 
-Built-in support for multiline strings also makes template literals a useful upgrade over normal JavaScript strings, which have never had this ability. Despite allowing newlines directly inside the template literal, you can still use \n and other character escape sequences.
+模板字面量是 ECMAScript 6 添加的一项重要内容，允许你创建领域特定语言（domain-specific languages, DSLs）以便让字符串的创建更加轻松。将变量直接嵌入到模板字面量中意味着开发者有一种比字符串拼接更为安全的方式来组合长字符串和变量。
 
-Template tags are the most important part of this feature for creating DSLs. Tags are functions that receive the pieces of the template literal as arguments. You can then use that data to return an appropriate string value. The data provided includes literals, their raw equivalents, and any substitution values. These pieces of information can then be used to determine the correct output for the tag.
+相比传统字符串，模板字面量内置的多行字符串支持是一项实用的改进，这也是前者永远也无法做到的。尽管在模板字面量中允许多行的存在，你依旧可以使用 \n 或其它字符转义序列。
 
+模板标签是创建 DSLs 最重要的部分。标签是接收模板字面量片段为参数的函数。你可以使用参数数据来返回恰当的字符串，其中包括字面量，原生字面量和置换值。标签根据它们来输出相应的结果。
+
+<br />
