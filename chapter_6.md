@@ -1,27 +1,27 @@
 # Symbols and Symbol Properties
 
 
-Symbols are a primitive type introduced in ECMAScript 6, joining the existing primitive types: strings, numbers, booleans, null, and undefined. Symbols began as a way to create private object members, a feature JavaScript developers wanted for a long time. Before symbols, any property with a string name was easy to access regardless of the obscurity of the name, and the “private names” feature was meant to let developers create non-string property names. That way, normal techniques for detecting these private names wouldn’t work.
+Symbol 是 ECMAScript 6 新引入的基本类型。其它基本类型包括：字符串类型（string），数字类型（number），布尔类型（boolean），null 和 undefined 。对象可以使用 symbol 来创建私有成员，这也是 JavaScript 开发者长久以来期待的一项特性。在 symbol 引入之前，若不论名称本身，任何字符串属性都可以很容易地被访问，而 “私有命名（private name）” 特性意味着开发者创建非字符串属性。因此，使用一般地方法无法访问它们。
 
-The private names proposal eventually evolved into ECMAScript 6 symbols, and this chapter will teach you how to use symbols effectively. While the implementation details remained the same (that is, they added non-string values for property names), the goal of privacy was dropped. Instead, symbol properties are categorized separately from other object properties.
-
-<br />
-
-### Sumarry
-* [](#Creating-Symbols)
-* [](#Using-Symbols)
-* [](#Sharing-Symbols)
-* [](#Symbol-Coercion)
-* [](#Retrieving-Symbol-Properties)
-* [](#Exposing-Internal-Operations-with-Well-Known-Symbols)
-* [](#Summary)
+私有命名的提案最终入驻 ECMAScript 6，并称其为 symbol，同时本章也会教导如何有效地使用它们。不过，symbol 仅保留了实现细节（即，引入了非字符串属性名）而放弃了隐秘性。相反，symbol 属性和其它对象属性不属于同一个类别。
 
 <br />
 
-### <a id="Creating-Symbols"> Creating Symbols </a>
+### 本章小结
+* [创建 Symbol](#Creating-Symbols)
+* [使用 Symbol](#Using-Symbols)
+* [共享 Symbol](#Sharing-Symbols)
+* [Symbol 类型的转换](#Symbol-Coercion)
+* [提取 Symbol 属性](#Retrieving-Symbol-Properties)
+* [公开 Well-Known-Symbols 的内部操作](#Exposing-Internal-Operations-with-Well-Known-Symbols)
+* [总结](#Summary)
+
+<br />
+
+### <a id="Creating-Symbols"> 创建 Symbol（Creating Symbols） </a>
 
 
-Symbols are unique among JavaScript primitives in that they don’t have a literal form, like true for booleans or 42 for numbers. You can create a symbol by using the global Symbol function, as in this example:
+symbol 在 JavaScript 基本类型中比较特别，你可以用 true 和 42 分别代表布尔类型和数字类型，但是 symbol 类型却无法用字面量表示。你可以使用全局 Symbol 函数来创建一个 symbol，如下所示：
 
 ```js
 let firstName = Symbol();
@@ -31,15 +31,15 @@ person[firstName] = "Nicholas";
 console.log(person[firstName]);     // "Nicholas"
 ```
 
-Here, the symbol firstName is created and used to assign a new property on the person object. That symbol must be used each time you want to access that same property. Naming the symbol variable appropriately is a good idea, so you can easily tell what the symbol represents.
+在这里，firstName 作为 symbol 类型被创建并赋值给 person 对象以作其属性。每次访问这个属性时必须使用该 symbol 。symbol 变量的良好命名是个不错的注意，你可以很容易地得知 symbol 代表的内容。
 
 <br />
 
-> **NOTE**: Because symbols are primitive values, calling new Symbol() throws an error when called. You can create an instance of Symbol via new Object(yourSymbol) as well, but it’s unclear when this capability would be useful.
+> **注意**: 因为 symbol 是基础类型，调用 new Symbol() 时会抛出错误。你也可以通过 new Object(yourSymbol) 来创建 Symbol 的一个实例，不过目前尚不清楚这样做有何意义。
 
 <br />
 
-The Symbol function also accepts an optional argument that is the description of the symbol. The description itself cannot be used to access the property, but is used for debugging purposes. For example:
+Symbol 函数也会接收一个额外参数来作为自身的描述。该描述本身无法访问属性，不过它可以在调试中发挥作用。例如：
 
 ```js
 let firstName = Symbol("first name");
@@ -52,24 +52,24 @@ console.log(person[firstName]);             // "Nicholas"
 console.log(firstName);                     // "Symbol(first name)"
 ```
 
-A symbol’s description is stored internally in the [[Description]] property. This property is read whenever the symbol’s toString() method is called either explicitly or implicitly. The firstName symbol’s toString() method is called implictly by console.log() in this example, so the description gets printed to the log. It is not otherwise possible to access [[Description]] directly from code. I recommended always providing a description to make both reading and debugging symbols easier.
+symbol 的描述被存储在内部属性 [[Description]] 中。无论是显式还是隐式调用 symbol 的 toString() 方法，该属性都会被读取。firstName symbol 在本例中由 console.log() 隐式调用，并将其描述输出到控制台上。除此之外没有别的方法可以由代码访问 [[Description]] 内部属性。我推荐向每个 symbol 添加描述以便读取或调试 symbol。
 
 <br />
 
-> #### Identifying Symbols
+> #### 识别 symbol（Identifying Symbols）
 
-> Since symbols are primitive values, you can use the typeof operator to determine if a variable contains a symbol. ECMAScript 6 extends typeof to return "symbol" when used on a symbol. For example:
+> 既然 symbol 是基础类型，你可以使用 typeof 操作符来判断变量是否为 symbol 。ECMAScript 6 拓展了 typeof 使其操作 symbol 时返回 "symbol"。例如：
 
 ```js
 let symbol = Symbol("test symbol");
 console.log(typeof symbol);         // "symbol"
 ```
 
-> While there are other indirect ways of determining whether a variable is a symbol, the typeof operator is the most accurate and preferred technique.
+> 虽然还有其它间接方式判断 symbol 变量，不过 typeof 操作符是最精准也是我推荐的方式。
 
 <br />
 
-#### <a id="Using-Symbols"> Using Symbols </a>
+#### <a id="Using-Symbols"> 使用 Symbol（Using Symbols） </a>
 
 
 You can use symbols anywhere you’d use a computed property name. You’ve already seen bracket notation used with symbols in this chapter, but you can use symbols in computed object literal property names as well as with Object.defineProperty() and Object.defineProperties() calls, such as:
@@ -104,7 +104,7 @@ While symbols can be used in any place that computed property names are allowed,
 
 <br />
 
-### <a id="Sharing-Symbols"> Sharing Symbols </a>
+### <a id="Sharing-Symbols"> 共享 Symbol（Sharing Symbols） </a>
 
 
 You may find that you want different parts of your code to use the same symbols. For example, suppose you have two different object types in your application that should use the same symbol property to represent a unique identifier. Keeping track of symbols across files or large codebases can be difficult and error-prone. That’s why ECMAScript 6 provides a global symbol registry that you can access at any point in time.
@@ -160,7 +160,7 @@ Notice that both uid and uid2 return the "uid" key. The symbol uid3 doesn’t ex
 
 <br />
 
-### <a id="Symbol-Coercion"> Symbol Coercion </a>
+### <a id="Symbol-Coercion"> Symbol 类型的转换（Symbol Coercion） </a>
 
 
 Type coercion is a significant part of JavaScript, and there’s a lot of flexibility in the language’s ability to coerce one data type into another. Symbols, however, are quite inflexible when it comes to coercion because other types lack a logical equivalent to a symbol. Specifically, symbols cannot be coerced into strings or numbers so that they cannot accidentally be used as properties that would otherwise be expected to behave as symbols.
@@ -194,7 +194,7 @@ This example attempts to divide the symbol by 1, which causes an error. Errors a
 
 <br />
 
-### <a id="Retrieving-Symbol-Properties"> Retrieving Symbol Properties </a>
+### <a id="Retrieving-Symbol-Properties"> 提取 Symbol 属性（Retrieving Symbol Properties） </a>
 
 
 The Object.keys() and Object.getOwnPropertyNames() methods can retrieve all property names in an object. The former method returns all enumerable property names, and the latter returns all properties regardless of enumerability. Neither method returns symbol properties, however, to preserve their ECMAScript 5 functionality. Instead, the Object.getOwnPropertySymbols() method was added in ECMAScript 6 to allow you to retrieve property symbols from an object.
@@ -220,7 +220,7 @@ All objects start with zero own symbol properties, but objects can inherit symbo
 
 <br />
 
-### <a id="Exposing-Internal-Operations-with-Well-Known-Symbols"> Exposing Internal Operations with Well-Known Symbols </a>
+### <a id="Exposing-Internal-Operations-with-Well-Known-Symbols"> 公开 Well-Known-Symbols 的内部操作（Exposing Internal Operations with Well-Known Symbols） </a>
 
 
 A central theme for ECMAScript 5 was exposing and defining some of the “magic” parts of JavaScript, the parts that developers couldn’t emulate at the time. ECMAScript 6 carries on that tradition by exposing even more of the previously internal logic of the language, primarily by using symbol prototype properties to define the basic behavior of certain objects.
@@ -672,7 +672,7 @@ In general, you shouldn’t need to define Symbol.unscopables for your objects u
 
 <br />
 
-### <a id="Summary> Summary </a>
+### <a id="Summary> 总结（Summary） </a>
 
 
 Symbols are a new type of primitive value in JavaScript and are used to create nonenumerable properties that can’t be accessed without referencing the symbol.
