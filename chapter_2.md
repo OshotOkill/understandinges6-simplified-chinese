@@ -100,7 +100,7 @@ console.log(is32Bit("a"));          // false
 console.log(String.fromCodePoint(134071));  // "𠮷"
 ```
 
-可以将 String.fromCharCode() 视为 String.fromCharCode() 的完善版本。针对 BMP 字符两者会产生相同的结果，只有 BMP 之外的字符才会有差异。
+可以将 String.fromCodePoint() 视为 String.fromCharCode() 的完善版本。针对 BMP 字符两者会产生相同的结果，只有 BMP 之外的字符才会有差异。
 
 <br />
 
