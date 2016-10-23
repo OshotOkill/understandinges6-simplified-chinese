@@ -14,7 +14,7 @@
 
 <br />
 
-> **注意**： gitbook 无法正常解析 \$\$ 字符，所以在模板字面量一节中 \$ \$ 实际上为 \$\$ 。
+> **译者注**： gitbook 无法正常解析 \$\$ 字符，所以在模板字面量一节中 \$ \$ 实际上为 \$\$ 。
 
 <br />
 
@@ -679,6 +679,8 @@ let count = 10,
     message = `${count} items cost $ ${(count * price).toFixed(2)}.`;
 
 console.log(message);       // "10 items cost $2.50."
+
+// 注意：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
 ```
 
 该段代码中模板字面量的一部分执行了一次计算。count 和 price 变量进行相乘并使用 .toFixed() 方法将结果的精度格式化为百分位。第二处置换位置之前的美元符号照常输出，因为没有花括号紧随其后。
@@ -692,8 +694,6 @@ let name = "Nicholas",
     }.`;
 
 console.log(message);        // "Hello, my name is Nicholas."
-
-// 注意：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
 ```
 
 该例将第二个模板字面量嵌入到第一个内。在首处 ${ 之后使用了另一个模板字面量。第二处 ${ 表示将要嵌入到内层模板字面量的表达式，即 name 变量。
@@ -733,7 +733,7 @@ let count = 10,
     price = 0.25,
     message = passthru`${count} items cost $ ${(count * price).toFixed(2)}.`;
 
-    // 注意：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
+    // 译者注：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
 ```
 
 如果你拥有一个 passthru() 函数，那么它会接收三个参数。首当其冲的是一个 literals 数组，包含如下的元素：
@@ -769,6 +769,8 @@ let count = 10,
     message = passthru`${count} items cost $ ${(count * price).toFixed(2)}.`;
 
 console.log(message);       // "10 items cost $2.50."
+
+// 译者注：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
 ```
 
 该例定义了 passthru 标签并具有模板字面量的默认行为。唯一的技巧是在循环中使用 substituions.length 而不是 literals.length 来避免 substituions 数组的越界。它的生效归功于 ECMAScript 6 对 literals 和 substituions 的良好定义。
