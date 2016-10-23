@@ -245,7 +245,7 @@ function hasRegExpU() {
 
 <br />
 
-### 字符串的其它改进（Other String Changes）
+### <a id ="Other-String-Changes"> 字符串的其它改进（Other String Changes）
 
 
 JavaScript 的字符串特性总是落后于其它语言。比如，直到 ECMAScript 5 字符串才总算拥有了 trim() 方法，ECMAScript 6 则继续添加新功能以扩展 JavaScript 解析字符串的能力。
@@ -317,7 +317,7 @@ ECMAScript 6 同样为正则表达式添加了一些实用的功能来增加它�
 
 <br />
 
-### 正则表达式的其它改进（Other Regular Expression Changes）
+### <a id ="Other-Regular-Expression-Changes"> 正则表达式的其它改进（Other Regular Expression Changes）
 
 
 正则表达式是在 JavaScript 中操作字符串的重要方式之一，和很多其它语言相似，它在最近的几个版本中并未发生太大的变化。不过，为了和针对字符串的修改一起作伴，ECMAScript 6 也给正则表达式做了一些改进。
@@ -503,7 +503,7 @@ console.log(re.flags);      // "g"
 
 <br />
 
-### 模板字面量（Template Literals）
+### <a id ="Template-Literals"> 模板字面量（Template Literals）
 
 
 JavaScript 中的字符串相比其它语言有着太多的限制。例如，在 ECMAScript 6 之前本章介绍过的字符串的所有新方法都不能使用，而且字符串的拼接方式过于简陋。为了能让开发者解决更复杂的问题，ECMAScript 6 中的模板字面量提供了创建领域特定语言（domain-specific languages, DSLs）的语法使其相比 ECMAScript 5 或更早的版本能更安全的操作相应的内容（领域特定语言面向且专注于的是某单一特定目标的计算机程序设计语言，与通用目的语言如 JavaScript 相反）。ECMAScript wiki 提供了 [template literal strawman](http://wiki.ecmascript.org/doku.php?id=harmony:quasis) 的如下描述：
