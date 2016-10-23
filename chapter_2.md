@@ -692,6 +692,8 @@ let name = "Nicholas",
     }.`;
 
 console.log(message);        // "Hello, my name is Nicholas."
+
+// 注意：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
 ```
 
 该例将第二个模板字面量嵌入到第一个内。在首处 ${ 之后使用了另一个模板字面量。第二处 ${ 表示将要嵌入到内层模板字面量的表达式，即 name 变量。
