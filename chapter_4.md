@@ -24,9 +24,9 @@ ECMAScript 6 给对象的各个方面，从简单的语法扩展到操作与交�
 
 JavaScript 混合了多种术语来描述规范中定义的对象，而非针对浏览器或者 Node.js 这些执行环境。ECMAScript 6 规范明确定义了每种对象类别。理解该术语对于从整体上认识该门语言显得十分重要。对象类别包括：
 
-* 普通对象（ordinary object）拥有 JavaScript 对象所有的默认行为。
+* 常规对象（ordinary object）拥有 JavaScript 对象所有的默认行为。
 * 特异对象（exotic object）的某些内部行为和默认的有所差异。
-* 标准对象（standard object）是 ECMAScript 6 中定义的对象，例如 Array, Date 等，它们既可能是普通也可能是特异对象。
+* 标准对象（standard object）是 ECMAScript 6 中定义的对象，例如 Array, Date 等，它们既可能是常规也可能是特异对象。
 * 内置对象（built-in object）指 JavaScript 执行环境开始运行时已存在的对象。标准对象均为内置对象。
 
 我会在整本书中使用这些术语来说明在 ECMAScript 6 中定义的各式对象。
