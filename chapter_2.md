@@ -21,7 +21,7 @@
 ### <a id ="Better-Unicode-Support"> 更佳的 Unicode 支持（Better Unicode Support） </a>
 
 
-ECMAScript 6 诞生之前，JavaScript 字符串（string）由 16 位编码的字符组成（UTF-16）。每个字符又由包含一个 16 位序列的代码单元（code unit）表示。所有的字符串属性和方法，例如 length 和 charAt()，都基于这些 16 位编码单元。曾经，16 位的容量对于任意字符的存放都是足够的，然而 Unicode 引入了扩展字符集（expanded character set）使得
+ECMAScript 6 诞生之前，JavaScript 字符串（string）由 16 位编码的字符组成（UTF-16）。每个字符又由包含一个 16 位序列的代码单元（code unit）表示。所有的字符串属性和方法，例如 length 和 charAt()，都基于这些 16 位编码单元。曾经，16 位的容量对于任意字符的存放都是足够的，然而现在不是了，辛亏 Unicode 引入了扩展字符集（expanded character set）。
 
 <br />
 
