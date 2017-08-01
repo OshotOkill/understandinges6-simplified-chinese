@@ -366,7 +366,7 @@ console.log(Object.getOwnPropertyNames(obj).join(""));     // "012acbd"
 
 Object.getOwnPropertyNames() 方法返回的属性集合顺序依次为 0，1，2，a，c，b，d 。注意数字类型的键会被提升并自动排序，字符类型的键紧随其后并保持添加到对象时的顺序。对象字面量本身的键优先级比后动态添加到对象的高（在本例中，d）。
 
-for-in 循环的枚举顺序仍不明确，因为各 JavaScript 引擎的实现不懂。同样 Object.keys() 和 JSON.stringify() 由于枚举顺序和 for-in 相同导致它们的具体结果也无确切定义。
+for-in 循环的枚举顺序仍不明确，因为各 JavaScript 引擎的实现不同。同样 Object.keys() 和 JSON.stringify() 由于枚举顺序和 for-in 相同导致它们的具体结果也无确切定义。
 
 虽然枚举顺序的变动对 JavaScript 的运作来讲细小甚微，但是依赖于枚举顺序而运行的项目并不罕见。ECMAScript 6 通过定义枚举的顺序使其与具体的执行环境无关，保证依赖于枚举的 JavaScript 代码能正常工作。
 
