@@ -14,7 +14,7 @@
 
 <br />
 
-> **注意**： gitbook 无法正常解析 \$\$ 字符，所以在模板字面量一节中 \$ \$ 实际上为 \$\$ 。
+> **译者注**： gitbook 无法正常解析 \$\$ 字符，所以在模板字面量一节中 \$ \$ 实际上为 \$\$ 。
 
 <br />
 
@@ -100,7 +100,7 @@ console.log(is32Bit("a"));          // false
 console.log(String.fromCodePoint(134071));  // "𠮷"
 ```
 
-可以将 String.fromCharCode() 视为 String.fromCharCode() 的完善版本。针对 BMP 字符两者会产生相同的结果，只有 BMP 之外的字符才会有差异。
+可以将 String.fromCodePoint() 视为 String.fromCharCode() 的完善版本。针对 BMP 字符两者会产生相同的结果，只有 BMP 之外的字符才会有差异。
 
 <br />
 
@@ -245,7 +245,7 @@ function hasRegExpU() {
 
 <br />
 
-### 字符串的其它改进（Other String Changes）
+### <a id ="Other-String-Changes"> 字符串的其它改进（Other String Changes）
 
 
 JavaScript 的字符串特性总是落后于其它语言。比如，直到 ECMAScript 5 字符串才总算拥有了 trim() 方法，ECMAScript 6 则继续添加新功能以扩展 JavaScript 解析字符串的能力。
@@ -317,7 +317,7 @@ ECMAScript 6 同样为正则表达式添加了一些实用的功能来增加它�
 
 <br />
 
-### 正则表达式的其它改进（Other Regular Expression Changes）
+### <a id ="Other-Regular-Expression-Changes"> 正则表达式的其它改进（Other Regular Expression Changes）
 
 
 正则表达式是在 JavaScript 中操作字符串的重要方式之一，和很多其它语言相似，它在最近的几个版本中并未发生太大的变化。不过，为了和针对字符串的修改一起作伴，ECMAScript 6 也给正则表达式做了一些改进。
@@ -503,7 +503,7 @@ console.log(re.flags);      // "g"
 
 <br />
 
-### 模板字面量（Template Literals）
+### <a id ="Template-Literals"> 模板字面量（Template Literals）
 
 
 JavaScript 中的字符串相比其它语言有着太多的限制。例如，在 ECMAScript 6 之前本章介绍过的字符串的所有新方法都不能使用，而且字符串的拼接方式过于简陋。为了能让开发者解决更复杂的问题，ECMAScript 6 中的模板字面量提供了创建领域特定语言（domain-specific languages, DSLs）的语法使其相比 ECMAScript 5 或更早的版本能更安全的操作相应的内容（领域特定语言面向且专注于的是某单一特定目标的计算机程序设计语言，与通用目的语言如 JavaScript 相反）。ECMAScript wiki 提供了 [template literal strawman](http://wiki.ecmascript.org/doku.php?id=harmony:quasis) 的如下描述：
@@ -679,6 +679,8 @@ let count = 10,
     message = `${count} items cost $ ${(count * price).toFixed(2)}.`;
 
 console.log(message);       // "10 items cost $2.50."
+
+// 注意：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
 ```
 
 该段代码中模板字面量的一部分执行了一次计算。count 和 price 变量进行相乘并使用 .toFixed() 方法将结果的精度格式化为百分位。第二处置换位置之前的美元符号照常输出，因为没有花括号紧随其后。
@@ -731,7 +733,7 @@ let count = 10,
     price = 0.25,
     message = passthru`${count} items cost $ ${(count * price).toFixed(2)}.`;
 
-    // 注意：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
+    // 译者注：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
 ```
 
 如果你拥有一个 passthru() 函数，那么它会接收三个参数。首当其冲的是一个 literals 数组，包含如下的元素：
@@ -767,6 +769,8 @@ let count = 10,
     message = passthru`${count} items cost $ ${(count * price).toFixed(2)}.`;
 
 console.log(message);       // "10 items cost $2.50."
+
+// 译者注：gitbook 解析 markdown 语法时存在一个 bug，在这里 $ $ 实际为 $$
 ```
 
 该例定义了 passthru 标签并具有模板字面量的默认行为。唯一的技巧是在循环中使用 substituions.length 而不是 literals.length 来避免 substituions 数组的越界。它的生效归功于 ECMAScript 6 对 literals 和 substituions 的良好定义。
