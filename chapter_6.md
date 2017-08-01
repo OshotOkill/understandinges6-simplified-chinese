@@ -165,9 +165,7 @@ console.log(Symbol.keyFor(uid3));   // undefined
 ### <a id="Symbol-Coercion"> Symbol 类型的强制转换（Symbol Coercion） </a>
 
 
-Type coercion is a significant part of JavaScript, and there’s a lot of flexibility in the language’s ability to coerce one data type into another. Symbols, however, are quite inflexible when it comes to coercion because other types lack a logical equivalent to a symbol. Specifically, symbols cannot be coerced into strings or numbers so that they cannot accidentally be used as properties that would otherwise be expected to behave as symbols.
-
-类型强制转换在 JavaScript 中意义重大，在该语言中它有着极高的灵活度。不过，symbol 类型的转换却十分不便，因为其它类型缺乏与 symbol 的等同逻辑。特别是 symbol 无法强制转换为字符串与数字，因此它们不可能无意间被用作。。。。。。。。。。
+类型强制转换在 JavaScript 中意义重大，在该语言中它有着极高的灵活度。不过，symbol 类型的转换却十分不便，因为其它类型缺乏与 symbol 的等同逻辑。特别是 symbol 无法强制转换为字符串与数字，因此将它作为属性可以避免被无意间地引用。
 
 本章中的示例使用了 console.log() 来输出并显示 symbol，之所以能这么做是因为 console.log() 会对 symbol 调用 String() 以得到有用的输出。你可以直接使用 String() 来得到相同的结果。例如：
 
@@ -440,7 +438,7 @@ console.log(split1);            // ["Hello world"]
 console.log(split2);            // ["", ""]
 ```
 
-hasLengthOf10 对象试图模仿正则表达式的行为并匹配长度恰好为 10 的字符串。hasLengthOf10 用对应的 symbol 实现了这四个方法，之后相应的方法将会在字符串上调用。。第一个字符串 message1 含有 11 个字符，所以它不符合匹配规则；第二个字符串 message 含有 10 个字符串，于是它成为了匹配的元素。尽管 hasLengthOf10 不是正则表达式，但是根据内部附加的方法，它仍然会被正确的使用。
+hasLengthOf10 对象试图模仿正则表达式的行为并匹配长度恰好为 10 的字符串。hasLengthOf10 用对应的 symbol 实现了四个方法，之后相应的方法将会在这两个字符串上调用。第一个字符串 message1 含有 11 个字符，所以它不符合匹配规则；第二个字符串 message 含有 10 个字符串，于是它成为了匹配的元素。尽管 hasLengthOf10 不是正则表达式，但是根据内部附加的方法，它仍然会被正确的使用。
 
 虽然这个示例比较简单，它却可以实行比正则表达式力所能及到的还要复杂的匹配，这就给自定义模式匹配提供了不少可能性。
 
@@ -510,11 +508,7 @@ console.log(String(freezing));          // "32°"，原文有误（째）
 #### Symbol.toStringTag symbol（The Symbol.toStringTag Symbol）
 
 
-One of the most interesting problems in JavaScript has been the availability of multiple global execution environments. This occurs in web browsers when a page includes an iframe, as the page and the iframe each have their own execution environments. In most cases, this isn’t a problem, as data can be passed back and forth between the environments with little cause for concern. The problem arises when trying to identify what type of object you’re dealing with after the object has been passed between different objects.
-
 JavaScript 最有趣的问题之一在于它的多个执行环境可以同时并存。它发生在如下情况：浏览器加载的页面中包含一个 iframe，而页面和 iframe 分别拥有各自的执行环境。在大部分场景下，这都不是问题，因为数据可以在不同的环境中反复传递而不需要特别的去关心它们。如果对象在不同的对象之间互相传递后你想要确认某个对象的具体类型，那么麻烦就会出现。
-
-The canonical example of this issue is passing an array from an iframe into the containing page or vice-versa. In ECMAScript 6 terminology, the iframe and the containing page each represent a different realm which is an execution environment for JavaScript. Each realm has its own global scope with its own copy of global objects. In whichever realm the array is created, it is definitely an array. When it’s passed to a different realm, however, an instanceof Array call returns false because the array was created with a constructor from a different realm and Array represents the constructor in the current realm.
 
 这个问题的经典案例是将 iframe 中的数组传递给包含它的页面，或反过来将数组传递给页面中的 iframe。在 ECMAScript 6 中的术语中，iframe 与包含它的页面代表不同的场景（realm）——即 JavaScript 的一种执行环境。每个场景拥有自己的全局作用域和对应全局对象的拷贝。不论数组在哪个场景中创建，它都是真正的数组。不过，当将它传递给不同的场景并对其调用 Array 对象的 instanceof 方法后，结果会返回 false，因为该数组由不同场景中的数组构造器创建，然而 Array 仅代表当前场景中的构造器。
 
@@ -522,8 +516,6 @@ The canonical example of this issue is passing an array from an iframe into the 
 
 ##### 鉴定问题的解决方案（A Workaround for the Identification Problem）
 
-
-Faced with this problem, developers soon found a good way to identify arrays. They discovered that by calling the standard toString() method on the object, a predictable string was always returned. Thus, many JavaScript libraries began including a function like this:
 
 面对以上问题，开发者迅速发觉了一种好的办法来确认数组。他们了解到，向对象调用标准的 toString() 方法总会返回一个可预测的字符串。因此渐渐地，很多 JavaScript 库开始引入了如下的函数：
 
@@ -535,15 +527,9 @@ function isArray(value) {
 console.log(isArray([]));   // true
 ```
 
-This may look a bit roundabout, but it worked quite well for identifying arrays in all browsers. The toString() method on arrays isn’t useful for identifying an object because it returns a string representation of the items the object contains. But the toString() method on Object.prototype had a quirk: it included internally-defined name called [[Class]] in the returned result. Developers could use this method on an object to retrieve what the JavaScript environment thought the object’s data type was.
-
 这看起来有些兜圈子，不过它确实很好的解决了在所有浏览器中如何确认数组的问题。这种解决方案用来确认对象则不是那么有效，因为它总会返回以字符串表示的对象包含的项。但是 Object.prototype 的 toString() 方法有一个怪异（quirk）之处：返回的结果包含 [[Class]] 内部定义命名。开发者可以使用这个方法来获取 JavaScript 环境推断的对象类型。
 
-Developers quickly realized that since there was no way to change this behavior, it was possible to use the same approach to distinguish between native objects and those created by developers. The most important case of this was the ECMAScript 5 JSON object.
-
 开发者迅速认识到既然没有任何办法可以更改这个行为，那么使用相同的方式来区分原生（native object）和开发者自定义的对象也是可能的。最重要的案例就是 ECMAScript 5 的 JSON 对象。
-
-Prior to ECMAScript 5, many developers used Douglas Crockford’s json2.js, which creates a global JSON object. As browsers started to implement the JSON global object, figuring out whether the global JSON was provided by the JavaScript environment itself or through some other library became necessary. Using the same technique I showed with the isArray() function, many developers created functions like this:
 
 在 ECMAScript 5 之前，很多开发者使用 Douglas Crockford 编写的 json2.js 来创建全局 JSON 对象。当浏览器开始实现 JSON 全局对象时，如何区分全局 JSON 是由 JavaScript 环境提供还是由开发者自定义变得很有必要。使用如上演示过的 isArray() 函数包含的技巧，很多开发者创建了如下这样的函数：
 
@@ -554,8 +540,6 @@ function supportsNativeJSON() {
 }
 ```
 
-The same characteristic of Object.prototype that allowed developers to identify arrays across iframe boundaries also provided a way to tell if JSON was the native JSON object or not. A non-native JSON object would return [object Object] while the native version returned [object JSON] instead. This approach became the de facto standard for identifying native objects.
-
 Object.prototype 允许开发者跨越 iframe 的边界来确认数组，同样它也可以告知 JSON 是否为原生丢向。一个非原生 JSON 对象会返回 [object Object]，相反原生对象会返回 [object JSON]。该种方案成为了区分原生对象的事实标准。
 
 <br />
@@ -563,11 +547,7 @@ Object.prototype 允许开发者跨越 iframe 的边界来确认数组，同样�
 ##### ECMAScript 6 的答案（The ECMAScript 6 Answer）
 
 
-ECMAScript 6 redefines this behavior through the Symbol.toStringTag symbol. This symbol represents a property on each object that defines what value should be produced when Object.prototype.toString.call() is called on it. For an array, the value that function returns is explained by storing "Array" in the Symbol.toStringTag property.
-
 ECMAScript 6 通过 Symbol.toStringTag Symbol 重新定义了以上行为。该 Symbol 代表每个对象上都存在的一个属性，每次调用 Object.prototype.toString.call() 会返回这个属性值。对于数组来讲，该函数的返回值可以被解释为 "Array" 字符串作为值被存储到了 Symbol.toStringTag 属性中。
-
-Likewise, you can define the Symbol.toStringTag value for your own objects:
 
 类似的是，你可以给自己的对象定义 Symbol.toStringTag 的值：
 
@@ -583,8 +563,6 @@ let me = new Person("Nicholas");
 console.log(me.toString());                         // "[object Person]"
 console.log(Object.prototype.toString.call(me));    // "[object Person]"
 ```
-
-In this example, a Symbol.toStringTag property is defined on Person.prototype to provide the default behavior for creating a string representation. Since Person.prototype inherits the Object.prototype.toString() method, the value returned from Symbol.toStringTag is also used when calling the me.toString() method. However, you can still define your own toString() method that provides a different behavior without affecting the use of the Object.prototype.toString.call() method. Here’s how that might look:
 
 本例中，为了给对象创建一个字符串表达形式，便定义了 Symbol.toStringTag 属性来提供默认的行为。因为 Person.prototype 继承了 Object.prototype.toString() 方法，Symbol.toStringTag 的值会被 me.toString() 方法使用。不过，你依然可以定义自己的 toString() 方法，在不影响 Object.prototype.toString.call() 方法的前提下提供另一种不同的行为。
 
@@ -605,19 +583,13 @@ console.log(me.toString());                         // "Nicholas"
 console.log(Object.prototype.toString.call(me));    // "[object Person]"
 ```
 
-This code defines Person.prototype.toString() to return the value of the name property. Since Person instances no longer inherit the Object.prototype.toString() method, calling me.toString() exhibits a different behavior.
-
 上段代码定义了 Person.prototype.toString() 并返回 name 属性。由于 Person 实例不再继承 Object.prototype.toString() 方法，调用 me.toString() 会展现不同的行为。
 
 <br />
 
-> All objects inherit Symbol.toStringTag from Object.prototype unless otherwise specified. The string "Object" is the default property value.
-
 > 所有的对象都继承了 Object.prototype 上的 Symbol.toStringTag。除非特别设置，"Object" 字符串是默认的属性值。
 
 <br />
-
-There is no restriction on which values can be used for Symbol.toStringTag on developer-defined objects. For example, nothing prevents you from using "Array" as the value of the Symbol.toStringTag property, such as:
 
 在开发者定义的对象上 Symbol.toStringTag 的值没有任何限制。例如，没有什么能阻止你将 "Array" 设置为 Symbol.toStringTag 的属性值，例如：
 
@@ -638,11 +610,7 @@ console.log(me.toString());                         // "Nicholas"
 console.log(Object.prototype.toString.call(me));    // "[object Array]"
 ```
 
-The result of calling Object.prototype.toString() is "[object Array]" in this code, which is the same result you’d get from an actual array. This highlights the fact that Object.prototype.toString() is no longer a completely reliable way of identifying an object’s type.
-
 本段代码中调用 Object.prototype.toString() 的结果是 "[object Array]"，它也是在真正的数组上调用该方法获得的结果。这突出说明了在确认对象类型时，Object.prototype.toString() 已经不能完全信赖。
-
-Changing the string tag for native objects is also possible. Just assign to Symbol.toStringTag on the object’s prototype, like this:
 
 更改原生对象的字符串标签也是可以的，只需要在对象原型上向 Symbol.toStringTag 赋值。如下所示：
 
@@ -654,8 +622,6 @@ let values = [];
 console.log(Object.prototype.toString.call(values));    // "[object Magic]"
 ```
 
-Even though Symbol.toStringTag is overwritten for arrays in this example, the call to Object.prototype.toString() results in "[object Magic]" instead. While I recommended not changing built-in objects in this way, there’s nothing in the language that forbids doing so.
-
 即使上例只重写了数组的 Symbol.toStringTag，对其调用 Object.prototype.toString() 的结果仍然是 [object Magic]。虽然我不推荐像上例中更改内置对象，但是语言本身并没有任何办法禁止你这样做。
 
 <br />
@@ -663,19 +629,11 @@ Even though Symbol.toStringTag is overwritten for arrays in this example, the ca
 #### Symbol.unscopables Symbol（The Symbol.unscopables Symbol）
 
 
-The with statement is one of the most controversial parts of JavaScript. Originally designed to avoid repetitive typing, the with statement later became roundly criticized for making code harder to understand and for negative performance implications as well as being error-prone.
-
 with 语句是 JavaScript 中最具争议的部分之一。它起先的设计目的是用来避免重复书写代码，不过在那之后，with 语句因为晦涩难懂和对性能的消极影响被饱受批评，同时它也存在很多隐患。
-
-As a result, the with statement is not allowed in strict mode; that restriction also affects classes and modules, which are strict mode by default and have no opt-out.
 
 因此，严格模式下 with 语句被禁止使用，在类和模块中也不允许它的存在，因为两者默认以严格模式运行，而且没有办法妥协。
 
-While future code will undoubtedly not use the with statement, ECMAScript 6 still supports with in nonstrict mode for backwards compatibility and, as such, had to find ways to allow code that does use with to continue to work properly.
-
 虽然在未来的代码编写中 with 语句毫无疑问会被弃用，但 ECMAScript 6 为了向后兼容仍然支持在非严格模式下使用它。因此，必须找到一种方式使得 with 能继续正常工作。
-
-To understand the complexity of this task, consider the following code:
 
 为了了解这项任务的复杂程度，考虑如下的代码：
 
@@ -692,15 +650,9 @@ with(colors) {
 console.log(colors);    // ["red", "green", "blue", "black", 1, 2, 3]
 ```
 
-In this example, the two calls to push() inside the with statement are equivalent to colors.push() because the with statement added push as a local binding. The color reference refers to the variable created outside the with statement, as does the values reference.
-
 本例中，在 with 语句中两次调用的 push() 等同于两次调用 colors.push()，因为 with 语句将 push 添加到局部绑定中。color 引用指代 with 语句外创建的变量，values 同理。
 
-But ECMAScript 6 added a values method to arrays. (The values method is discussed in detail in Chapter 7, “Iterators and Generators.”) That would mean in an ECMAScript 6 environment, the values reference inside the with statement should refer not to the local variable values, but to the array’s values method, which would break the code. This is why the Symbol.unscopables symbol exists.
-
 但是 ECMAScript 6 向数组添加了 values 方法（values 方法将在第八章“迭代器与生成器”中详细介绍），这意味着在 ECMAScript 6 的执行环境中，with 语句中的 values 引用指代的并非局部变量 values，而是数组的 values 方法，于是代码无法正常运行。为了解决这个问题，Symbol.unscopables 应运而生。
-
-The Symbol.unscopables symbol is used on Array.prototype to indicate which properties shouldn’t create bindings inside of a with statement. When present, Symbol.unscopables is an object whose keys are the identifiers to omit from with statement bindings and whose values are true to enforce the block. Here’s the default Symbol.unscopables property for arrays:
 
 Array.prototype 根据 Symbol.unscopables symbol 来指示 with 语句中应该创建哪些绑定。Symbol.unscopables 以对象的形式存在，with 语句根据这个对象的属性标识符来确定代码块内应该存在哪些绑定。以下是数组默认的 Symbol.unscopables 值：
 
@@ -718,11 +670,7 @@ Array.prototype[Symbol.unscopables] = Object.assign(Object.create(null), {
 });
 ```
 
-The Symbol.unscopables object has a null prototype, which is created by the Object.create(null) call, and contains all of the new array methods in ECMAScript 6. (These methods are covered in detail in Chapter 7, “Iterators and Generators,” and Chapter 9, “Arrays.”) Bindings for these methods are not created inside a with statement, allowing old code to continue working without any problem.
-
 Symbol.unscopables 对象拥有一个空的原型（null prototype），它由 Object.create(null) 创建，并包含所有 ECMAScript 6 为数组添加的新方法（这些方法会在第八章“迭代器与生成器”和第十章“改进的数组功能”中详细说明）。with 语句中不会创建这些方法的绑定，以便让旧的代码正常运行。
-
-In general, you shouldn’t need to define Symbol.unscopables for your objects unless you use the with statement and are making changes to an existing object in your code base.
 
 总的来讲，除非你使用了 with 语句并对代码库中存在的对象进行变动，你不需要给对象定义 Symbol.unscopables。
 
@@ -731,23 +679,13 @@ In general, you shouldn’t need to define Symbol.unscopables for your objects u
 ### <a id="Summary> 总结（Summary） </a>
 
 
-Symbols are a new type of primitive value in JavaScript and are used to create nonenumerable properties that can’t be accessed without referencing the symbol.
-
 Symbol 是 JavaScript 中一种新的基本类型，它被用来创建不可枚举的属性而且只能通过引用 symbol 来访问。
-
-While not truly private, these properties are harder to accidentally change or overwrite and are therefore suitable for functionality that needs a level of protection from developers.
 
 虽然它们并非真正的私有属性，不过对开发者来讲，这些属性很难被意外修改和覆盖的特点使得它们很适合为某些设计功能做一定级别的防护。
 
-You can provide descriptions for symbols that allow for easier identification of symbol values. There is a global symbol registry that allows you to use shared symbols in different parts of code by using the same description. In this way, the same symbol can be used for the same reason in multiple places.
-
 为了让 symbol 值更易辨识，你可以为其提供一些描述。全局 symbol 记录的存在让你可以在代码的不同片段中通过相同的描述来使用共享的 symbol。同理，相同的 symbol 可以在多处使用。
 
-Methods like Object.keys() or Object.getOwnPropertyNames() don’t return symbols, so a new method called Object.getOwnPropertySymbols() was added in ECMAScript 6 to allow retrieval of symbol properties. You can still make changes to symbol properties by calling the Object.defineProperty() and Object.defineProperties() methods.
-
 类似于 Object.keys() 或 Object.getOwnPropertyNames() 这样的方法无法返回 symbol，于是 ECMAScript 6 引入了 Object.getOwnPropertySymbols() 这个新方法来提取 symbol 属性。你仍旧可以通过 Object.defineProperty() 或 Object.defineProperties() 来修改 symbol 属性。
-
-Well-known symbols define previously internal-only functionality for standard objects and use globally-available symbol constants, such as the Symbol.hasInstance property. These symbols use the prefix Symbol. in the specification and allow developers to modify standard object behavior in a variety of ways.
 
 well-known symbol 定义了标准对象中在以前只能由内部运作的功能。它们是全局可用的 symbol 常量且带有 Symbol. 前缀，例如 Symbol.hasInstance 属性，并允许开发者以各种各样的方式来修改标准对象的行为
 
